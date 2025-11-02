@@ -1,0 +1,23 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "X": {
+      "tag": "neoforge:ingots/astralite"
+    }
+  },
+  "pattern": [
+    "     ",
+    "     ",
+    "  X  ",
+    " X   ",
+    "S    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:swiftness_dagger"
+  }
+}

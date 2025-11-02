@@ -1,0 +1,26 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "B": {
+      "item": "minecraft:breeze_rod"
+    },
+    "X": {
+      "tag": "neoforge:block/obscurite_block"
+    },
+    "Z": {
+      "tag": "neoforge:block/obscuridium_block"
+    }
+  },
+  "pattern": [
+    " ZZZB",
+    "XX BZ",
+    "X  B ",
+    "  B  ",
+    "  B  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:wings_of_doom"
+  }
+}

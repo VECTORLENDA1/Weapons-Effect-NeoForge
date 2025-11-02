@@ -1,0 +1,23 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "tag": "neoforge:ingots/nexalite"
+    }
+  },
+  "pattern": [
+    "     ",
+    "     ",
+    "  B  ",
+    " B   ",
+    "S    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:blindness_dagger"
+  }
+}

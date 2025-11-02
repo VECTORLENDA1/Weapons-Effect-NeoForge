@@ -1,0 +1,217 @@
+{
+
+  "2":             "||BLOCKS||",
+  "block.weaponseffect.simple_crafting_table": "Simple Crafting Table",
+
+
+
+
+  "3":             "||WEAPONS||",
+  "item.weaponseffect.fire_sword": "Fire Sword",
+  "item.weaponseffect.wither_sword": "Wither Sword",
+  "item.weaponseffect.blindness_dagger": "Blindness Dagger",
+  "item.weaponseffect.darkness_mace": "Darkness Mace",
+  "item.weaponseffect.gimlis_axe": "Gimli's Axe",
+  "item.weaponseffect.ice_sword": "Ice Sword",
+  "item.weaponseffect.lance": "Lance",
+  "item.weaponseffect.poison_sword": "Poison Sword",
+  "item.weaponseffect.hammer": "Hammer",
+  "item.weaponseffect.wings_of_doom": "Wings of Doom",
+  "item.weaponseffect.swiftness_dagger": "Swiftness Dagger",
+
+
+
+  "4":            "||TOOLTIPS||",
+
+
+  "5":        "||Blindness_Dagger||",
+  "blindness.dagger.tooltip": "Inflicts Blindness",
+  "blindness.line.2": " ",
+  "blindness.immunities": "IMMUNITIES",
+  "blindness.immunities.tooltip": "Blindness",
+
+
+
+  "6":         "||Darkness_Mace||",
+  "darkness.mace.tooltip": "Inflicts Darkness",
+  "darkness.line.2": " ",
+  "darkness.immunities": "IMMUNITIES",
+  "darkness.immunities.tooltip": "Darkness",
+
+
+
+  "7":         "||Fire_Sword||",
+  "fire.sword.tooltip": "Inflicts Fire",
+  "fire.line.2": " ",
+  "fire.immunities": "IMMUNITIES",
+  "fire.immunities.tooltip": "Fire",
+  "fire.line.3": " ",
+  "fire.ability": "ABILITY",
+  "fire.ability.name": "Blazing Gaze",
+  "fire.line.4": " ",
+  "fire.ability.description": "Create an area of flames where you look",
+
+
+
+  "8":         "||Gimli's_Axe||",
+  "gimlis.axe.tooltip": "Inflicts Slowness",
+
+
+
+  "9":         "||Ice_Sword||",
+  "ice.sword.tooltip": "Inflicts slowness that drain life",
+  "ice.line.2": " ",
+  "ice.immunities": "IMMUNITIES",
+  "ice.immunities.tooltip": "Slowness",
+
+
+
+  "10":         "||Lance||",
+  "lance.tooltip": "Make them Weak",
+  "lance.line.2": " ",
+  "lance.immunities": "IMMUNITIES",
+  "lance.immunities.tooltip": "Slowness",
+
+
+
+  "11":         "||Poison_Sword||",
+  "poison.sword.tooltip": "Inflicts Poison",
+  "poison.line.2": " ",
+  "poison.immunities": "IMMUNITIES",
+  "poison.immunities.tooltip": "Poison",
+
+
+
+  "12":         "||Hammer||",
+  "hammer.tooltip": "Inflicts Slowness",
+  "hammer.line.2": " ",
+  "hammer.ability": "ABILITY",
+  "hammer.ability.name": "Explosion",
+  "hammer.line.3": " ",
+  "hammer.ability.description": "Create an explosive area dealing massive damage",
+
+
+
+  "13":         "||Swiftness_Dagger||",
+  "swiftness.dagger.tooltip": "Inflicts Poison",
+  "swiftness.line.2": " ",
+  "swiftness.immunities": "IMMUNITIES",
+  "swiftness.immunities.tooltip": "Slowness",
+
+
+
+  "14":         "||Wings_of_Doom||",
+  "wings.of.doom.tooltip": "Inflicts them with Poison and Withering",
+  "wings.of.doom.tooltip.2": "make them slow, blind and weak",
+  "wings.of.doom.tooltip.3": "and with dark they can's see",
+  "wings.of.doom.line.2": " ",
+  "wings.of.doom.immunities": "IMMUNITIES",
+  "wings.of.doom.immunities.tooltip": "Blindness",
+  "wings.of.doom.immunities.tooltip.2": "Darkness",
+  "wings.of.doom.immunities.tooltip.3": "Poison",
+  "wings.of.doom.immunities.tooltip.4": "Slowness",
+  "wings.of.doom.immunities.tooltip.5": "Weakness",
+  "wings.of.doom.immunities.tooltip.6": "Wither",
+  "wings.of.doom.immunities.tooltip.7": "Fire",
+  "wings.of.doom.line.3": " ",
+  "wings.of.doom.abilitys": "ABILITY",
+  "wings.of.doom.abilitys.name": "Black Hole",
+  "wings.of.doom.line.4": " ",
+  "wings.of.doom.ability.description": "Create a Black Hole in the World and consume everything",
+
+
+
+  "15":         "||Wither_Sword||",
+  "wither.sword.tooltip": "Inflicts Wither",
+  "wither.line.2": " ",
+  "wither.immunities": "IMMUNITIES",
+  "wither.immunities.tooltip": "Wither",
+  "wither.line.3": " ",
+  "wither.ability": "ABILITY",
+  "wither.ability.name": "Wither Rain",
+  "wither.line.4": " ",
+  "wither.ability.description": "Launch wither skulls from your sword",
+
+
+
+  "16":         "||Abilities||",
+  "item.hammer.cooldown": "Hammer on Cooldown",
+  "item.wither_sword.cooldown": "Wither Sword on Cooldown",
+  "item.fire.sword.cooldown": "Fire Sword on Cooldown",
+
+
+  "17":         "||Book||",
+  "book.weaponseffect.name": "Weapons Effect",
+  "book.weaponseffect.landing_text": "Weapons Effect adds new weapons with effects that will change your combat experience and way of thinking. This Guide Book will teach you how the mod works, like, ''What this weapon can benefit you and what you can do with it'', or ''I don't know where can i get this ore?''. So i hope this guide book can help you with my mod, and have fun!",
+
+  "book.weaponseffect.category.crafting.name": "Crafting",
+  "book.weaponseffect.category.crafting.description": "This category is to show some basic recipes and how to make them.",
+  "book.weaponseffect.category.ores.name": "Ores",
+  "book.weaponseffect.category.ores.description": "This category is about the ores and dimensions you can get the ores of the mod and where you can find them.",
+  "book.weaponseffect.category.weapons.name": "Weapons",
+  "book.weaponseffect.category.weapons.description": "This category is about the weapons and their effects.",
+
+  "book.weaponseffect.entry.simple_crafting_table": "Simple Crafting Table",
+  "book.weaponseffect.entry.crafting.page.1": "The Simple Crafting Table is the new custom crafting table for this mod and this will allow you to craft $(bold)ALL$() the weapons of this mod.",
+  "book.weaponseffect.entry.weapons_effect_guide_book": "Weapons Effect Guide Book",
+  "book.weaponseffect.entry.crafting.page.2": "This Book is to help you with the recipes, ores and weapons for this mod, and how you can craft and find them.",
+  "book.weaponseffect.entry.obscurite": "Obscurite",
+  "book.weaponseffect.entry.crafting.page.3": "At first this recipes may be a little scary/hard to make, but trust me, it's going to be really worth it.",
+  "book.weaponseffect.entry.crafting.page.4": "$(bold)This recipe give you 4 ingots$()",
+  "book.weaponseffect.entry.overworld": "Overworld Ores",
+  "book.weaponseffect.entry.overworld.page.1": "This ore is the most basic ore of this mod and the easiest to get.",
+  "book.weaponseffect.entry.overworld.page.2": "Get Ignitha ore between layer $(bold)0 and 60$(), and deepslate ignitha ore between layer $(bold)-30 and 0$().",
+  "book.weaponseffect.entry.overworld.page.3": "This ore is a little bit more dificult to get since only spawn in the deepslate, but it is commun in the deepslate and you can start doing pretty good things with it.",
+  "book.weaponseffect.entry.overworld.page.4": "Get this ore between layer $(bold)-30 and -58$().",
+  "book.weaponseffect.entry.overworld.page.5": "This ore is the same as the previous one, a little bit more dificult to get since only spawn in the deepslate, but it is commun in the deepslate and you can also start doing pretty good things with it.",
+  "book.weaponseffect.entry.overworld.page.6": "Get this ore between layer $(bold)-30 and -58$().",
+  "book.weaponseffect.entry.overworld.page.7": "Now, this Ore in specific is the most dificult to get from them all, and you $(bold)CAN'T$() break it if a pickaxe, you $(bold)MUST$() use $(bold)TNT$() to break it and have a $(bold)CHANCE$() to get the block or the item, $(bold)Good Luck$().",
+  "book.weaponseffect.entry.overworld.page.8": "Get this ore between layer $(bold)-59 and -63$().",
+  "book.weaponseffect.entry.nether": "Nether Ores",
+  "book.weaponseffect.entry.nether.page.1": "This ore you can get on the nether everywhere, like quartzo, and you can use it as $(bold)FUEL$() and has double the duration of the $(bold)COAL$(), for now only the item can be use as fuel later on i will add the block to.",
+  "book.weaponseffect.entry.nether.page.2": "Get this ore between layer $(bold)40 and 126$().",
+  "book.weaponseffect.entry.end": "End Ores",
+  "book.weaponseffect.entry.end.page.1": "Now this ore is pretty dificult to get no more than the $(bold)Bedrock Obscuridium$() but dificult, and with this ore you can craft the most powerfull weapons in the mod currently available, $(bold)you don't need to kill the dragon to mine this ore$(), but you need to kill it to get out so, $(bold)KILL IT NOW$().",
+  "book.weaponseffect.entry.end.page.2": "Get this ore between layer $(bold)10 and 50$().",
+  "book.weaponseffect.entry.end.page.3": "Now this ore is the same as the previous one, pretty dificult to get no more than the $(bold)Bedrock Obscuridium$() but dificult, and with this ore you can also craft the most powerfull weapons in the mod currently available, $(bold)you don't need to kill the dragon to mine this ore$(), but you need to kill it to get out so, $(bold)KILL IT NOW$().",
+  "book.weaponseffect.entry.end.page.4": "Get this ore between layer $(bold)10 and 50$().",
+
+  "book.weaponseffect.entry.blindness_dagger": "Blindness Dagger",
+  "book.weaponseffect.entry.weapons.page.1": "The Blindness Dagger, it can Inflict $(bold)$(#555555)Blindness$() to the enemies. and it gives you Immunity to $(bold)$(#555555)Blindness$().",
+
+  "book.weaponseffect.entry.darkness_mace": "Darkness Mace",
+  "book.weaponseffect.entry.weapons.page.2": "The Darkness Mace, it can Inflict $(bold)$(#555555)Darkness and Slowness$() to the enemies. and it gives you $(bold)$(#555555)Resistance and Strength$() also gives you Immunity to $(bold)$(#555555)Darkness$().",
+
+  "book.weaponseffect.entry.fire_sword": "Fire Sword",
+  "book.weaponseffect.entry.weapons.page.3": "The Fire Sword has an Ability $(bold)$(#AA0000)Blazing Gaze$() that shots a area of fire, it can Inflict $(bold)$(#AA0000)Fire$() to the enemies. and it gives you Immunity to $(bold)$(#AA0000)Fire and lava$().",
+
+  "book.weaponseffect.entry.gimlis_axe": "Gimlis Axe",
+  "book.weaponseffect.entry.weapons.page.4": "The Gimli's Axe, it can Inflict $(bold)$(#AAAAAA)Slowness$() to the enemies. and it gives you $(bold)$(#3F3F3F)Resistance and $(#3F3F3F)Strength$().",
+
+  "book.weaponseffect.entry.hammer": "Hammer",
+  "book.weaponseffect.entry.weapons.page.5": "The Hammer, has an Ability $(bold)$(#AAAAAA)Explosion$(), create an explosive area dealing massive damage, it gives you $(bold)$(#3F3F3F)Strength$() and Inflict $(bold)$(#AAAAAA)Slowness$() to the enemies.",
+
+  "book.weaponseffect.entry.ice_sword": "Ice Sword",
+  "book.weaponseffect.entry.weapons.page.6": "The Ice Sword has the freezing effect that can chill the enemies, it can Inflict $(bold)$(#2CBAA8)Slowness$() to the enemies. and gives you Immunity to $(bold)$(#2CBAA8)Slowness$().",
+
+  "book.weaponseffect.entry.lance": "Lance",
+  "book.weaponseffect.entry.weapons.page.7": "The Lance has the ability to be throwed really fast and causing a lot of damage, it can give you $(bold)$(#AAAAAA)Speed and Strength$(). also gives you $(bold)$(#AAAAAA)Immunity to Slowness$().",
+
+  "book.weaponseffect.entry.poison_sword": "Poison Sword",
+  "book.weaponseffect.entry.weapons.page.8": "The Poison Sword, it can Inflict $(bold)$(#00AA00)Poison$() to the enemies. also give you Immunity to $(bold)$(#00AA00)Poison$().",
+
+  "book.weaponseffect.entry.swiftness_dagger": "Swiftness Dagger",
+  "book.weaponseffect.entry.weapons.page.9": "The Swiftness Dagger, it can Inflict $(bold)$(#00AA00)Poison$() to the enemies. Gives you $(bold)$(#AAAAAA)Speed$() and Immunity to $(bold)$(#AAAAAA)Slowness$().",
+
+  "book.weaponseffect.entry.wings_of_doom": "Wings of Doom",
+  "book.weaponseffect.entry.weapons.page.10": "The Wings Of Doom, has the Ability $(bold)$(#000000)Black Hole$() that can devour the world, it can inflict $(bold)$(#00AA00)Poison$(), $(bold)$(#151515)Wither$(), $(bold)$(#555555)Slowness$(), $(bold)$(#000000)Blindness$(), $(bold)$(#151515)Darkness$(), $(bold)$(#555555)Weakness$(), $(bold)$(#15153F)Mining Fatigue$() and $(bold)$(#AA0000)Fire$() to the enemies. it gives to you $(bold)$(#AAAAAA)Speed, $(#2A2A2A)Resistance, $(#AAAAAA)Night Vision, $(#971607)Regeneration, $(#971607)Saturaion, $(#AA0000)Fire Resistance and $(#2A2A2A)Strength$().",
+  "book.weaponseffect.entry.weapons.page.11": "Grant immunity to $(#000000)Blindness, $(#151515)Darkness, $(bold)$(#00AA00)Poison, $(#555555)Slowness, $(#555555)Weakness, $(#151515)Wither, $(#AA0000)Fire$().",
+
+  "book.weaponseffect.entry.wither_sword": "Wither Sword",
+  "book.weaponseffect.entry.weapons.page.12": "The Wither Sword, has an Ability $(bold)$(#555555)Wither Rain$() that can shot 8 wither skulls, it can Inflict $(bold)$(#555555)Wither$() to the enemies. and gives you Immunity to $(bold)$(#555555)Wither$().",
+
+
+  "creativetab.weapons_effect": "Weapons Effect"
+}
+
+

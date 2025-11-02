@@ -1,0 +1,23 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "N": {
+      "tag": "neoforge:ingots/nexalite"
+    }
+  },
+  "pattern": [
+    "  NNN",
+    "   SN",
+    "  S N",
+    " S   ",
+    "S    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:lance"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "Z": {
+      "tag": "neoforge:gems/zenithra"
+    },
+    "C": {
+      "tag": "neoforge:gems/celestine"
+    }
+  },
+  "pattern": [
+    "Z S Z",
+    "CZSZC",
+    "C S C",
+    "  S  ",
+    "  S  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:gimlis_axe"
+  }
+}

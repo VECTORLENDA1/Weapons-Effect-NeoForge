@@ -1,0 +1,23 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "A": {
+      "tag": "neoforge:ingots/astralite"
+    }
+  },
+  "pattern": [
+    "    A",
+    "   A ",
+    " SA  ",
+    " SS  ",
+    "S    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:ice_sword"
+  }
+}

@@ -6,10 +6,10 @@
       "item": "minecraft:breeze_rod"
     },
     "X": {
-      "tag": "neoforge:block/obscurite_block"
+      "item": "simpleores:obscurite_block"
     },
     "Z": {
-      "tag": "neoforge:block/obscuridium_block"
+      "item": "simpleores:obscuridium_block"
     }
   },
   "pattern": [

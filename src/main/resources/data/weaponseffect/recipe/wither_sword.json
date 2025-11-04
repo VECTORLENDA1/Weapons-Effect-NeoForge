@@ -6,7 +6,7 @@
       "item": "minecraft:stick"
     },
     "N": {
-      "tag": "neoforge:block/nexalite_block"
+      "item": "simpleores:nexalite_block"
     }
   },
   "pattern": [

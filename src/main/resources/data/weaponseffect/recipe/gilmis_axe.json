@@ -6,10 +6,10 @@
       "item": "minecraft:stick"
     },
     "Z": {
-      "tag": "neoforge:gems/zenithra"
+      "item": "simpleores:zenithra"
     },
     "C": {
-      "tag": "neoforge:gems/celestine"
+      "item": "simpleores:celestine"
     }
   },
   "pattern": [

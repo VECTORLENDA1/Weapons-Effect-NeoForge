@@ -6,10 +6,10 @@
       "item": "minecraft:end_rod"
     },
     "z": {
-      "tag": "neoforge:gems/zenithra"
+      "item": "simpleores:zenithra"
     },
     "Z": {
-      "tag": "neoforge:block/zenithra_block"
+      "item": "simpleores:zenithra_block"
     }
   },
   "pattern": [

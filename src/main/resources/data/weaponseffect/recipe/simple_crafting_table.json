@@ -6,10 +6,10 @@
       "item": "minecraft:crafting_table"
     },
     "N": {
-      "tag": "neoforge:ingots/nexalite"
+      "item": "simpleores:nexalite"
     },
     "A": {
-      "tag": "neoforge:ingots/astralite"
+      "item": "simpleores:astralite"
     }
   },
   "pattern": [

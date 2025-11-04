@@ -6,7 +6,7 @@
       "item": "minecraft:blaze_rod"
     },
     "I": {
-      "tag": "neoforge:block/ignithra_block"
+      "item": "simpleores:ignithra_block"
     }
   },
   "pattern": [

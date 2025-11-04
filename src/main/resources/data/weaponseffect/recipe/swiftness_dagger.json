@@ -6,7 +6,7 @@
       "item": "minecraft:stick"
     },
     "X": {
-      "tag": "neoforge:ingots/astralite"
+      "item": "simpleores:astralite"
     }
   },
   "pattern": [

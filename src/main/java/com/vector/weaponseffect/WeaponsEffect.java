@@ -1,6 +1,7 @@
 package com.vector.weaponseffect;
 
 import com.mojang.logging.LogUtils;
+import com.vector.weaponseffect.recipe.ModRecipes;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -24,7 +25,6 @@ import com.vector.weaponseffect.entity.ModEntities;
 import com.vector.weaponseffect.entity.client.LanceProjectileRenderer;
 import com.vector.weaponseffect.item.ModCreativeModTabs;
 import com.vector.weaponseffect.item.ModItems;
-import com.vector.weaponseffect.recipe.ModRecipes;
 import com.vector.weaponseffect.registry.ModParticles;
 import com.vector.weaponseffect.screen.ModMenuTypes;
 import com.vector.weaponseffect.screen.custom.SimpleCraftingTableScreen;

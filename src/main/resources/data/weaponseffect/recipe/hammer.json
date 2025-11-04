@@ -1,0 +1,26 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "E": {
+      "item": "minecraft:end_rod"
+    },
+    "Z": {
+      "item": "simpleores:zenithra_block"
+    },
+    "C": {
+      "item": "simpleores:celestine_block"
+    }
+  },
+  "pattern": [
+    "ZCECZ",
+    "ZCECZ",
+    "ZCECZ",
+    "  E  ",
+    "  E  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:hammer"
+  }
+}

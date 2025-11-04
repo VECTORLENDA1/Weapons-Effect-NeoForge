@@ -1,0 +1,23 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "N": {
+      "item": "simpleores:nexalite_block"
+    }
+  },
+  "pattern": [
+    "    N",
+    "   N ",
+    " SN  ",
+    " SS  ",
+    "S    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:wither_sword"
+  }
+}

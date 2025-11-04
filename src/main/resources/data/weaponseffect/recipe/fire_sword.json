@@ -1,0 +1,23 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "I": {
+      "item": "simpleores:ignithra_block"
+    }
+  },
+  "pattern": [
+    "    I",
+    "   I ",
+    " BI  ",
+    " BB  ",
+    "B    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:fire_sword"
+  }
+}

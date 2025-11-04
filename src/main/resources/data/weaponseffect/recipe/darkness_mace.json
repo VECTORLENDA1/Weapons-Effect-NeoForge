@@ -1,0 +1,26 @@
+{
+  "type": "weaponseffect:simple_crafting_table",
+  "category": "equipment",
+  "ingredient": {
+    "E": {
+      "item": "minecraft:end_rod"
+    },
+    "z": {
+      "item": "simpleores:zenithra"
+    },
+    "Z": {
+      "item": "simpleores:zenithra_block"
+    }
+  },
+  "pattern": [
+    "Z E Z",
+    "ZzEzZ",
+    " zEz ",
+    "  E  ",
+    "  E  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "weaponseffect:darkness_mace"
+  }
+}

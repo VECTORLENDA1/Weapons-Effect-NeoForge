@@ -1,5 +1,5 @@
 {
-  "type": "weaponseffect:simple_crafting_table",
+  "type": "simpleores:simple_crafting_table",
   "category": "equipment",
   "ingredient": {
     "B": {

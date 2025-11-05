@@ -4,18 +4,10 @@
   "key": {
     "C": {
       "item": "minecraft:crafting_table"
-    },
-    "N": {
-      "item": "simpleores:nexalite"
-    },
-    "A": {
-      "item": "simpleores:astralite"
     }
   },
   "pattern": [
-    "ANA",
-    "NCN",
-    "ANA"
+    "C"
     ],
       "result": {
         "count": 1,

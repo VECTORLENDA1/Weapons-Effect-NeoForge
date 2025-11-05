@@ -1,6 +1,8 @@
 package com.vector.weaponseffect.block.custom;
 
 import com.mojang.serialization.MapCodec;
+import com.vector.weaponseffect.block.entity.ModBlockEntities;
+import com.vector.weaponseffect.block.entity.custom.SimpleCraftingTableEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,8 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.vector.weaponseffect.block.entity.ModBlockEntities;
-import com.vector.weaponseffect.block.entity.custom.SimpleCraftingTableEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class SimpleCraftingTable extends BaseEntityBlock {
@@ -67,7 +67,7 @@ public class SimpleCraftingTable extends BaseEntityBlock {
     }
 
 
-    //This will open the Menu of the block (Simple Crafting Table)
+    //This will open the Menu of the block (Simple Crafting Table)\\
     @Override
     protected ItemInteractionResult useItemOn(ItemStack Stack, BlockState State, Level pLevel, BlockPos pos,
                                               Player Player, InteractionHand Hand, BlockHitResult HitResult) {

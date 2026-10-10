@@ -1,7 +1,5 @@
 package com.vector.weaponseffect.item;
 
-import com.vector.weaponseffect.block.ModBlocks;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SwordItem;
 import net.neoforged.bus.api.IEventBus;

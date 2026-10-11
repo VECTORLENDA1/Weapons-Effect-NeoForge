@@ -1,4 +1,4 @@
-package com.exoticmoss.weaponseffect.item.custom;
+package com.exoticmoss.weaponseffect.item;
 
 import com.exoticmoss.weaponseffect.util.ModTags;
 import net.minecraft.tags.BlockTags;

@@ -1,5 +1,4 @@
 {
-	"parent": "wings_of_doom",
 	"textures": {
 		"0": "weaponseffect:item/wings_of_doom_handle",
 		"1": "weaponseffect:item/wings_of_doom_blade",

@@ -1,8 +1,10 @@
 package com.exoticmoss.weaponseffect.compat;
 
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeRegistration;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ItemLike;
@@ -52,7 +54,7 @@ public class JEIWeaponsEffectPlugin implements IModPlugin {
         weapons.put(ModItems.WINGS_OF_DOOM.get(), 4);
 
         weapons.forEach((weapon, tier) -> {
-            String name = weapon.asItem().builtInRegistryHolder().getKey().identifier().getPath();
+            String name = BuiltInRegistries.ITEM.getKey(weapon.asItem()).getPath();
             registration.addIngredientInfo(weapon,
                     Component.translatable("jei.weaponseffect.crafted_in", Component.translatable(CORE_TIERS[tier - 1])),
                     Component.literal(" "),

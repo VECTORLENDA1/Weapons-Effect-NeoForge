@@ -9,7 +9,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import static com.exoticmoss.weaponseffect.WeaponsEffect.MODID;
 
 
-//Isto serve para cria um guia no modo creativo dop jogo, para os teus items
+//Creates the mod tab in the creative inventory, with all the weapons
 public class ModCreativeModTabs {
     public static final net.neoforged.neoforge.registries.DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             net.neoforged.neoforge.registries.DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);

@@ -1,84 +1,74 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.WitherSkull;
+import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 
-public class WitherSwordItem extends SwordItem {
+public class WitherSwordItem extends Item {
     private static final int COOLDOWN_TICKS = 40;
     private static final int NUM_HEADS = 10;
 
-    public WitherSwordItem(Tier pTier, Properties pProperties) {
-        super(pTier, pProperties);
+    public WitherSwordItem(Properties pProperties) {
+        super(pProperties);
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        boolean result = super.hurtEnemy(pStack, pTarget, pAttacker);
-        if (result) {
-            pTarget.addEffect(new MobEffectInstance(MobEffects.WITHER, 100, 6), pAttacker);
-        }
-        return result;
+    public void hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
+        pTarget.addEffect(new MobEffectInstance(MobEffects.WITHER, 100, 6), pAttacker);
+        super.hurtEnemy(pStack, pTarget, pAttacker);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @NotNull TooltipContext pContext, List<Component> pTooltipComponents, @NotNull TooltipFlag pTooltipFlag) {
-        pTooltipComponents.add(Component.translatable("wither.sword.tooltip").withStyle(ChatFormatting.WHITE));
-        pTooltipComponents.add(Component.translatable("wither.line.2"));
-        pTooltipComponents.add(Component.translatable("wither.immunities").withStyle(ChatFormatting.WHITE));
-        pTooltipComponents.add(Component.translatable("wither.immunities.tooltip").withStyle(ChatFormatting.DARK_GRAY));
-        pTooltipComponents.add(Component.translatable("wither.line.3"));
-        pTooltipComponents.add(Component.translatable("wither.ability").withStyle(ChatFormatting.WHITE));
-        pTooltipComponents.add(Component.translatable("wither.ability.name").withStyle(ChatFormatting.DARK_GRAY));
-        pTooltipComponents.add(Component.translatable("wither.line.4"));
-        pTooltipComponents.add(Component.translatable("wither.ability.description").withStyle(ChatFormatting.WHITE));
-        super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay pDisplay, Consumer<Component> pTooltip, TooltipFlag pTooltipFlag) {
+        pTooltip.accept(Component.translatable("wither.sword.tooltip").withStyle(ChatFormatting.WHITE));
+        pTooltip.accept(Component.translatable("wither.line.2"));
+        pTooltip.accept(Component.translatable("wither.immunities").withStyle(ChatFormatting.WHITE));
+        pTooltip.accept(Component.translatable("wither.immunities.tooltip").withStyle(ChatFormatting.DARK_GRAY));
+        pTooltip.accept(Component.translatable("wither.line.3"));
+        pTooltip.accept(Component.translatable("wither.ability").withStyle(ChatFormatting.WHITE));
+        pTooltip.accept(Component.translatable("wither.ability.name").withStyle(ChatFormatting.DARK_GRAY));
+        pTooltip.accept(Component.translatable("wither.line.4"));
+        pTooltip.accept(Component.translatable("wither.ability.description").withStyle(ChatFormatting.WHITE));
+        super.appendHoverText(pStack, pContext, pDisplay, pTooltip, pTooltipFlag);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
+    public InteractionResult use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
 
-        if (!pLevel.isClientSide) {
-            if (pPlayer.getCooldowns().isOnCooldown(this)) {
-                pPlayer.displayClientMessage(Component.translatable("item.wither_sword.cooldown"), true);
-                return InteractionResultHolder.fail(itemstack);
+        if (pPlayer.getCooldowns().isOnCooldown(itemstack)) {
+            if (!pLevel.isClientSide()) {
+                pPlayer.sendOverlayMessage(Component.translatable("item.wither_sword.cooldown"));
             }
+            return InteractionResult.FAIL;
+        }
 
-            pPlayer.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
+        pPlayer.getCooldowns().addCooldown(itemstack, COOLDOWN_TICKS);
+
+        if (!pLevel.isClientSide()) {
             launchWitherSkulls(pPlayer, pLevel, NUM_HEADS);
         }
 
-        if (pLevel.isClientSide) {
-            handleWitherSound(pLevel, pPlayer.blockPosition());
-        }
-
-        return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 
     private void launchWitherSkulls(LivingEntity attacker, Level level, int numHeads) {
@@ -95,42 +85,11 @@ public class WitherSwordItem extends SwordItem {
 
             level.addFreshEntity(witherSkull);
         }
-        handleWitherSound(level, attacker.blockPosition());
+        playWitherSound(level, attacker.blockPosition());
     }
 
-    private void handleWitherSound(Level level, BlockPos position) {
-        if (level.isClientSide()) {
-            // Este metodo, sendo chamado aqui, será executado apenas no cliente
-            // E o metodo playClientWitherSound está anotado para ser removido no servidor
-            playClientWitherSound(level, position);
-        } else {
-            // Este código é executado no servidor e notifica todos os clientes próximos
-            level.playSound(null, position, SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.0F);
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private void playClientWitherSound(Level level, BlockPos position) {
-        if (level.isClientSide) {
-            Minecraft minecraft = Minecraft.getInstance();
-            if (minecraft != null) {
-                SoundEvent soundEvent = SoundEvents.LAVA_EXTINGUISH;
-                float volume = 0.5F;
-                float pitch = 1.0F;
-
-                SimpleSoundInstance soundInstance = new SimpleSoundInstance(
-                        soundEvent,
-                        SoundSource.AMBIENT,
-                        volume,
-                        pitch,
-                        minecraft.player.getRandom(),
-                        position.getX() + 0.5,
-                        position.getY() + 0.5,
-                        position.getZ() + 0.5
-                );
-
-                minecraft.getSoundManager().play(soundInstance);
-            }
-        }
+    // Played by the server: every player nearby hears it
+    private void playWitherSound(Level level, BlockPos position) {
+        level.playSound(null, position, SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.0F);
     }
 }

@@ -1,37 +1,59 @@
 package com.exoticmoss.weaponseffect.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.util.Unit;
+import net.minecraft.world.phys.AABB;
 import com.exoticmoss.weaponseffect.entity.custom.LanceProjectileEntity;
 
-public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntity> {
-    private LanceProjectileModel model;
+/// Draws the thrown Lance (same idea as the vanilla ThrownTridentRenderer).
+public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntity, ThrownTridentRenderState> {
+    private final LanceProjectileModel model;
 
     public LanceProjectileRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
         this.model = new LanceProjectileModel(pContext.bakeLayer(LanceProjectileModel.LAYER_LOCATION));
     }
 
-    public void render(LanceProjectileEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        pPoseStack.pushPose();
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(pPartialTicks, pEntity.yRotO, pEntity.getYRot()) - 90.0F));
-        pPoseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot()) - 90.0F));
-        VertexConsumer vertexconsumer = ItemRenderer.getFoilBufferDirect(pBuffer, this.model.renderType(this.getTextureLocation(pEntity)), false, pEntity.isFoil());
-        this.model.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY);
-        pPoseStack.popPose();
-        super.render(pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
+    @Override
+    public void submit(ThrownTridentRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot - 90.0F));
+        collector.order(0).submitModel(this.model, Unit.INSTANCE, poseStack, LanceProjectileModel.TEXTURE,
+                state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, (ModelFeatureRenderer.CrumblingOverlay) null);
+        if (state.isFoil) {
+            // Enchantment glint
+            collector.order(1).submitModel(this.model, Unit.INSTANCE, poseStack, RenderTypes.entityGlint(),
+                    state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, (ModelFeatureRenderer.CrumblingOverlay) null);
+        }
+        poseStack.popPose();
+        super.submit(state, poseStack, collector, camera);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(LanceProjectileEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath("weaponseffect", "textures/entity/lance/lance_entity.png");
+    protected AABB getBoundingBoxForCulling(LanceProjectileEntity entity) {
+        return super.getBoundingBoxForCulling(entity).inflate(2.5);
+    }
+
+    @Override
+    public ThrownTridentRenderState createRenderState() {
+        return new ThrownTridentRenderState();
+    }
+
+    @Override
+    public void extractRenderState(LanceProjectileEntity entity, ThrownTridentRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.yRot = entity.getYRot(partialTicks);
+        state.xRot = entity.getXRot(partialTicks);
+        state.isFoil = entity.isFoil();
     }
 }

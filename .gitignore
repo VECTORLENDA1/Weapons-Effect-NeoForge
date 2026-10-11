@@ -24,3 +24,5 @@ runs
 run-data
 
 repo
+# local mod jars for runClient (e.g. Simple Ores)
+libs

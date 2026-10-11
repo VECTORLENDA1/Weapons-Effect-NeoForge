@@ -1,6 +1,6 @@
 package com.exoticmoss.weaponseffect.util;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -10,12 +10,12 @@ import net.minecraft.world.level.block.Block;
 public class ModTags {
     public static class Blocks {
         public static TagKey<Block> tag(String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath("weaponseffect", name));
+            return BlockTags.create(Identifier.fromNamespaceAndPath("weaponseffect", name));
         }
     }
 
     public static class Items {
-        //WEAPONS//
+        //WEAPONS (repair items of each weapon)//
         public static final TagKey<Item> FIRE_SWORD = tag("fire_sword");
         public static final TagKey<Item> WITHER_SWORD = tag("wither_sword");
         public static final TagKey<Item> BLINDNESS_DAGGER = tag("blindness_dagger");
@@ -30,7 +30,7 @@ public class ModTags {
 
 
         public static TagKey<Item> tag(String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath("weaponseffect", name));
+            return ItemTags.create(Identifier.fromNamespaceAndPath("weaponseffect", name));
         }
     }
 }

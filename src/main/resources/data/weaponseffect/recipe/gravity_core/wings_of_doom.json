@@ -1,0 +1,13 @@
+{
+  "type": "simpleores:gravity_craft",
+  "tier": 4,
+  "time_per_tier": [200, 160, 80, 0],
+  "ingredients": [
+    { "item": "simpleores:obscuridium_block", "count": 4 },
+    { "item": "simpleores:obscurite_block", "count": 3 },
+    { "item": "minecraft:breeze_rod", "count": 5 }
+  ],
+  "result": {
+    "id": "weaponseffect:wings_of_doom"
+  }
+}

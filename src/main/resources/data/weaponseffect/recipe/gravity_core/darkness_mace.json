@@ -1,0 +1,13 @@
+{
+  "type": "simpleores:gravity_craft",
+  "tier": 2,
+  "time_per_tier": [200, 160, 80, 0],
+  "ingredients": [
+    { "item": "simpleores:zenithra_block", "count": 4 },
+    { "item": "simpleores:zenithra", "count": 4 },
+    { "item": "minecraft:end_rod", "count": 5 }
+  ],
+  "result": {
+    "id": "weaponseffect:darkness_mace"
+  }
+}

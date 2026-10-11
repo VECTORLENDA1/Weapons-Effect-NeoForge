@@ -1,5 +1,4 @@
 {
-	"parent": "fire_sword",
 	"texture_size": [32, 32],
 	"textures": {
 		"3": "weaponseffect:item/fire",

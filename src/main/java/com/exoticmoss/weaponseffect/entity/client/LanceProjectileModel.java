@@ -1,21 +1,21 @@
 package com.exoticmoss.weaponseffect.entity.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
-import com.exoticmoss.weaponseffect.entity.custom.LanceProjectileEntity;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 
-public class LanceProjectileModel extends EntityModel<LanceProjectileEntity> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("weaponseffect", "lance_entity"), "main");
-    private final ModelPart lance_blade;
+/// 3D model of the thrown Lance (same idea as the vanilla TridentModel).
+public class LanceProjectileModel extends Model<Unit> {
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath("weaponseffect", "lance_entity"), "main");
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("weaponseffect", "textures/entity/lance/lance_entity.png");
 
     public LanceProjectileModel(ModelPart root) {
-        this.lance_blade = root.getChild("lance_blade");
+        super(root, RenderTypes::entityCutout);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -46,15 +46,5 @@ public class LanceProjectileModel extends EntityModel<LanceProjectileEntity> {
                 .texOffs(0, 0).addBox(-1.0F, -40.0F, -1.0F, 2.0F, 30.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 1.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 32, 32);
-    }
-
-    @Override
-    public void setupAnim(LanceProjectileEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        lance_blade.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
     }
 }

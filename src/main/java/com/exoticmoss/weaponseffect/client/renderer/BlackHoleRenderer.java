@@ -2,50 +2,72 @@ package com.exoticmoss.weaponseffect.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import com.exoticmoss.weaponseffect.entity.BlackHoleEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("weaponseffect", "textures/entity/black_hole/black_hole.png");
+public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHoleRenderer.State> {
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("weaponseffect", "textures/entity/black_hole/black_hole.png");
+    private static final RenderType RENDER_TYPE = RenderTypes.entityCutout(TEXTURE);
 
     private static final int RINGS = 32;    // anéis horizontais (latitude)
     private static final int SEGMENTS = 48; // fatias verticais (longitude) — como gomos de laranja
+
+    /// What the drawing needs, copied from the entity
+    /// (Minecraft first "reads" the entity, then "draws" it in a separate step).
+    public static class State extends EntityRenderState {
+        float radius;
+    }
 
     public BlackHoleRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public void render(BlackHoleEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        poseStack.pushPose();
-
-        float radius = entity.getCurrentRadius();
-        poseStack.scale(radius, radius, radius);
-
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        renderSphere(poseStack, vertexConsumer, packedLight);
-
-        poseStack.popPose();
-        super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(BlackHoleEntity entity) {
-        return TEXTURE;
+    public void extractRenderState(BlackHoleEntity entity, State state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.radius = entity.getCurrentRadius();
+    }
+
+    // The sphere is much bigger than the entity's hitbox: without this it disappears when the hitbox is off screen
+    @Override
+    protected AABB getBoundingBoxForCulling(BlackHoleEntity entity) {
+        return super.getBoundingBoxForCulling(entity).inflate(entity.getCurrentRadius());
+    }
+
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        poseStack.pushPose();
+
+        float radius = state.radius;
+        poseStack.scale(radius, radius, radius);
+
+        int light = state.lightCoords;
+        collector.submitCustomGeometry(poseStack, RENDER_TYPE, (pose, vertexConsumer) -> renderSphere(pose, vertexConsumer, light));
+
+        poseStack.popPose();
+        super.submit(state, poseStack, collector, camera);
     }
 
     /**
      * Desenha uma "UV sphere": anéis de latitude cruzados com fatias de longitude,
      * ligados por quads curvos. Raio unitário — o tamanho real vem do poseStack.scale().
      */
-    private void renderSphere(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight) {
-        PoseStack.Pose pose = poseStack.last();
+    private static void renderSphere(PoseStack.Pose pose, VertexConsumer vertexConsumer, int packedLight) {
         float radius = 0.5f;
 
         for (int i = 0; i < RINGS; i++) {
@@ -74,14 +96,14 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         }
     }
 
-    private Vec3 spherePoint(float theta, float phi, float radius) {
+    private static Vec3 spherePoint(float theta, float phi, float radius) {
         double x = radius * Math.sin(theta) * Math.cos(phi);
         double y = radius * Math.cos(theta);
         double z = radius * Math.sin(theta) * Math.sin(phi);
         return new Vec3(x, y, z);
     }
 
-    private void addVertex(PoseStack.Pose pose, VertexConsumer consumer, Vec3 point, float u, float v, int light) {
+    private static void addVertex(PoseStack.Pose pose, VertexConsumer consumer, Vec3 point, float u, float v, int light) {
         Vec3 normal = point.normalize();
         consumer.addVertex(pose, (float) point.x, (float) point.y, (float) point.z)
                 .setColor(255, 255, 255, 255)

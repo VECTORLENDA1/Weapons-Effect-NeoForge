@@ -1,5 +1,5 @@
 {
-  "3":             "||WEAPONS||",
+  "3": "||WEAPONS||",
   "item.weaponseffect.fire_sword": "Fire Sword",
   "item.weaponseffect.wither_sword": "Wither Sword",
   "item.weaponseffect.blindness_dagger": "Blindness Dagger",
@@ -11,29 +11,18 @@
   "item.weaponseffect.hammer": "Hammer",
   "item.weaponseffect.wings_of_doom": "Wings of Doom",
   "item.weaponseffect.swiftness_dagger": "Swiftness Dagger",
-
-
-
-  "4":            "||TOOLTIPS||",
-
-
-  "5":        "||Blindness_Dagger||",
+  "4": "||TOOLTIPS||",
+  "5": "||Blindness_Dagger||",
   "blindness.dagger.tooltip": "Inflicts Blindness",
   "blindness.line.2": " ",
   "blindness.immunities": "IMMUNITIES",
   "blindness.immunities.tooltip": "Blindness",
-
-
-
-  "6":         "||Darkness_Mace||",
+  "6": "||Darkness_Mace||",
   "darkness.mace.tooltip": "Inflicts Darkness",
   "darkness.line.2": " ",
   "darkness.immunities": "IMMUNITIES",
   "darkness.immunities.tooltip": "Darkness",
-
-
-
-  "7":         "||Fire_Sword||",
+  "7": "||Fire_Sword||",
   "fire.sword.tooltip": "Inflicts Fire",
   "fire.line.2": " ",
   "fire.immunities": "IMMUNITIES",
@@ -43,57 +32,36 @@
   "fire.ability.name": "Blazing Gaze",
   "fire.line.4": " ",
   "fire.ability.description": "Create an area of flames where you look",
-
-
-
-  "8":         "||Gimli's_Axe||",
+  "8": "||Gimli's_Axe||",
   "gimlis.axe.tooltip": "Inflicts Slowness",
-
-
-
-  "9":         "||Ice_Sword||",
+  "9": "||Ice_Sword||",
   "ice.sword.tooltip": "Inflicts slowness that drain life",
   "ice.line.2": " ",
   "ice.immunities": "IMMUNITIES",
   "ice.immunities.tooltip": "Slowness",
-
-
-
-  "10":         "||Lance||",
+  "10": "||Lance||",
   "lance.tooltip": "Make them Weak",
   "lance.line.2": " ",
   "lance.immunities": "IMMUNITIES",
   "lance.immunities.tooltip": "Slowness",
-
-
-
-  "11":         "||Poison_Sword||",
+  "11": "||Poison_Sword||",
   "poison.sword.tooltip": "Inflicts Poison",
   "poison.line.2": " ",
   "poison.immunities": "IMMUNITIES",
   "poison.immunities.tooltip": "Poison",
-
-
-
-  "12":         "||Hammer||",
+  "12": "||Hammer||",
   "hammer.tooltip": "Inflicts Slowness",
   "hammer.line.2": " ",
   "hammer.ability": "ABILITY",
   "hammer.ability.name": "Explosion",
   "hammer.line.3": " ",
   "hammer.ability.description": "Create an explosive area dealing massive damage",
-
-
-
-  "13":         "||Swiftness_Dagger||",
+  "13": "||Swiftness_Dagger||",
   "swiftness.dagger.tooltip": "Inflicts Poison",
   "swiftness.line.2": " ",
   "swiftness.immunities": "IMMUNITIES",
   "swiftness.immunities.tooltip": "Slowness",
-
-
-
-  "14":         "||Wings_of_Doom||",
+  "14": "||Wings_of_Doom||",
   "wings.of.doom.tooltip": "Inflicts them with Poison and Withering",
   "wings.of.doom.tooltip.2": "make them slow, blind and weak",
   "wings.of.doom.tooltip.3": "and with dark they can's see",
@@ -111,10 +79,7 @@
   "wings.of.doom.abilitys.name": "Black Hole",
   "wings.of.doom.line.4": " ",
   "wings.of.doom.ability.description": "Create a Black Hole in the World and consume everything",
-
-
-
-  "15":         "||Wither_Sword||",
+  "15": "||Wither_Sword||",
   "wither.sword.tooltip": "Inflicts Wither",
   "wither.line.2": " ",
   "wither.immunities": "IMMUNITIES",
@@ -124,16 +89,22 @@
   "wither.ability.name": "Wither Rain",
   "wither.line.4": " ",
   "wither.ability.description": "Launch wither skulls from your sword",
-
-
-
-  "16":         "||Abilities||",
+  "16": "||Abilities||",
   "item.hammer.cooldown": "Hammer on Cooldown",
   "item.wither_sword.cooldown": "Wither Sword on Cooldown",
   "item.fire.sword.cooldown": "Fire Sword on Cooldown",
-
-
-  "creativetab.weapons_effect": "Weapons Effect"
+  "creativetab.weapons_effect": "Weapons Effect",
+  "17": "||JEI||",
+  "jei.weaponseffect.crafted_in": "Crafted in a Gravity Core (Simple Ores): %s or higher",
+  "jei.weaponseffect.blindness_dagger.info": "Hits inflict Blindness. While held you are immune to Blindness.",
+  "jei.weaponseffect.swiftness_dagger.info": "Hits inflict Poison. While held you get Speed VI and are immune to Slowness.",
+  "jei.weaponseffect.poison_sword.info": "Hits inflict a strong Poison. While held you are immune to Poison.",
+  "jei.weaponseffect.ice_sword.info": "Hits freeze the target: extreme Slowness that drains life. While held you are immune to Slowness.",
+  "jei.weaponseffect.lance.info": "Right-click to throw it like a trident. While held you get Strength II and Speed II and are immune to Slowness.",
+  "jei.weaponseffect.wither_sword.info": "Hits inflict Wither. Right-click: Wither Rain, launches wither skulls. While held you get Resistance and are immune to Wither.",
+  "jei.weaponseffect.fire_sword.info": "Hits set the target on fire. Right-click: Blazing Gaze, flames where you look. While held you get Fire Resistance.",
+  "jei.weaponseffect.gimlis_axe.info": "Hits inflict Slowness. While held you get Strength II and Resistance III.",
+  "jei.weaponseffect.darkness_mace.info": "Hits inflict Darkness and Slowness. While held you get Strength III and Resistance III and are immune to Darkness.",
+  "jei.weaponseffect.hammer.info": "Hits inflict Slowness. Right-click a block: Explosion, massive damage around it. While held you get Strength VIII.",
+  "jei.weaponseffect.wings_of_doom.info": "Hits inflict Poison, Wither, Slowness, Blindness, Darkness, Weakness, Mining Fatigue and fire. Right-click: creates a Black Hole that consumes everything. While held you get many buffs and immunities."
 }
-
-

@@ -1,7 +1,8 @@
 package com.exoticmoss.weaponseffect;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -34,7 +35,8 @@ public class Config
     // a list of strings that are treated as resource locations for items
     private static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
             .comment("A list of items to log on common setup.")
-            .define("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
+            // define() validates the whole list; defineListAllowEmpty() validates each element
+            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -45,7 +47,7 @@ public class Config
 
     private static boolean validateItemName(final Object obj)
     {
-        return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
+        return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(Identifier.parse(itemName));
     }
 
     @SubscribeEvent
@@ -57,7 +59,7 @@ public class Config
 
         // convert the list of strings into a set of items
         items = ITEM_STRINGS.get().stream()
-                .map(itemName -> BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemName)))
+                .map(itemName -> BuiltInRegistries.ITEM.getValue(Identifier.parse(itemName)))
                 .collect(Collectors.toSet());
     }
 }

@@ -1,9 +1,7 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SyncedDataHolder;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,26 +11,33 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.arrow.Arrow;
+import net.minecraft.world.entity.projectile.ProjectileDeflection;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.Collection;
+import java.util.List;
 
-public class LanceProjectileEntity extends Arrow {
-    private static final EntityDataAccessor<Byte> ID_LOYALTY = SynchedEntityData.defineId((Class<? extends SyncedDataHolder>) LanceProjectileEntity.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Boolean> ID_FOIL = SynchedEntityData.defineId((Class<? extends SyncedDataHolder>) LanceProjectileEntity.class, EntityDataSerializers.BOOLEAN);
-    private Optional<Boolean> dealtDamage;
+/// The thrown Lance. Works like a trident (also with Loyalty), but does more damage.
+public class LanceProjectileEntity extends AbstractArrow {
+    private static final EntityDataAccessor<Byte> ID_LOYALTY = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Boolean> ID_FOIL = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BOOLEAN);
+    /// Damage done when the lance hits a mob.
+    private static final float DAMAGE = 10.0F;
+    private boolean dealtDamage;
     public int clientSideReturnTridentTickCount;
 
     public LanceProjectileEntity(EntityType<? extends LanceProjectileEntity> pEntityType, Level pLevel) {
@@ -40,13 +45,13 @@ public class LanceProjectileEntity extends Arrow {
     }
 
     public LanceProjectileEntity(Level pLevel, LivingEntity pShooter, ItemStack pPickupItemStack) {
-        super(ModEntities.LANCE.get(), pLevel);
+        super(ModEntities.LANCE.get(), pShooter, pLevel, pPickupItemStack, null);
         this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(pPickupItemStack));
         this.entityData.set(ID_FOIL, pPickupItemStack.hasFoil());
     }
 
     public LanceProjectileEntity(Level pLevel, double pX, double pY, double pZ, ItemStack pPickupItemStack) {
-        super(ModEntities.LANCE.get(), pLevel);
+        super(ModEntities.LANCE.get(), pX, pY, pZ, pLevel, pPickupItemStack, pPickupItemStack);
         this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(pPickupItemStack));
         this.entityData.set(ID_FOIL, pPickupItemStack.hasFoil());
     }
@@ -65,25 +70,26 @@ public class LanceProjectileEntity extends Arrow {
             this.dealtDamage = true;
         }
 
-        Entity entity = this.getOwner();
-        int i = this.entityData.get(ID_LOYALTY);
-        if (i > 0 && (this.dealtDamage || this.isNoPhysics()) && entity != null) {
+        Entity owner = this.getOwner();
+        int loyalty = this.entityData.get(ID_LOYALTY);
+        if (loyalty > 0 && (this.dealtDamage || this.isNoPhysics()) && owner != null) {
             if (!this.isAcceptibleReturnOwner()) {
-                if (!this.level().isClientSide() && this.pickup == Pickup.ALLOWED) {
-                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
+                if (this.level() instanceof ServerLevel serverLevel && this.pickup == Pickup.ALLOWED) {
+                    this.spawnAtLocation(serverLevel, this.getPickupItem(), 0.1F);
                 }
 
                 this.discard();
             } else {
-                this.setNoPhysics(true);
-                Vec3 vec3 = entity.getEyePosition().subtract(this.position());
-                this.setPosRaw(this.getX(), this.getY() + vec3.y * 0.015 * (double)i, this.getZ());
-                if (this.level().isClientSide) {
-                    this.yOld = this.getY();
+                if (!(owner instanceof Player) && this.position().distanceTo(owner.getEyePosition()) < (double)owner.getBbWidth() + 1.0) {
+                    this.discard();
+                    return;
                 }
 
-                double d0 = 0.05 * (double)i;
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.95).add(vec3.normalize().scale(d0)));
+                this.setNoPhysics(true);
+                Vec3 vec3 = owner.getEyePosition().subtract(this.position());
+                this.setPosRaw(this.getX(), this.getY() + vec3.y * 0.015 * (double)loyalty, this.getZ());
+                double accel = 0.05 * (double)loyalty;
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95).add(vec3.normalize().scale(accel)));
                 if (this.clientSideReturnTridentTickCount == 0) {
                     this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
                 }
@@ -96,38 +102,46 @@ public class LanceProjectileEntity extends Arrow {
     }
 
     private boolean isAcceptibleReturnOwner() {
-        Entity entity = this.getOwner();
-        return entity == null || !entity.isAlive() ? false : !(entity instanceof ServerPlayer) || !entity.isSpectator();
+        Entity owner = this.getOwner();
+        if (owner != null && owner.isAlive()) {
+            return !(owner instanceof ServerPlayer) || !owner.isSpectator();
+        }
+        return false;
     }
 
     public boolean isFoil() {
         return this.entityData.get(ID_FOIL);
     }
 
-    @Nullable
     @Override
-    protected EntityHitResult findHitEntity(Vec3 pStartVec, Vec3 pEndVec) {
+    protected @Nullable EntityHitResult findHitEntity(Vec3 pStartVec, Vec3 pEndVec) {
         return this.dealtDamage ? null : super.findHitEntity(pStartVec, pEndVec);
+    }
+
+    @Override
+    protected Collection<EntityHitResult> findHitEntities(Vec3 pStartVec, Vec3 pEndVec) {
+        EntityHitResult hit = this.findHitEntity(pStartVec, pEndVec);
+        return hit != null ? List.of(hit) : List.of();
     }
 
     @Override
     protected void onHitEntity(EntityHitResult pResult) {
         Entity entity = pResult.getEntity();
-        float f = 10.0F;
-        Entity entity1 = this.getOwner();
-        DamageSource damagesource = this.damageSources().trident(this, (Entity)(entity1 == null ? this : entity1));
+        float damage = DAMAGE;
+        Entity owner = this.getOwner();
+        DamageSource damagesource = this.damageSources().trident(this, owner == null ? this : owner);
         if (this.level() instanceof ServerLevel serverlevel) {
-            f = EnchantmentHelper.modifyDamage(serverlevel, this.getWeaponItem(), entity, damagesource, f);
+            damage = EnchantmentHelper.modifyDamage(serverlevel, this.getWeaponItem(), entity, damagesource, damage);
         }
 
         this.dealtDamage = true;
-        if (entity.hurt(damagesource, f)) {
-            if (entity.getType() == EntityType.ENDERMAN) {
+        if (entity.hurtOrSimulate(damagesource, damage)) {
+            if (entity.is(EntityTypes.ENDERMAN)) {
                 return;
             }
 
-            if (this.level() instanceof ServerLevel serverlevel1) {
-                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverlevel1, entity, damagesource, this.getWeaponItem());
+            if (this.level() instanceof ServerLevel serverlevel) {
+                EnchantmentHelper.doPostAttackEffectsWithItemSourceOnBreak(serverlevel, entity, damagesource, this.getWeaponItem(), weapon -> this.kill(serverlevel));
             }
 
             if (entity instanceof LivingEntity livingentity) {
@@ -136,7 +150,8 @@ public class LanceProjectileEntity extends Arrow {
             }
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01, -0.1, -0.01));
+        this.deflect(ProjectileDeflection.REVERSE, entity, this.owner, false);
+        this.setDeltaMovement(this.getDeltaMovement().multiply(0.02, 0.2, 0.02));
         this.playSound(SoundEvents.TRIDENT_HIT, 1.0F, 1.0F);
     }
 
@@ -151,7 +166,7 @@ public class LanceProjectileEntity extends Arrow {
                 null,
                 vec3,
                 pLevel.getBlockState(pHitResult.getBlockPos()),
-                p_343806_ -> this.kill()
+                item -> this.kill(pLevel)
         );
     }
 
@@ -183,16 +198,16 @@ public class LanceProjectileEntity extends Arrow {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.dealtDamage = pCompound.getBoolean("DealtDamage");
+    protected void readAdditionalSaveData(ValueInput pInput) {
+        super.readAdditionalSaveData(pInput);
+        this.dealtDamage = pInput.getBooleanOr("DealtDamage", false);
         this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(this.getPickupItemStackOrigin()));
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putBoolean("DealtDamage", this.dealtDamage);
+    protected void addAdditionalSaveData(ValueOutput pOutput) {
+        super.addAdditionalSaveData(pOutput);
+        pOutput.putBoolean("DealtDamage", this.dealtDamage);
     }
 
     private byte getLoyaltyFromItem(ItemStack pStack) {
@@ -201,8 +216,8 @@ public class LanceProjectileEntity extends Arrow {
 
     @Override
     public void tickDespawn() {
-        int i = this.entityData.get(ID_LOYALTY);
-        if (this.pickup != Pickup.ALLOWED || i <= 0) {
+        int loyalty = this.entityData.get(ID_LOYALTY);
+        if (this.pickup != Pickup.ALLOWED || loyalty <= 0) {
             super.tickDespawn();
         }
     }

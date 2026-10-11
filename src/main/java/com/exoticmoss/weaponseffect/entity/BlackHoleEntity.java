@@ -1,11 +1,10 @@
 package com.exoticmoss.weaponseffect.entity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -109,21 +108,6 @@ public class BlackHoleEntity extends Entity {
         }
     }
 
-    @Override
-    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
-        return false;
-    }
-
-    @Override
-    protected void readAdditionalSaveData(ValueInput valueInput) {
-
-    }
-
-    @Override
-    protected void addAdditionalSaveData(ValueOutput valueOutput) {
-
-    }
-
     public float getCurrentRadius() {
         return this.entityData.get(DATA_RADIUS);
     }
@@ -194,6 +178,24 @@ public class BlackHoleEntity extends Entity {
                 }
             }
         }
+    }
+
+    // The black hole is temporary: it is not saved with the world
+    @Override
+    protected void readAdditionalSaveData(ValueInput input) {}
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput output) {}
+
+    @Override
+    public boolean shouldBeSaved() {
+        return false;
+    }
+
+    // Nothing can hurt a black hole
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        return false;
     }
 
     public Level getLevel() {

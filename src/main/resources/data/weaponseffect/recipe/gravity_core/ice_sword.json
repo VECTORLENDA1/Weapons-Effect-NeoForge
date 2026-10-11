@@ -1,0 +1,12 @@
+{
+  "type": "simpleores:gravity_craft",
+  "tier": 1,
+  "time_per_tier": [200, 160, 80, 0],
+  "ingredients": [
+    { "item": "simpleores:astralite", "count": 3 },
+    { "item": "minecraft:stick", "count": 4 }
+  ],
+  "result": {
+    "id": "weaponseffect:ice_sword"
+  }
+}

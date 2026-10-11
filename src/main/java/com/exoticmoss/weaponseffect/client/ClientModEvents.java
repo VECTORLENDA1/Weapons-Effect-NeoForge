@@ -1,29 +1,27 @@
 package com.exoticmoss.weaponseffect.client;
 
-import net.minecraft.client.particle.GustParticle;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.client.renderer.BlackHoleRenderer;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
-import com.exoticmoss.weaponseffect.registry.ModParticles;
+import com.exoticmoss.weaponseffect.entity.client.LanceProjectileModel;
+import com.exoticmoss.weaponseffect.entity.client.LanceProjectileRenderer;
 
 
-@EventBusSubscriber(modid = WeaponsEffect.MODID, bus  = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+// Client only: how the mod's entities are drawn
+@EventBusSubscriber(modid = WeaponsEffect.MODID, value = Dist.CLIENT)
 public class ClientModEvents {
     @SubscribeEvent
-    public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        EntityRenderers.register(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
+    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(LanceProjectileModel.LAYER_LOCATION, LanceProjectileModel::createBodyLayer);
     }
 
     @SubscribeEvent
-    public static void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ModParticles.GUST.get(), GustParticle.Provider::new);
+    public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
+        event.registerEntityRenderer(ModEntities.LANCE.get(), LanceProjectileRenderer::new);
     }
-
-
 }

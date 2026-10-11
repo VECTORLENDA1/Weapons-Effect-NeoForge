@@ -5,30 +5,30 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-import java.util.List;
+import java.util.function.Consumer;
 
-public class PoisonSwordItem extends SwordItem {
-    public PoisonSwordItem(Tier pTier, Properties pProperties) {
-        super(pTier, pProperties);
+public class PoisonSwordItem extends Item {
+    public PoisonSwordItem(Properties pProperties) {
+        super(pProperties);
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        pTarget.addEffect(new MobEffectInstance(MobEffects.POISON, 200,100), pAttacker);
-        return super.hurtEnemy(pStack, pTarget, pAttacker);
+    public void hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
+        pTarget.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 100), pAttacker);
+        super.hurtEnemy(pStack, pTarget, pAttacker);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pTooltipFlag) {
-        pTooltipComponents.add(Component.translatable("poison.sword.tooltip").withStyle(ChatFormatting.WHITE));
-        pTooltipComponents.add(Component.translatable("poison.line.2"));
-        pTooltipComponents.add(Component.translatable("poison.immunities").withStyle(ChatFormatting.WHITE));
-        pTooltipComponents.add(Component.translatable("poison.immunities.tooltip").withStyle(ChatFormatting.GREEN));
-        super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay pDisplay, Consumer<Component> pTooltip, TooltipFlag pTooltipFlag) {
+        pTooltip.accept(Component.translatable("poison.sword.tooltip").withStyle(ChatFormatting.WHITE));
+        pTooltip.accept(Component.translatable("poison.line.2"));
+        pTooltip.accept(Component.translatable("poison.immunities").withStyle(ChatFormatting.WHITE));
+        pTooltip.accept(Component.translatable("poison.immunities.tooltip").withStyle(ChatFormatting.GREEN));
+        super.appendHoverText(pStack, pContext, pDisplay, pTooltip, pTooltipFlag);
     }
 }

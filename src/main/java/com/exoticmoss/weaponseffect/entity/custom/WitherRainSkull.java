@@ -23,7 +23,7 @@ import net.minecraft.world.phys.AABB;
 /// They look like the Wither's skulls, but the damage is controlled here (not the Wither Boss attack).
 public class WitherRainSkull extends WitherSkull {
     /// How many skulls the Wither Sword launches each time.
-    public static final int SKULL_COUNT = 10;
+    public static final int SKULL_COUNT = 6;
     /// Damage done to the mob hit by the skull.
     public static final float DAMAGE = 8.0F;
     /// Wither effect given to the mob hit (seconds and level: 0 = Wither I, 1 = Wither II...). 0 seconds = no effect.
@@ -35,7 +35,7 @@ public class WitherRainSkull extends WitherSkull {
     /// Radius in blocks (0 = no explosion damage, only the visual effect and sound).
     public static final float EXPLOSION_RADIUS = 2.0F;
     /// Damage in the center of the explosion; it gets smaller further away (0 at the edge of the radius).
-    public static final float EXPLOSION_DAMAGE = 6.0F;
+    public static final float EXPLOSION_DAMAGE = 4.0F;
 
     public WitherRainSkull(EntityType<? extends WitherRainSkull> type, Level level) {
         super(type, level);

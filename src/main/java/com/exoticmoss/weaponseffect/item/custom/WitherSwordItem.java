@@ -11,7 +11,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;
+import com.exoticmoss.weaponseffect.entity.custom.WitherRainSkull;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -77,7 +77,7 @@ public class WitherSwordItem extends Item {
         Random rand = new Random();
 
         for (int i = 0; i < numHeads; i++) {
-            WitherSkull witherSkull = new WitherSkull(level, attacker, forwardVec);
+            WitherRainSkull witherSkull = new WitherRainSkull(level, attacker);
             witherSkull.setPos(startVec.x, startVec.y - 0.1, startVec.z);
 
             Vec3 randomOffset = new Vec3(rand.nextDouble() * 0.5 - 0.25, 0, rand.nextDouble() * 0.5 - 0.25);

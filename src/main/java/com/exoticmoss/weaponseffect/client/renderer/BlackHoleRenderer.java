@@ -2,6 +2,7 @@ package com.exoticmoss.weaponseffect.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -18,6 +19,19 @@ import net.minecraft.world.phys.Vec3;
 public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHoleRenderer.State> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("weaponseffect", "textures/entity/black_hole/black_hole.png");
     private static final RenderType RENDER_TYPE = RenderTypes.entityCutout(TEXTURE);
+    /// Accretion disk (the glowing ring), like the Black Hole tier of the Gravity Core: plain white texture, colors below
+    private static final RenderType RING_TYPE = RenderTypes.entityTranslucentEmissive(
+            Identifier.fromNamespaceAndPath("weaponseffect", "textures/entity/black_hole/ring.png"));
+    /// Ring colors (0xAARRGGBB): orange near the black hole, fading out to transparent at the edge
+    private static final int RING_INNER_COLOR = 0xFFFFB04A;
+    private static final int RING_OUTER_COLOR = 0x001B0B2E;
+    /// Ring size compared to the black hole (1.0 = the edge of the black hole)
+    private static final float RING_INNER = 1.15f;
+    private static final float RING_OUTER = 2.3f;
+    /// How tilted (degrees) the ring is and how fast it spins
+    private static final float RING_TILT = 15;
+    private static final float RING_SPEED = 2;
+    private static final int FULL_BRIGHT = 0xF000F0;
 
     private static final int RINGS = 32;    // anéis horizontais (latitude)
     private static final int SEGMENTS = 48; // fatias verticais (longitude) — como gomos de laranja
@@ -26,6 +40,7 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHole
     /// (Minecraft first "reads" the entity, then "draws" it in a separate step).
     public static class State extends EntityRenderState {
         float radius;
+        float time;
     }
 
     public BlackHoleRenderer(EntityRendererProvider.Context context) {
@@ -41,12 +56,13 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHole
     public void extractRenderState(BlackHoleEntity entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.radius = entity.getCurrentRadius();
+        state.time = entity.tickCount + partialTicks;
     }
 
     // The sphere is much bigger than the entity's hitbox: without this it disappears when the hitbox is off screen
     @Override
     protected AABB getBoundingBoxForCulling(BlackHoleEntity entity) {
-        return super.getBoundingBoxForCulling(entity).inflate(entity.getCurrentRadius());
+        return super.getBoundingBoxForCulling(entity).inflate(entity.getCurrentRadius() * RING_OUTER * 0.5f);
     }
 
     @Override
@@ -59,8 +75,46 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHole
         int light = state.lightCoords;
         collector.submitCustomGeometry(poseStack, RENDER_TYPE, (pose, vertexConsumer) -> renderSphere(pose, vertexConsumer, light));
 
+        // The ring is drawn inside the same scale, so it grows and shrinks together with the black hole
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.XP.rotationDegrees(RING_TILT));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.time * RING_SPEED));
+        collector.submitCustomGeometry(poseStack, RING_TYPE, (pose, vertexConsumer) ->
+                renderRing(pose, vertexConsumer, 0.5f * RING_INNER, 0.5f * RING_OUTER, RING_INNER_COLOR, RING_OUTER_COLOR));
+        poseStack.popPose();
+
         poseStack.popPose();
         super.submit(state, poseStack, collector, camera);
+    }
+
+    /// A flat ring (visible from both sides) going from the inner color to the outer color.
+    private static void renderRing(PoseStack.Pose pose, VertexConsumer v, float inner, float outer, int innerColor, int outerColor) {
+        int pieces = SEGMENTS * 2;
+        for (int i = 0; i < pieces; i++) {
+            float a1 = (float) (i * 2 * Math.PI / pieces);
+            float a2 = (float) ((i + 1) * 2 * Math.PI / pieces);
+            float c1 = (float) Math.cos(a1), s1 = (float) Math.sin(a1);
+            float c2 = (float) Math.cos(a2), s2 = (float) Math.sin(a2);
+            // top side
+            ringVertex(pose, v, c1 * inner, s1 * inner, 1, innerColor);
+            ringVertex(pose, v, c1 * outer, s1 * outer, 1, outerColor);
+            ringVertex(pose, v, c2 * outer, s2 * outer, 1, outerColor);
+            ringVertex(pose, v, c2 * inner, s2 * inner, 1, innerColor);
+            // bottom side (same points in reverse order)
+            ringVertex(pose, v, c2 * inner, s2 * inner, -1, innerColor);
+            ringVertex(pose, v, c2 * outer, s2 * outer, -1, outerColor);
+            ringVertex(pose, v, c1 * outer, s1 * outer, -1, outerColor);
+            ringVertex(pose, v, c1 * inner, s1 * inner, -1, innerColor);
+        }
+    }
+
+    private static void ringVertex(PoseStack.Pose pose, VertexConsumer v, float x, float z, float ny, int color) {
+        v.addVertex(pose, x, 0, z)
+                .setColor(color)
+                .setUv(0.5f, 0.5f)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(FULL_BRIGHT)
+                .setNormal(pose, 0, ny, 0);
     }
 
     /**

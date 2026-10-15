@@ -38,7 +38,7 @@ public class FlameWaveEntity extends Entity {
     /// How many ribbons of fire twist around each other.
     public static final int RIBBONS = 10;
     /// How far (in blocks) the ribbons get from the middle line at the end (how much the flames open up).
-    public static final float SPREAD = 6.0F;
+    public static final float SPREAD = 1.0F;
     /// Damage done to each mob the flames hit (only once) and how long it burns (seconds).
     public static final float DAMAGE = 8.0F;
     public static final int FIRE_SECONDS = 5;

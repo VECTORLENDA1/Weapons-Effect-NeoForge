@@ -31,8 +31,10 @@ public class FlameWaveEntity extends Entity {
     public static final float LENGTH = 8.0F;
     /// How many blocks the front of the flames moves each tick (20 ticks = 1 second).
     public static final float SPEED = 0.6F;
-    /// How many ticks the flames keep coming out of the sword before the end of them leaves it.
-    public static final int DURATION = 10;
+    /// How many ticks the flames stay at full length (connected to the sword) before the end of them
+    /// leaves the sword. The animation always lasts the whole ability: the flames come out until they
+    /// reach their full length (LENGTH or a wall), stay there HOLD ticks, and only then the end leaves the sword.
+    public static final int HOLD = 4;
     /// How many ribbons of fire twist around each other.
     public static final int RIBBONS = 10;
     /// How far (in blocks) the ribbons get from the middle line at the end (how much the flames open up).
@@ -91,8 +93,10 @@ public class FlameWaveEntity extends Entity {
     }
 
     /// How far the end of the flames is from the sword (0 while they are still coming out).
+    /// It only starts moving after the front reached the full length and HOLD ticks passed.
     public float getTail(float partialTicks) {
-        return Mth.clamp(SPEED * (this.tickCount + partialTicks - DURATION), 0, getMaxLength());
+        float max = getMaxLength();
+        return Mth.clamp(SPEED * (this.tickCount + partialTicks - HOLD) - max, 0, max);
     }
 
     /// How far the ribbons are from the middle line at this distance from the sword.

@@ -11,6 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraft.tags.DamageTypeTags;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.item.custom.*;
 
@@ -132,6 +134,40 @@ public class EventEffectItems {
         } else if (player.getPersistentData().getBooleanOr(tag, false)) {
             player.removeEffect(effect);
             player.getPersistentData().remove(tag);
+        }
+    }
+
+    // ---------------------------------------------------------------- fire and lava immunity
+
+    /// True if the player holds a weapon that makes them completely immune to fire and lava
+    /// (Fire Sword or Wings of Doom, in the right or left hand).
+    public static boolean isFireProof(Player player) {
+        return isFireProofItem(player.getMainHandItem()) || isFireProofItem(player.getOffhandItem());
+    }
+
+    private static boolean isFireProofItem(ItemStack stack) {
+        return stack.getItem() instanceof FireSwordItem || stack.getItem() instanceof WingsOfDoomItem;
+    }
+
+    /// The player never catches fire: no fire on the screen and no flames on the body
+    /// (on both sides, so the client doesn't show the fire even for a moment).
+    @SubscribeEvent
+    public static void onPlayerTickPost(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (!isFireProof(player)) return;
+
+        player.clearFire();
+        if (!player.level().isClientSide()) {
+            player.setSharedFlagOnFire(false);
+        }
+    }
+
+    /// No damage at all from fire, lava, magma blocks, fireballs...
+    @SubscribeEvent
+    public static void onFireDamage(LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof Player player && isFireProof(player)
+                && event.getSource().is(DamageTypeTags.IS_FIRE)) {
+            event.setCanceled(true);
         }
     }
 

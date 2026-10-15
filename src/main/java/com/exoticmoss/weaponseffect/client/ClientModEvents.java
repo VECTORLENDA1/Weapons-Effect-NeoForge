@@ -7,6 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.client.renderer.BlackHoleRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.FlameWaveRenderer;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.entity.client.LanceProjectileModel;
 import com.exoticmoss.weaponseffect.entity.client.LanceProjectileRenderer;
@@ -25,5 +26,6 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
         event.registerEntityRenderer(ModEntities.LANCE.get(), LanceProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.WITHER_RAIN_SKULL.get(), WitherSkullRenderer::new);
+        event.registerEntityRenderer(ModEntities.FLAME_WAVE.get(), FlameWaveRenderer::new);
     }
 }

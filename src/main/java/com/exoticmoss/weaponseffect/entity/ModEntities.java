@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import com.exoticmoss.weaponseffect.entity.custom.LanceProjectileEntity;
 import com.exoticmoss.weaponseffect.entity.custom.WitherRainSkull;
+import com.exoticmoss.weaponseffect.entity.custom.FlameWaveEntity;
 
 import static com.exoticmoss.weaponseffect.WeaponsEffect.MODID;
 
@@ -25,6 +26,10 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<WitherRainSkull>> WITHER_RAIN_SKULL =
             ENTITY_TYPES.registerEntityType("wither_rain_skull", WitherRainSkull::new, MobCategory.MISC,
                     builder -> builder.sized(0.3125F, 0.3125F).noLootTable().clientTrackingRange(4).updateInterval(10));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<FlameWaveEntity>> FLAME_WAVE =
+            ENTITY_TYPES.registerEntityType("flame_wave", FlameWaveEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.5F, 0.5F).noLootTable().clientTrackingRange(8).updateInterval(20));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

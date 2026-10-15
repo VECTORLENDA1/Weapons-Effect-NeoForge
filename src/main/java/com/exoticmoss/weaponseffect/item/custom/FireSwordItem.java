@@ -1,6 +1,6 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
-import com.exoticmoss.weaponseffect.ability.FlameWave;
+import com.exoticmoss.weaponseffect.entity.custom.FlameWaveEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -67,9 +67,9 @@ public class FireSwordItem extends Item {
 
         player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
 
-        // A wave of flames (see FlameWave): done by the server and sent to every player nearby
+        // A wave of flames (see FlameWaveEntity): done by the server and sent to every player nearby
         if (level instanceof ServerLevel serverLevel) {
-            FlameWave.launch(serverLevel, player);
+            FlameWaveEntity.launch(serverLevel, player);
         }
 
         return InteractionResult.SUCCESS;

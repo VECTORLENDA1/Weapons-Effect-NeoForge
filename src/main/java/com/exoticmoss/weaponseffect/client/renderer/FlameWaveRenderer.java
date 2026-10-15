@@ -22,9 +22,19 @@ import org.joml.Vector3f;
 /// from the sword to where the player is aiming. White-hot at the sword, then yellow, orange and dark
 /// red at the end. Everything is 3D geometry (no particles).
 public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWaveRenderer.State> {
-    private static final RenderType TYPE = RenderTypes.entityTranslucentEmissive(
-            Identifier.fromNamespaceAndPath("weaponseffect", "textures/entity/flame_wave.png"));
-    private static final int FULL_BRIGHT = 0xF000F0;
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("weaponseffect", "textures/entity/flame_wave.png");
+
+    // ---------------------------------------------------------------- LIGHT / BRIGHTNESS
+    /// How bright the flames are: 1.0 = full colors, 0.5 = half as bright, 0 = black.
+    private static final float BRIGHTNESS = 0.75F;
+    /// true = the flames are "emissive": shaders make them glow (bloom/halo around them).
+    /// false = no glow with shaders (they still have their colors and can be seen in the dark).
+    private static final boolean EMISSIVE = true;
+    /// Light of the flames: 15 = full light (seen bright even in the dark), 0 = dark like the place around.
+    private static final int LIGHT_LEVEL = 15;
+
+    private static final RenderType TYPE = EMISSIVE ? RenderTypes.entityTranslucentEmissive(TEXTURE) : RenderTypes.entityTranslucent(TEXTURE);
+    private static final int FULL_BRIGHT = LIGHT_LEVEL << 4 | LIGHT_LEVEL << 20;
 
     /// How long (in blocks) each piece of a ribbon is. Smaller = smoother curves (but slower to draw).
     private static final float STEP = 0.2F;
@@ -152,7 +162,7 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
                 ring[i] = new Vector3f(center)
                         .add(new Vector3f(s.side).mul(Mth.cos(a) * radius))
                         .add(new Vector3f(s.up).mul(Mth.sin(a) * radius * FLATNESS));
-                colors[i] = ARGB.color(alpha, GLOW_COLOR);
+                colors[i] = ARGB.color(alpha, ARGB.scaleRGB(GLOW_COLOR, BRIGHTNESS));
             }
             if (previous != null) tube(pose, v, previous, ring, previousColors, colors);
             previous = ring;
@@ -180,7 +190,7 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
         int index = Math.min((int) t, COLORS.length - 2);
         int color = ARGB.srgbLerp(t - index, COLORS[index], COLORS[index + 1]);
         float pulse = 0.78F + 0.22F * Mth.sin(along * 3 - s.time * 1.2F + ribbon);
-        return ARGB.color(ARGB.alpha(color), ARGB.scaleRGB(color, pulse));
+        return ARGB.color(ARGB.alpha(color), ARGB.scaleRGB(color, pulse * BRIGHTNESS));
     }
 
     /// Joins two rings of points with quads (both sides, so it looks right from inside too).

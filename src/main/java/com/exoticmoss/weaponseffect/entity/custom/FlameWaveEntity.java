@@ -70,7 +70,7 @@ public class FlameWaveEntity extends Entity {
     }
 
     /// The direction of the flames (where the player was aiming).
-    public Vec3 getDirection() {
+    public Vec3 getFlameDirection() {
         return Vec3.directionFromRotation(this.getXRot(), this.getYRot());
     }
 
@@ -78,7 +78,7 @@ public class FlameWaveEntity extends Entity {
     public float getMaxLength() {
         if (maxLength < 0) {
             Vec3 start = this.position();
-            Vec3 end = start.add(getDirection().scale(LENGTH));
+            Vec3 end = start.add(getFlameDirection().scale(LENGTH));
             HitResult result = this.level().clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             maxLength = result.getType() == HitResult.Type.MISS ? LENGTH : (float) result.getLocation().distanceTo(start);
         }
@@ -117,7 +117,7 @@ public class FlameWaveEntity extends Entity {
         float head = getHead(0);
         float tail = getTail(0);
         Vec3 start = this.position();
-        Vec3 direction = getDirection();
+        Vec3 direction = getFlameDirection();
         AABB area = new AABB(start.add(direction.scale(tail)), start.add(direction.scale(head))).inflate(SPREAD + 1);
 
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area)) {

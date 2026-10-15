@@ -69,7 +69,7 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
         state.time = entity.tickCount + partialTicks;
 
         // Direction of the flames, and two directions across them (to the side and "up")
-        Vec3 d = entity.getDirection();
+        Vec3 d = entity.getFlameDirection();
         Vec3 s = d.cross(new Vec3(0, 1, 0));
         if (s.lengthSqr() < 1.0E-4) s = new Vec3(1, 0, 0); // aiming straight up or down
         s = s.normalize();

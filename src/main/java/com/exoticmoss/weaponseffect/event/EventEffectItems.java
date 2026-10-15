@@ -127,8 +127,10 @@ public class EventEffectItems {
         String tag = EFFECT_TAG + effect.getRegisteredName();
         if (amplifier >= 0) {
             MobEffectInstance currentEffect = player.getEffect(effect);
-            if (currentEffect == null || currentEffect.getAmplifier() < amplifier) {
-                player.addEffect(new MobEffectInstance(effect, 12000, amplifier, false, false, true));
+            // Infinite time while the weapon is held (it is removed when the weapon is no longer held)
+            if (currentEffect == null || currentEffect.getAmplifier() < amplifier
+                    || (currentEffect.getAmplifier() == amplifier && !currentEffect.isInfiniteDuration())) {
+                player.addEffect(new MobEffectInstance(effect, MobEffectInstance.INFINITE_DURATION, amplifier, false, false, true));
                 player.getPersistentData().putBoolean(tag, true);
             }
         } else if (player.getPersistentData().getBooleanOr(tag, false)) {

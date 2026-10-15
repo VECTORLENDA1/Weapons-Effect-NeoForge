@@ -137,8 +137,9 @@ public class BlackHoleEntity extends Entity {
 
         for (Entity entity : entities) {
             if (entity instanceof Player player) {
-                ItemStack itemStack = player.getMainHandItem();
-                if (itemStack.getItem() == ModItems.WINGS_OF_DOOM.get()) {
+                // Players holding the Wings of Doom (right or left hand) are not pulled
+                if (player.getMainHandItem().getItem() == ModItems.WINGS_OF_DOOM.get()
+                        || player.getOffhandItem().getItem() == ModItems.WINGS_OF_DOOM.get()) {
                     continue;
                 }
             }

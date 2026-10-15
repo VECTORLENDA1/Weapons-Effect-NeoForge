@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.minecraft.tags.DamageTypeTags;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /// Effects the player gets while holding a weapon (main hand or off hand),
-/// and the effects the weapons make the player immune to (main hand).
+/// and the effects the weapons make the player immune to (main hand or off hand).
 @EventBusSubscriber(modid = WeaponsEffect.MODID)
 public class EventEffectItems {
 
@@ -55,6 +56,16 @@ public class EventEffectItems {
                     Map.entry(WingsOfDoomItem.class, 1))
     );
 
+    /// Effect -> the weapons that make the player immune to it (in the right or left hand).
+    private static final Map<Holder<MobEffect>, List<Class<? extends Item>>> IMMUNITIES = Map.of(
+            MobEffects.BLINDNESS, List.of(BlindnessDaggerItem.class, WingsOfDoomItem.class),
+            MobEffects.DARKNESS, List.of(DarknessMaceItem.class, WingsOfDoomItem.class),
+            MobEffects.POISON, List.of(PoisonSwordItem.class, WingsOfDoomItem.class),
+            MobEffects.SLOWNESS, List.of(LanceItem.class, WingsOfDoomItem.class, SwiftnessDaggerItem.class, IceSwordItem.class),
+            MobEffects.WEAKNESS, List.of(WingsOfDoomItem.class),
+            MobEffects.WITHER, List.of(WitherSwordItem.class, WingsOfDoomItem.class)
+    );
+
     @SubscribeEvent
     public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
             Player player = event.getEntity();
@@ -71,45 +82,33 @@ public class EventEffectItems {
             }
 
 
-            //Immunities//
-            boolean hasBlindnessDaggerItem = mainHandItem.getItem() instanceof BlindnessDaggerItem;
-            boolean hasDarknessMaceItem = mainHandItem.getItem() instanceof DarknessMaceItem;
-            boolean hasIceSwordItem = mainHandItem.getItem() instanceof IceSwordItem;
-            boolean hasLanceItem = mainHandItem.getItem() instanceof LanceItem;
-            boolean hasPoisonSwordItem = mainHandItem.getItem() instanceof PoisonSwordItem;
-            boolean hasSwiftnessDaggerItem = mainHandItem.getItem() instanceof SwiftnessDaggerItem;
-            boolean hasWingsofDoomItem = mainHandItem.getItem() instanceof WingsOfDoomItem;
-            boolean hasWitherSwordItem = mainHandItem.getItem() instanceof WitherSwordItem;
-
-            //Blindness//
-            if (hasBlindnessDaggerItem || hasWingsofDoomItem) {
-                removeIfPresent(player, MobEffects.BLINDNESS);
+            // Immunities: the effects are removed (and can't be given, see onEffectApplicable)
+            for (var entry : IMMUNITIES.entrySet()) {
+                if (holdsAny(player, entry.getValue())) {
+                    removeIfPresent(player, entry.getKey());
+                }
             }
+    }
 
-            //Darkness//
-            if (hasDarknessMaceItem || hasWingsofDoomItem) {
-                removeIfPresent(player, MobEffects.DARKNESS);
-            }
+    /// Stops the effect from being given at all while a weapon that is immune to it is held
+    /// (e.g. the Wither Boss attacks don't give Wither while holding the Wither Sword).
+    @SubscribeEvent
+    public static void onEffectApplicable(MobEffectEvent.Applicable event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        List<Class<? extends Item>> weapons = IMMUNITIES.get(event.getEffectInstance().getEffect());
+        if (weapons != null && holdsAny(player, weapons)) {
+            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+        }
+    }
 
-            //Poison//
-            if (hasPoisonSwordItem || hasWingsofDoomItem) {
-                removeIfPresent(player, MobEffects.POISON);
-            }
-
-            //Slowness//
-            if (hasLanceItem || hasWingsofDoomItem || hasSwiftnessDaggerItem || hasIceSwordItem) {
-                removeIfPresent(player, MobEffects.SLOWNESS);
-            }
-
-            //Weakness//
-            if (hasWingsofDoomItem) {
-                removeIfPresent(player, MobEffects.WEAKNESS);
-            }
-
-            //Wither//
-            if (hasWitherSwordItem || hasWingsofDoomItem) {
-                removeIfPresent(player, MobEffects.WITHER);
-            }
+    /// True if the player holds one of these weapons in the right hand or in the left hand (offhand).
+    private static boolean holdsAny(Player player, List<Class<? extends Item>> weapons) {
+        Item main = player.getMainHandItem().getItem();
+        Item off = player.getOffhandItem().getItem();
+        for (Class<? extends Item> weapon : weapons) {
+            if (weapon.isInstance(main) || weapon.isInstance(off)) return true;
+        }
+        return false;
     }
 
     /// Gives the effect while one of the weapons is held, and removes it again (only if it was

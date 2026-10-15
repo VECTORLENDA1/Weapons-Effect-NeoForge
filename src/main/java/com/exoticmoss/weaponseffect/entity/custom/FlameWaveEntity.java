@@ -28,17 +28,17 @@ import java.util.Set;
 /// The entity stays at the sword; the flames are drawn by FlameWaveRenderer (no particles).
 public class FlameWaveEntity extends Entity {
     /// How far the flames go (in blocks). They stop earlier if they hit a wall.
-    public static final float LENGTH = 9.0F;
+    public static final float LENGTH = 8.0F;
     /// How many blocks the front of the flames moves each tick (20 ticks = 1 second).
-    public static final float SPEED = 1.2F;
+    public static final float SPEED = 0.6F;
     /// How many ticks the flames keep coming out of the sword before the end of them leaves it.
     public static final int DURATION = 10;
     /// How many ribbons of fire twist around each other.
-    public static final int RIBBONS = 6;
+    public static final int RIBBONS = 10;
     /// How far (in blocks) the ribbons get from the middle line at the end (how much the flames open up).
-    public static final float SPREAD = 1.4F;
+    public static final float SPREAD = 6.0F;
     /// Damage done to each mob the flames hit (only once) and how long it burns (seconds).
-    public static final float DAMAGE = 13.0F;
+    public static final float DAMAGE = 8.0F;
     public static final int FIRE_SECONDS = 5;
 
     private LivingEntity owner;

@@ -27,7 +27,7 @@ public class WitherRainSkull extends WitherSkull {
     public static final int WITHER_AMPLIFIER = 1;
     /// Power of the explosion when the skull hits something (1.0 = like the Wither's skulls).
     /// 0 = no explosion, only the visual effect and sound. The explosion also hurts mobs around it.
-    public static final float EXPLOSION_POWER = 1.0F;
+    public static final float EXPLOSION_POWER = 0.5F;
     /// If the explosion breaks blocks.
     public static final boolean EXPLOSION_BREAKS_BLOCKS = false;
 

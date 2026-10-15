@@ -42,7 +42,7 @@ public class FlameWaveEntity extends Entity {
     public static final float START_WIDTH = 0.3F;
     public static final float WIDTH = 4.0F;
     /// How far in front of the player's eyes the flames start (the sword), in blocks.
-    public static final float START_DISTANCE = 0.1F;
+    public static final float START_DISTANCE = 0.5F;
     /// Damage done to each mob the flames hit (only once) and how long it burns (seconds).
     public static final float DAMAGE = 8.0F;
     public static final int FIRE_SECONDS = 5;

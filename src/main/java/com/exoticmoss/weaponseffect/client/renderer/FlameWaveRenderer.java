@@ -26,7 +26,7 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
 
     // ---------------------------------------------------------------- LIGHT / BRIGHTNESS
     /// How bright the flames are: 1.0 = full colors, 0.5 = half as bright, 0 = black.
-    private static final float BRIGHTNESS = 0.75F;
+    private static final float BRIGHTNESS = 0.5F;
     /// true = the flames are "emissive": shaders make them glow (bloom/halo around them).
     /// false = no glow with shaders (they still have their colors and can be seen in the dark).
     private static final boolean EMISSIVE = true;

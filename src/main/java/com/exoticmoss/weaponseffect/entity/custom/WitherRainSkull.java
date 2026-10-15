@@ -1,6 +1,7 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
 import com.exoticmoss.weaponseffect.entity.ModEntities;
+import com.exoticmoss.weaponseffect.item.custom.WitherSwordItem;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -16,20 +17,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.AABB;
 
 /// The skulls launched by the "Wither Rain" ability of the Wither Sword.
 /// They look like the Wither's skulls, but the damage is controlled here (not the Wither Boss attack).
 public class WitherRainSkull extends WitherSkull {
+    /// How many skulls the Wither Sword launches each time.
+    public static final int SKULL_COUNT = 10;
     /// Damage done to the mob hit by the skull.
     public static final float DAMAGE = 8.0F;
     /// Wither effect given to the mob hit (seconds and level: 0 = Wither I, 1 = Wither II...). 0 seconds = no effect.
     public static final int WITHER_SECONDS = 10;
     public static final int WITHER_AMPLIFIER = 1;
-    /// Power of the explosion when the skull hits something (1.0 = like the Wither's skulls).
-    /// 0 = no explosion, only the visual effect and sound. The explosion also hurts mobs around it.
-    public static final float EXPLOSION_POWER = 1.0F;
-    /// If the explosion breaks blocks.
-    public static final boolean EXPLOSION_BREAKS_BLOCKS = false;
+    /// The explosion when the skull hits something. It only does damage: it doesn't break blocks,
+    /// doesn't push anything and doesn't touch dropped items. It never hurts the player who launched
+    /// the skulls, nor anyone holding a Wither Sword (in the right or left hand).
+    /// Radius in blocks (0 = no explosion damage, only the visual effect and sound).
+    public static final float EXPLOSION_RADIUS = 2.0F;
+    /// Damage in the center of the explosion; it gets smaller further away (0 at the edge of the radius).
+    public static final float EXPLOSION_DAMAGE = 6.0F;
 
     public WitherRainSkull(EntityType<? extends WitherRainSkull> type, Level level) {
         super(type, level);
@@ -71,15 +77,37 @@ public class WitherRainSkull extends WitherSkull {
         }
 
         if (this.level() instanceof ServerLevel serverLevel) {
-            if (EXPLOSION_POWER > 0) {
-                serverLevel.explode(this, this.getX(), this.getY(), this.getZ(), EXPLOSION_POWER, false,
-                        EXPLOSION_BREAKS_BLOCKS ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
-            } else {
-                // Only the visual effect, no extra damage
-                serverLevel.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
-                serverLevel.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.4F, 1.4F);
-            }
+            Entity hitEntity = hitResult instanceof EntityHitResult entityHit ? entityHit.getEntity() : null;
+            explode(serverLevel, hitEntity);
             this.discard();
         }
+    }
+
+    /// Damage-only explosion: hurts the mobs around, nothing else.
+    private void explode(ServerLevel level, Entity hitEntity) {
+        level.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+        level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.4F, 1.4F);
+        if (EXPLOSION_RADIUS <= 0 || EXPLOSION_DAMAGE <= 0) return;
+
+        Entity owner = this.getOwner();
+        DamageSource source = owner instanceof LivingEntity livingOwner
+                ? this.damageSources().witherSkull(this, livingOwner)
+                : this.damageSources().magic();
+
+        AABB area = this.getBoundingBox().inflate(EXPLOSION_RADIUS);
+        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area)) {
+            // The mob hit directly already took the skull's damage
+            if (target == owner || target == hitEntity || isHoldingWitherSword(target)) continue;
+
+            double distance = target.position().distanceTo(this.position());
+            if (distance > EXPLOSION_RADIUS) continue;
+            float damage = (float) (EXPLOSION_DAMAGE * (1.0 - distance / EXPLOSION_RADIUS));
+            if (damage > 0) target.hurtServer(level, source, damage);
+        }
+    }
+
+    private static boolean isHoldingWitherSword(LivingEntity entity) {
+        return entity.getMainHandItem().getItem() instanceof WitherSwordItem
+                || entity.getOffhandItem().getItem() instanceof WitherSwordItem;
     }
 }

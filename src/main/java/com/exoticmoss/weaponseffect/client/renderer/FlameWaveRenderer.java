@@ -36,7 +36,7 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
     /// How many turns the ribbons do around each other per block, and how fast they spin.
     private static final float TWIST = 0.9F;
     private static final float SPIN = 0.35F;
-    /// The flames are wider than tall (1 = round, smaller = flatter).
+    /// The flames are wider than tall: height = WIDTH x FLATNESS (1 = round, smaller = flatter).
     private static final float FLATNESS = 0.6F;
     /// Colors along the flames (0xAARRGGBB), from the sword (first) to the end (last).
     private static final int[] COLORS = {0xFFFFFFD0, 0xFFFFE070, 0xFFFFA020, 0xF0F05000, 0xC0B01800, 0x60600800};
@@ -81,7 +81,7 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
 
     @Override
     protected AABB getBoundingBoxForCulling(FlameWaveEntity entity) {
-        return super.getBoundingBoxForCulling(entity).inflate(FlameWaveEntity.LENGTH + FlameWaveEntity.SPREAD + 1);
+        return super.getBoundingBoxForCulling(entity).inflate(FlameWaveEntity.LENGTH + FlameWaveEntity.WIDTH + 1);
     }
 
     @Override
@@ -107,13 +107,15 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
 
             // Where the ribbon is: turns around the middle line, and opens up further away
             float angle = offset + along * TWIST * Mth.TWO_PI / 2 - s.time * SPIN;
-            float wiggle = 1 + 0.25F * Mth.sin(along * 1.7F + s.time * 0.3F + ribbon);
-            float radius = FlameWaveEntity.spreadAt(along) * wiggle;
+            // The outer edge of the ribbons never goes past the WIDTH of the flames
+            float thickness = thicknessAt(along);
+            float wiggle = 0.9F + 0.1F * Mth.sin(along * 1.7F + s.time * 0.3F + ribbon);
+            float radius = (FlameWaveEntity.halfWidthAt(along) - thickness) * wiggle;
             Vector3f center = new Vector3f(s.direction).mul(along)
                     .add(new Vector3f(s.side).mul(Mth.cos(angle) * radius))
                     .add(new Vector3f(s.up).mul(Mth.sin(angle) * radius * FLATNESS));
 
-            float thickness = Mth.lerp(along / FlameWaveEntity.LENGTH, START_THICKNESS, END_THICKNESS) * ends(s, along);
+            thickness *= ends(s, along);
             int color = colorAt(s, along, ribbon);
 
             Vector3f[] ring = new Vector3f[SIDES];
@@ -141,8 +143,8 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
             if (last) along = s.head;
 
             Vector3f center = new Vector3f(s.direction).mul(along);
-            float radius = FlameWaveEntity.spreadAt(along) * 0.8F * ends(s, along);
-            int alpha = Math.round(ARGB.alpha(GLOW_COLOR) * (1 - along / FlameWaveEntity.LENGTH * 0.6F));
+            float radius = (FlameWaveEntity.halfWidthAt(along) - thicknessAt(along)) * 0.8F * ends(s, along);
+            int alpha = Math.round(ARGB.alpha(GLOW_COLOR) * (1 - along / FlameWaveEntity.reach() * 0.6F));
             Vector3f[] ring = new Vector3f[SIDES * 2];
             int[] colors = new int[SIDES * 2];
             for (int i = 0; i < ring.length; i++) {
@@ -159,6 +161,12 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
         }
     }
 
+    /// Thickness of a ribbon at this distance (never more than half of the flames' half width).
+    private static float thicknessAt(float along) {
+        float thickness = Mth.lerp(Mth.clamp(along / FlameWaveEntity.reach(), 0, 1), START_THICKNESS, END_THICKNESS);
+        return Math.min(thickness, FlameWaveEntity.halfWidthAt(along) * 0.5F);
+    }
+
     /// The flames get thin at the front and at the end, so they don't look cut.
     private static float ends(State s, float along) {
         float fromTail = s.tail > 0 ? (along - s.tail) / 1.2F : 1;
@@ -168,7 +176,7 @@ public class FlameWaveRenderer extends EntityRenderer<FlameWaveEntity, FlameWave
 
     /// Color at this distance from the sword, with brighter pulses running along the flames.
     private static int colorAt(State s, float along, int ribbon) {
-        float t = Mth.clamp(along / FlameWaveEntity.LENGTH, 0, 1) * (COLORS.length - 1);
+        float t = Mth.clamp(along / FlameWaveEntity.reach(), 0, 1) * (COLORS.length - 1);
         int index = Math.min((int) t, COLORS.length - 2);
         int color = ARGB.srgbLerp(t - index, COLORS[index], COLORS[index + 1]);
         float pulse = 0.78F + 0.22F * Mth.sin(along * 3 - s.time * 1.2F + ribbon);

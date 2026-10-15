@@ -27,7 +27,7 @@ import java.util.Set;
 /// stops at walls, burns and hurts every mob it touches.
 /// The entity stays at the sword; the flames are drawn by FlameWaveRenderer (no particles).
 public class FlameWaveEntity extends Entity {
-    /// How far the flames go (in blocks). They stop earlier if they hit a wall.
+    /// How far the flames reach, measured from the player (in blocks). They stop earlier if they hit a wall.
     public static final float LENGTH = 8.0F;
     /// How many blocks the front of the flames moves each tick (20 ticks = 1 second).
     public static final float SPEED = 0.6F;
@@ -37,8 +37,12 @@ public class FlameWaveEntity extends Entity {
     public static final int HOLD = 4;
     /// How many ribbons of fire twist around each other.
     public static final int RIBBONS = 10;
-    /// How far (in blocks) the ribbons get from the middle line at the end (how much the flames open up).
-    public static final float SPREAD = 1.0F;
+    /// Total width of the flames (in blocks, from one side to the other) at the sword and at the end.
+    /// The height is WIDTH x FLATNESS (see FlameWaveRenderer). Mobs touching this width are hit.
+    public static final float START_WIDTH = 0.3F;
+    public static final float WIDTH = 4.0F;
+    /// How far in front of the player's eyes the flames start (the sword), in blocks.
+    public static final float START_DISTANCE = 0.8F;
     /// Damage done to each mob the flames hit (only once) and how long it burns (seconds).
     public static final float DAMAGE = 8.0F;
     public static final int FIRE_SECONDS = 5;
@@ -58,7 +62,7 @@ public class FlameWaveEntity extends Entity {
         this.owner = owner;
         // Comes out of the sword, a bit in front of the player, in the direction the player is aiming
         Vec3 look = owner.getLookAngle();
-        Vec3 start = owner.getEyePosition().add(0, -0.35, 0).add(look.scale(0.8));
+        Vec3 start = owner.getEyePosition().add(0, -0.35, 0).add(look.scale(START_DISTANCE));
         this.setPos(start.x, start.y, start.z);
         this.setYRot(owner.getYRot());
         this.setXRot(owner.getXRot());
@@ -76,13 +80,13 @@ public class FlameWaveEntity extends Entity {
         return Vec3.directionFromRotation(this.getXRot(), this.getYRot());
     }
 
-    /// Where the flames stop: at the first wall, or at LENGTH.
+    /// Where the flames stop (from the sword): at the first wall, or at LENGTH from the player.
     public float getMaxLength() {
         if (maxLength < 0) {
             Vec3 start = this.position();
-            Vec3 end = start.add(getFlameDirection().scale(LENGTH));
+            Vec3 end = start.add(getFlameDirection().scale(reach()));
             HitResult result = this.level().clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-            maxLength = result.getType() == HitResult.Type.MISS ? LENGTH : (float) result.getLocation().distanceTo(start);
+            maxLength = result.getType() == HitResult.Type.MISS ? reach() : (float) result.getLocation().distanceTo(start);
         }
         return maxLength;
     }
@@ -99,9 +103,14 @@ public class FlameWaveEntity extends Entity {
         return Mth.clamp(SPEED * (this.tickCount + partialTicks - HOLD) - max, 0, max);
     }
 
-    /// How far the ribbons are from the middle line at this distance from the sword.
-    public static float spreadAt(float distance) {
-        return 0.12F + SPREAD * Mth.clamp(distance / LENGTH, 0, 1);
+    /// The length of the flames from the sword (LENGTH is counted from the player).
+    public static float reach() {
+        return Math.max(0.5F, LENGTH - START_DISTANCE);
+    }
+
+    /// Half of the width of the flames at this distance from the sword (from the middle line to the outer edge).
+    public static float halfWidthAt(float distance) {
+        return Mth.lerp(Mth.clamp(distance / reach(), 0, 1), START_WIDTH, WIDTH) / 2;
     }
 
     @Override
@@ -122,7 +131,7 @@ public class FlameWaveEntity extends Entity {
         float tail = getTail(0);
         Vec3 start = this.position();
         Vec3 direction = getFlameDirection();
-        AABB area = new AABB(start.add(direction.scale(tail)), start.add(direction.scale(head))).inflate(SPREAD + 1);
+        AABB area = new AABB(start.add(direction.scale(tail)), start.add(direction.scale(head))).inflate(WIDTH / 2 + 1);
 
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area)) {
             if (target == owner || target.fireImmune() || hit.contains(target)) continue;
@@ -130,9 +139,11 @@ public class FlameWaveEntity extends Entity {
             // Distance along the flames and distance from the middle line
             Vec3 toTarget = target.getBoundingBox().getCenter().subtract(start);
             double along = toTarget.dot(direction);
-            if (along < tail - 0.5 || along > head + 0.5) continue;
+            // The mob is hit when its body touches the flames (half of its width counts)
+            double body = target.getBbWidth() / 2;
+            if (along < tail - body || along > head + body) continue;
             double fromLine = toTarget.subtract(direction.scale(along)).length();
-            if (fromLine > spreadAt((float) along) + 0.6 + target.getBbWidth() / 2) continue;
+            if (fromLine > halfWidthAt((float) along) + body) continue;
 
             hit.add(target);
             target.setRemainingFireTicks(FIRE_SECONDS * 20);

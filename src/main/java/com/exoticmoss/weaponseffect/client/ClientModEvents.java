@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect.client;
 
+import net.minecraft.client.renderer.entity.WitherSkullRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,5 +24,6 @@ public class ClientModEvents {
     public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
         event.registerEntityRenderer(ModEntities.LANCE.get(), LanceProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.WITHER_RAIN_SKULL.get(), WitherSkullRenderer::new);
     }
 }

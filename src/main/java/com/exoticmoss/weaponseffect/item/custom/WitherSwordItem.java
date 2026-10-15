@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 
 public class WitherSwordItem extends Item {
     private static final int COOLDOWN_TICKS = 40;
-    private static final int NUM_HEADS = 10;
 
     public WitherSwordItem(Properties pProperties) {
         super(pProperties);
@@ -65,7 +64,7 @@ public class WitherSwordItem extends Item {
         pPlayer.getCooldowns().addCooldown(itemstack, COOLDOWN_TICKS);
 
         if (!pLevel.isClientSide()) {
-            launchWitherSkulls(pPlayer, pLevel, NUM_HEADS);
+            launchWitherSkulls(pPlayer, pLevel, WitherRainSkull.SKULL_COUNT);
         }
 
         return InteractionResult.SUCCESS;

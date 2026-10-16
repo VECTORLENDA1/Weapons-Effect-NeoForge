@@ -15,6 +15,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
+import com.exoticmoss.weaponseffect.item.ModItems;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -142,6 +143,10 @@ public class BlackHoleEntity extends Entity {
             // Dropped items and experience are never pulled or destroyed (e.g. the Nether Star of a Wither)
             if (entity instanceof ItemEntity || entity instanceof ExperienceOrb) continue;
 
+            // Players holding the Wings of Doom in the MAIN hand (right) are not pulled or killed.
+            // Checked every tick: changing slot (or holding it in the left hand) gives no protection
+            if (entity instanceof Player player && player.getMainHandItem().is(ModItems.WINGS_OF_DOOM.get())) continue;
+
             // Big mobs made of parts (the Ender Dragon): the closest part counts
             Entity target = entity instanceof EnderDragonPart part ? part.parentMob : entity;
             Vec3 directionToBlackHole = this.position().subtract(entity.position()).normalize();
@@ -178,7 +183,8 @@ public class BlackHoleEntity extends Entity {
     }
 
     /// Kills anything inside the black hole, no matter what: creative players, bosses, mobs with
-    /// immortality from other mods... Only the player who made the black hole is safe (see ownerUUID).
+    /// immortality from other mods... Only the player who made the black hole and players holding the
+    /// Wings of Doom in the main hand are safe (see suckBlocksAndEntities).
     private static void annihilate(ServerLevel level, Entity entity) {
         if (!entity.isAlive()) return;
 

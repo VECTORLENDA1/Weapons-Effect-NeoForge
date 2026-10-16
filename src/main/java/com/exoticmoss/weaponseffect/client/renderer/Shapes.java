@@ -49,13 +49,24 @@ public final class Shapes {
     /// A ball of the given radius around the center of the pose.
     /// "wobble" (0 = perfect ball) makes it lumpy and moving, like smoke, using the time.
     public static void sphere(PoseStack.Pose pose, VertexConsumer v, float radius, int color, int light, float wobble, float time) {
-        int detail = 16;
+        sphereQuads(pose, v, radius, color, light, wobble, time, 16, false);
+    }
+
+    /// A ball seen from inside and outside (for big domes the player can be in).
+    public static void sphereBothSides(PoseStack.Pose pose, VertexConsumer v, float radius, int color, int light, float wobble, float time) {
+        sphereQuads(pose, v, radius, color, light, wobble, time, 24, false);
+        sphereQuads(pose, v, radius, color, light, wobble, time, 24, true);
+    }
+
+    private static void sphereQuads(PoseStack.Pose pose, VertexConsumer v, float radius, int color, int light, float wobble, float time,
+                                    int detail, boolean inside) {
         for (int lat = 0; lat < detail; lat++) {
             for (int lon = 0; lon < detail; lon++) {
-                spherePoint(pose, v, lat, lon, detail, radius, color, light, wobble, time);
-                spherePoint(pose, v, lat + 1, lon, detail, radius, color, light, wobble, time);
-                spherePoint(pose, v, lat + 1, lon + 1, detail, radius, color, light, wobble, time);
-                spherePoint(pose, v, lat, lon + 1, detail, radius, color, light, wobble, time);
+                int lon1 = inside ? lon + 1 : lon, lon2 = inside ? lon : lon + 1;
+                spherePoint(pose, v, lat, lon1, detail, radius, color, light, wobble, time);
+                spherePoint(pose, v, lat + 1, lon1, detail, radius, color, light, wobble, time);
+                spherePoint(pose, v, lat + 1, lon2, detail, radius, color, light, wobble, time);
+                spherePoint(pose, v, lat, lon2, detail, radius, color, light, wobble, time);
             }
         }
     }

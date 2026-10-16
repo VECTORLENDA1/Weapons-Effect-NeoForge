@@ -12,6 +12,8 @@ import com.exoticmoss.weaponseffect.entity.custom.ShockwaveEntity;
 import com.exoticmoss.weaponseffect.entity.custom.IceLotusEntity;
 import com.exoticmoss.weaponseffect.entity.custom.IceShardEntity;
 import com.exoticmoss.weaponseffect.entity.custom.PoisonCloudEntity;
+import com.exoticmoss.weaponseffect.ritual.SoulEntity;
+import com.exoticmoss.weaponseffect.ritual.SoulRitualEntity;
 
 import static com.exoticmoss.weaponseffect.WeaponsEffect.MODID;
 
@@ -50,6 +52,14 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<IceLotusEntity>> ICE_LOTUS =
             ENTITY_TYPES.registerEntityType("ice_lotus", IceLotusEntity::new, MobCategory.MISC,
                     builder -> builder.sized(0.8F, 0.4F).noLootTable().clientTrackingRange(8).updateInterval(20));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<SoulRitualEntity>> SOUL_RITUAL =
+            ENTITY_TYPES.registerEntityType("soul_ritual", SoulRitualEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.5F, 0.5F).noLootTable().clientTrackingRange(10).updateInterval(2));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<SoulEntity>> SOUL =
+            ENTITY_TYPES.registerEntityType("soul", SoulEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.3F, 0.3F).noLootTable().clientTrackingRange(8).updateInterval(1));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

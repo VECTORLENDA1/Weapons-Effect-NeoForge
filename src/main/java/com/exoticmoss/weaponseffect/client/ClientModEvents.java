@@ -12,6 +12,8 @@ import com.exoticmoss.weaponseffect.client.renderer.ShockwaveRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.IceLotusRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.IceShardRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.PoisonCloudRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.SoulRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.SoulRitualRenderer;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.entity.client.LanceProjectileModel;
 import com.exoticmoss.weaponseffect.entity.client.LanceProjectileRenderer;
@@ -35,5 +37,7 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.POISON_CLOUD.get(), PoisonCloudRenderer::new);
         event.registerEntityRenderer(ModEntities.SHOCKWAVE.get(), ShockwaveRenderer::new);
         event.registerEntityRenderer(ModEntities.ICE_LOTUS.get(), IceLotusRenderer::new);
+        event.registerEntityRenderer(ModEntities.SOUL_RITUAL.get(), SoulRitualRenderer::new);
+        event.registerEntityRenderer(ModEntities.SOUL.get(), SoulRenderer::new);
     }
 }

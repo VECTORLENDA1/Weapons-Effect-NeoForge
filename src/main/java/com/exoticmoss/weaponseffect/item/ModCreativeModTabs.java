@@ -34,6 +34,9 @@ public class ModCreativeModTabs {
                     output.accept(ModItems.HAMMER.get());
                     output.accept(ModItems.WINGS_OF_DOOM.get());
                     output.accept(ModItems.SWIFTNESS_DAGGER.get());
+
+                    //RITUAL//
+                    output.accept(ModItems.SOUL_CORE.get());
             })
                 .build());
 

@@ -1,0 +1,14 @@
+{
+  "type": "simpleores:gravity_craft",
+  "tier": 1,
+  "time_per_tier": [200, 160, 80, 0],
+  "ingredients": [
+    { "item": "minecraft:nether_star", "count": 1 },
+    { "item": "minecraft:soul_sand", "count": 16 },
+    { "item": "minecraft:echo_shard", "count": 2 },
+    { "item": "minecraft:ghast_tear", "count": 4 }
+  ],
+  "result": {
+    "id": "weaponseffect:soul_core"
+  }
+}

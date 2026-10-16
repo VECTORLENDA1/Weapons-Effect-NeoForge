@@ -1,6 +1,7 @@
 package com.exoticmoss.weaponseffect.item;
 
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -39,6 +40,11 @@ public class ModItems {
     public static final DeferredItem<Item> SWIFTNESS_DAGGER = ITEMS.registerItem("swiftness_dagger", SwiftnessDaggerItem::new,
             p -> p.sword(ModToolTiers.SWIFTNESS_DAGGER, 4, -0.3F));
 
+
+    //RITUAL//
+    /// Spent in the Soul Ritual that raises the level of a weapon (see SoulRitualEntity).
+    public static final DeferredItem<Item> SOUL_CORE = ITEMS.registerItem("soul_core", Item::new,
+            p -> p.stacksTo(16).rarity(Rarity.EPIC));
 
     public static void Register(IEventBus eventBus) {
         ITEMS.register(eventBus);

@@ -52,6 +52,7 @@ public class JEIWeaponsEffectPlugin implements IModPlugin {
         weapons.put(ModItems.DARKNESS_MACE.get(), 2);
         weapons.put(ModItems.HAMMER.get(), 3);
         weapons.put(ModItems.WINGS_OF_DOOM.get(), 4);
+        weapons.put(ModItems.SOUL_CORE.get(), 1);
 
         weapons.forEach((weapon, tier) -> {
             String name = BuiltInRegistries.ITEM.getKey(weapon.asItem()).getPath();

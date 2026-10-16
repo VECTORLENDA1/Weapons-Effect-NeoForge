@@ -16,6 +16,8 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
 import com.exoticmoss.weaponseffect.item.ModItems;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
+import com.exoticmoss.weaponseffect.entity.custom.ShockwaveEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,9 +29,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/// The Wings of Doom ability: a black hole that grows, swallows blocks and pulls and kills everything around.
+///  - Level III and up: it pulls from further away.
+///  - Level V: when it collapses, beams of white light come out of it (like the death of the Ender Dragon)
+///    and at the end everyone that was in its pull area takes damage.
+///
+/// TABLES: one number for each level { I, II, III, IV, V }.
 public class BlackHoleEntity extends Entity {
-    public static final int DEFAULT_LIFETIME = 200;
-    public static final float DEFAULT_MAX_RADIUS = 10.0F;
+    /// Biggest size of the black hole (radius in blocks) and how long it lives (ticks, 20 = 1 second).
+    public static final float[] MAX_RADIUS = {10, 11, 12, 13, 15};
+    public static final int[] LIFETIME = {200, 220, 240, 260, 300};
+    /// How far it pulls: the size of the black hole times this number.
+    public static final float[] PULL_RANGE = {3, 3, 4, 4.5F, 5};
+    /// Levels where it collapses with beams of light, and the damage of the collapse.
+    public static final boolean[] COLLAPSE = {false, false, false, false, true};
+    public static final float COLLAPSE_DAMAGE = 60.0F;
 
 
     private static final float MIN_RADIUS = 0.5F;
@@ -39,6 +53,8 @@ public class BlackHoleEntity extends Entity {
 
 
     // Raio sincronizado entre servidor e cliente — ESSENCIAL para o renderer ver o crescimento
+    private static final EntityDataAccessor<Boolean> DATA_COLLAPSING =
+            SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> DATA_RADIUS =
             SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.FLOAT);
 
@@ -49,16 +65,18 @@ public class BlackHoleEntity extends Entity {
     private int holdTicksRemaining;
     private float maxRadius;
     private UUID ownerUUID;
+    private int weaponLevel = 1;
 
     public BlackHoleEntity(EntityType<? extends BlackHoleEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public BlackHoleEntity(Level world, double x, double y, double z, int lifetime, float maxRadius, UUID ownerUUID) {
+    public BlackHoleEntity(Level world, double x, double y, double z, int weaponLevel, UUID ownerUUID) {
         this(ModEntities.BLACK_HOLE.get(), world);
         this.setPos(x, y, z);
-        this.lifetime = lifetime;
-        this.maxRadius = maxRadius;
+        this.weaponLevel = weaponLevel;
+        this.lifetime = WeaponLevels.pick(LIFETIME, weaponLevel);
+        this.maxRadius = WeaponLevels.pick(MAX_RADIUS, weaponLevel);
         this.ownerUUID = ownerUUID;
         this.entityData.set(DATA_RADIUS, MIN_RADIUS);
     }
@@ -66,6 +84,12 @@ public class BlackHoleEntity extends Entity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
         pBuilder.define(DATA_RADIUS, MIN_RADIUS);
+        pBuilder.define(DATA_COLLAPSING, false);
+    }
+
+    /// true while it collapses with beams of light (level V).
+    public boolean isCollapsing() {
+        return this.entityData.get(DATA_COLLAPSING);
     }
 
     @Override
@@ -96,8 +120,10 @@ public class BlackHoleEntity extends Entity {
                 }
             }
             case SHRINKING -> {
+                if (COLLAPSE[weaponLevel - 1]) this.entityData.set(DATA_COLLAPSING, true);
                 radius = Math.max(radius - SHRINK_RATE, 0.0F);
                 if (radius <= 0.0F) {
+                    if (COLLAPSE[weaponLevel - 1] && this.level() instanceof ServerLevel level) collapse(level);
                     this.discard();
                     return;
                 }
@@ -118,7 +144,8 @@ public class BlackHoleEntity extends Entity {
 
     public void suckBlocksAndEntities() {
         float currentRadius = this.getCurrentRadius();
-        int range = (int) Math.ceil(getCurrentRadius() * 3);
+        float pull = WeaponLevels.pick(PULL_RANGE, weaponLevel);
+        int range = (int) Math.ceil(getCurrentRadius() * pull);
         BlockPos centerPos = this.blockPosition();
 
         List<BlockPos> blocksToRemove = new ArrayList<>();
@@ -152,9 +179,9 @@ public class BlackHoleEntity extends Entity {
             Vec3 directionToBlackHole = this.position().subtract(entity.position()).normalize();
             double distance = entity.distanceTo(this);
 
-            double innerZoneRadius = currentRadius * 1.5;
-            double middleZoneRadius = currentRadius * 2.25;
-            double outerZoneRadius = currentRadius * 3.0;
+            double innerZoneRadius = currentRadius * pull * 0.5;
+            double middleZoneRadius = currentRadius * pull * 0.75;
+            double outerZoneRadius = currentRadius * pull;
 
             double strength;
 
@@ -177,9 +204,33 @@ public class BlackHoleEntity extends Entity {
             double killRadius = currentRadius * 0.6;//Area of killradius insade the Black Hole
 
             if (distance <= killRadius && this.level() instanceof ServerLevel level) {
+                boolean wasAlive = target.isAlive();
                 annihilate(level, target);
+                if (wasAlive && target instanceof LivingEntity killed && getOwner(level) instanceof LivingEntity owner) {
+                    WeaponLevels.reward(owner, ModItems.WINGS_OF_DOOM.get(), killed);
+                }
             }
         }
+    }
+
+    /// The player who made the black hole (null if not online).
+    private Entity getOwner(ServerLevel level) {
+        return ownerUUID == null ? null : level.getEntity(ownerUUID);
+    }
+
+    /// Level V: at the end of the collapse, everyone in the pull area takes damage (not the owner,
+    /// nor players holding the Wings of Doom in the main hand).
+    private void collapse(ServerLevel level) {
+        double range = maxRadius * WeaponLevels.pick(PULL_RANGE, weaponLevel);
+        Entity owner = getOwner(level);
+        var source = owner instanceof Player player ? level.damageSources().playerAttack(player) : level.damageSources().magic();
+        for (LivingEntity mob : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(range))) {
+            if (mob == owner || mob.distanceTo(this) > range) continue;
+            if (mob instanceof Player player && player.getMainHandItem().is(ModItems.WINGS_OF_DOOM.get())) continue;
+            mob.hurtServer(level, source, COLLAPSE_DAMAGE);
+            if (owner instanceof LivingEntity livingOwner) WeaponLevels.reward(livingOwner, ModItems.WINGS_OF_DOOM.get(), mob);
+        }
+        ShockwaveEntity.spawn(level, this.position(), (float) range, 0x50E0D8FF);
     }
 
     /// Kills anything inside the black hole, no matter what: creative players, bosses, mobs with

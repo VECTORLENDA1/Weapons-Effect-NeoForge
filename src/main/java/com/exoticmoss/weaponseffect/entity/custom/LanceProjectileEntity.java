@@ -26,6 +26,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import org.jspecify.annotations.Nullable;
 
@@ -36,21 +39,34 @@ import java.util.List;
 /// Ability "Rain of Lances": the first time the thrown lance hits something (a mob or a block),
 /// lances fall from the sky around that place. Those falling lances can't be picked up and
 /// disappear a moment after landing.
+///  - Level III and up: the falling lances also give Weakness.
+///  - Level V: at the end a giant lance falls in the middle and explodes.
+///
+/// TABLES: one number for each level { I, II, III, IV, V }.
 public class LanceProjectileEntity extends AbstractArrow {
     // ---------------------------------------------------------------- Rain of Lances
-    /// How many lances fall.
-    public static final int RAIN_COUNT = 12;
-    /// Damage of each falling lance.
-    public static final float RAIN_DAMAGE = 6.0F;
-    /// Size of the rain: radius around the hit (blocks) and how high the lances start (blocks above the hit).
-    public static final float RAIN_RADIUS = 4.0F;
+    /// How many lances fall, and the damage of each one.
+    public static final int[] RAIN_COUNT = {12, 15, 18, 21, 25};
+    public static final float[] RAIN_DAMAGE = {6, 7, 8, 9, 10};
+    /// Size of the rain: radius around the hit (blocks).
+    public static final float[] RAIN_RADIUS = {4, 4.5F, 5, 5.5F, 6};
+    /// Weakness given by the falling lances (seconds, 0 = none; Weakness II).
+    public static final int[] WEAKNESS_SECONDS = {0, 0, 6, 8, 10};
+    /// Levels with the giant lance at the end.
+    public static final boolean[] GIANT_LANCE = {false, false, false, false, true};
+    /// The giant lance: its explosion (radius in blocks and damage), and how big it looks.
+    public static final float GIANT_RADIUS = 6.0F;
+    public static final float GIANT_DAMAGE = 40.0F;
+    public static final float GIANT_SCALE = 4.0F;
+    /// How high the lances start (blocks above the hit), how fast they fall (blocks per tick)
+    /// and how long they stay in the ground before disappearing (ticks).
     public static final float RAIN_HEIGHT = 12.0F;
-    /// How fast the lances fall (blocks per tick) and how long they stay in the ground before disappearing (ticks).
     public static final float RAIN_SPEED = 2.0F;
     public static final int RAIN_LANCE_LIFETIME = 30;
 
     private static final EntityDataAccessor<Byte> ID_LOYALTY = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Boolean> ID_FOIL = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> ID_GIANT = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     /// Damage done when the lance hits a mob.
     private static final float DAMAGE = 10.0F;
     private boolean dealtDamage;
@@ -58,6 +74,8 @@ public class LanceProjectileEntity extends AbstractArrow {
     private boolean isRainLance;
     /// true after this lance already made its rain.
     private boolean rainDone;
+    /// Level of the Lance that was thrown.
+    private int weaponLevel = 1;
     public int clientSideReturnTridentTickCount;
 
     public LanceProjectileEntity(EntityType<? extends LanceProjectileEntity> pEntityType, Level pLevel) {
@@ -66,6 +84,7 @@ public class LanceProjectileEntity extends AbstractArrow {
 
     public LanceProjectileEntity(Level pLevel, LivingEntity pShooter, ItemStack pPickupItemStack) {
         super(ModEntities.LANCE.get(), pShooter, pLevel, pPickupItemStack, null);
+        this.weaponLevel = WeaponLevels.level(pPickupItemStack);
         this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(pPickupItemStack));
         this.entityData.set(ID_FOIL, pPickupItemStack.hasFoil());
     }
@@ -82,26 +101,47 @@ public class LanceProjectileEntity extends AbstractArrow {
         super.defineSynchedData(pBuilder);
         pBuilder.define(ID_LOYALTY, (byte)0);
         pBuilder.define(ID_FOIL, false);
+        pBuilder.define(ID_GIANT, false);
     }
 
-    /// The ability: lances fall from the sky around this place.
+    /// true for the giant lance of level V (drawn bigger).
+    public boolean isGiant() {
+        return this.entityData.get(ID_GIANT);
+    }
+
+    /// The ability: lances fall from the sky around this place (and the giant lance at level V).
     private void startRain(ServerLevel level, Vec3 center) {
         rainDone = true;
-        for (int i = 0; i < RAIN_COUNT; i++) {
+        float radius = WeaponLevels.pick(RAIN_RADIUS, weaponLevel);
+        for (int i = 0; i < WeaponLevels.pick(RAIN_COUNT, weaponLevel); i++) {
             // A random place inside the circle, and a random height so they don't all land at once
             double angle = level.getRandom().nextDouble() * Math.PI * 2;
-            double distance = Math.sqrt(level.getRandom().nextDouble()) * RAIN_RADIUS;
+            double distance = Math.sqrt(level.getRandom().nextDouble()) * radius;
             double height = RAIN_HEIGHT + level.getRandom().nextDouble() * 6;
-            LanceProjectileEntity lance = new LanceProjectileEntity(level,
-                    center.x + Math.cos(angle) * distance, center.y + height, center.z + Math.sin(angle) * distance,
-                    new ItemStack(ModItems.LANCE.get()));
-            lance.isRainLance = true;
-            lance.setOwner(this.getOwner());
-            lance.pickup = Pickup.DISALLOWED;
-            lance.shoot(0, -1, 0, RAIN_SPEED, 2.0F);
-            level.addFreshEntity(lance);
+            spawnFalling(level, center.add(Math.cos(angle) * distance, height, Math.sin(angle) * distance), false);
         }
+        // The giant lance starts higher, so it lands last
+        if (GIANT_LANCE[weaponLevel - 1]) spawnFalling(level, center.add(0, RAIN_HEIGHT + 14, 0), true);
         level.playSound(null, center.x, center.y, center.z, SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 1.0F, 1.4F);
+    }
+
+    private void spawnFalling(ServerLevel level, Vec3 at, boolean giant) {
+        LanceProjectileEntity lance = new LanceProjectileEntity(level, at.x, at.y, at.z, new ItemStack(ModItems.LANCE.get()));
+        lance.isRainLance = true;
+        lance.weaponLevel = weaponLevel;
+        lance.entityData.set(ID_GIANT, giant);
+        lance.setOwner(this.getOwner());
+        lance.pickup = Pickup.DISALLOWED;
+        lance.shoot(0, -1, 0, RAIN_SPEED, giant ? 0 : 2.0F);
+        level.addFreshEntity(lance);
+    }
+
+    /// The giant lance explodes when it lands (damage only, no blocks broken).
+    private void giantExplosion(ServerLevel level) {
+        if (!(this.getOwner() instanceof LivingEntity owner)) return;
+        ShockwaveEntity.blast(level, this.position(), GIANT_RADIUS, 0x70D0D8FF, 0,
+                new ShockwaveEntity.Blast(owner, ModItems.LANCE.get(), GIANT_DAMAGE, 0.6, 0.6, 0));
+        this.discard();
     }
 
     @Override
@@ -177,14 +217,20 @@ public class LanceProjectileEntity extends AbstractArrow {
     @Override
     protected void onHitBlock(BlockHitResult hitResult) {
         super.onHitBlock(hitResult);
-        if (!isRainLance && !rainDone && this.level() instanceof ServerLevel level) startRain(level, hitResult.getLocation());
+        if (!(this.level() instanceof ServerLevel level)) return;
+        if (isGiant()) giantExplosion(level);
+        else if (!isRainLance && !rainDone) startRain(level, hitResult.getLocation());
     }
 
     @Override
     protected void onHitEntity(EntityHitResult pResult) {
         Entity entity = pResult.getEntity();
+        if (isGiant() && this.level() instanceof ServerLevel level) {
+            giantExplosion(level);
+            return;
+        }
         if (!isRainLance && !rainDone && this.level() instanceof ServerLevel level) startRain(level, entity.position());
-        float damage = isRainLance ? RAIN_DAMAGE : DAMAGE;
+        float damage = isRainLance ? WeaponLevels.pick(RAIN_DAMAGE, weaponLevel) : DAMAGE;
         Entity owner = this.getOwner();
         DamageSource damagesource = this.damageSources().trident(this, owner == null ? this : owner);
         if (this.level() instanceof ServerLevel serverlevel) {
@@ -204,6 +250,9 @@ public class LanceProjectileEntity extends AbstractArrow {
             if (entity instanceof LivingEntity livingentity) {
                 this.doKnockback(livingentity, damagesource);
                 this.doPostHurtEffects(livingentity);
+                int weakness = WeaponLevels.pick(WEAKNESS_SECONDS, weaponLevel);
+                if (isRainLance && weakness > 0) livingentity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, weakness * 20, 1), owner);
+                if (owner instanceof LivingEntity livingOwner) WeaponLevels.reward(livingOwner, ModItems.LANCE.get(), livingentity);
             }
         }
 

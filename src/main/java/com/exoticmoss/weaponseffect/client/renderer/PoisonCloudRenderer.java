@@ -12,7 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 
 /// Draws the poison cloud in 3D: many green puffs of smoke (lumpy balls) that move slowly
-/// and fill the size of the cloud (PoisonCloudEntity.RADIUS and HEIGHT).
+/// and fill the size of the cloud (the RADIUS and HEIGHT of its level in PoisonCloudEntity).
 public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, PoisonCloudRenderer.State> {
     /// How many puffs make the cloud. More = fuller cloud (but slower to draw).
     private static final int PUFFS = 16;
@@ -21,7 +21,7 @@ public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, Poiso
     private static final int INSIDE = 0x80307020;
 
     public static class State extends EntityRenderState {
-        float size, opacity, time;
+        float size, opacity, time, radius, height;
     }
 
     public PoisonCloudRenderer(EntityRendererProvider.Context context) {
@@ -38,13 +38,15 @@ public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, Poiso
         super.extractRenderState(entity, state, partialTicks);
         state.size = entity.getSize(partialTicks);
         state.opacity = entity.getOpacity(partialTicks);
+        state.radius = entity.getRadius();
+        state.height = entity.getHeight();
         state.time = entity.tickCount + partialTicks;
     }
 
     // The cloud is much bigger than the entity: without this it disappears when the entity is off screen
     @Override
     protected AABB getBoundingBoxForCulling(PoisonCloudEntity entity) {
-        return super.getBoundingBoxForCulling(entity).inflate(PoisonCloudEntity.RADIUS, PoisonCloudEntity.HEIGHT, PoisonCloudEntity.RADIUS);
+        return super.getBoundingBoxForCulling(entity).inflate(entity.getRadius(), entity.getHeight(), entity.getRadius());
     }
 
     @Override
@@ -52,8 +54,8 @@ public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, Poiso
         if (state.size <= 0.01F || state.opacity <= 0.01F) return;
         int outside = fade(OUTSIDE, state.opacity);
         int inside = fade(INSIDE, state.opacity);
-        float radius = PoisonCloudEntity.RADIUS * state.size;
-        float height = PoisonCloudEntity.HEIGHT * state.size;
+        float radius = state.radius * state.size;
+        float height = state.height * state.size;
 
         for (int i = 0; i < PUFFS; i++) {
             // Each puff has its own place (spread like a sunflower) and slowly turns around the middle

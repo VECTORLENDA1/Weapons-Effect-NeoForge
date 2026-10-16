@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.level.Abilities;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import com.exoticmoss.weaponseffect.entity.custom.PoisonCloudEntity;
 import net.minecraft.ChatFormatting;
@@ -23,8 +24,8 @@ import java.util.function.Consumer;
 /// Ability "Poison Cloud": right-click to make a poison cloud where you aim
 /// (size, duration and poison in PoisonCloudEntity).
 public class PoisonSwordItem extends Item implements AbilityWeapon {
-    /// Time between two uses of the ability (ticks, 20 = 1 second).
-    private static final int COOLDOWN_TICKS = 200;
+    /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
+    private static final int[] COOLDOWN_TICKS = {200, 180, 160, 140, 0};
     /// Poison of a hit: seconds and level.
     private static final int HIT_POISON_SECONDS = 10;
     private static final int HIT_POISON_AMPLIFIER = 100;
@@ -42,14 +43,8 @@ public class PoisonSwordItem extends Item implements AbilityWeapon {
     // Right-click: the ability
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.getCooldowns().isOnCooldown(stack)) {
-            if (!level.isClientSide()) player.sendOverlayMessage(Component.translatable("item.poison.sword.cooldown"));
-            return InteractionResult.FAIL;
-        }
-        player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
-        if (level instanceof ServerLevel serverLevel) PoisonCloudEntity.launch(serverLevel, player);
-        return InteractionResult.SUCCESS;
+        return Abilities.use(level, player, hand, COOLDOWN_TICKS, "item.poison.sword.cooldown",
+                (server, user, weapon, weaponLevel) -> PoisonCloudEntity.launch(server, user, weaponLevel));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,8 @@ import java.util.function.Consumer;
 
 public class WingsOfDoomItem extends Item implements AbilityWeapon {
     /// Cooldown of the black hole ability (in ticks, 20 = 1 second)
-    private static final int COOLDOWN_TICKS = 300;
+    /// Time between two black holes for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
+    private static final int[] COOLDOWN_TICKS = {300, 260, 220, 180, 0};
 
     public WingsOfDoomItem(Properties pProperties) {
         super(pProperties);
@@ -83,6 +85,7 @@ public class WingsOfDoomItem extends Item implements AbilityWeapon {
         if (player.getCooldowns().isOnCooldown(stack)) {
             return InteractionResult.FAIL;
         }
+        int weaponLevel = WeaponLevels.level(stack);
 
         if (!world.isClientSide()) {
             Vec3 lookVec = player.getLookAngle();
@@ -101,21 +104,13 @@ public class WingsOfDoomItem extends Item implements AbilityWeapon {
             }
 
 
-            int lifetime = BlackHoleEntity.DEFAULT_LIFETIME;
-            float maxRadius = BlackHoleEntity.DEFAULT_MAX_RADIUS;
-
-            BlackHoleEntity blackHole = new BlackHoleEntity(
-                    world,
-                    spawnPosition.x, spawnPosition.y, spawnPosition.z,
-                    lifetime,
-                    maxRadius,
-                    player.getUUID()
-            );
+            BlackHoleEntity blackHole = new BlackHoleEntity(world, spawnPosition.x, spawnPosition.y, spawnPosition.z, weaponLevel, player.getUUID());
 
             world.addFreshEntity(blackHole);
 
             //Cooldown of the black hole ability
-            player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
+            int cooldown = WeaponLevels.pick(COOLDOWN_TICKS, weaponLevel);
+            if (cooldown > 0) player.getCooldowns().addCooldown(stack, cooldown);
         }
         return InteractionResult.SUCCESS;
     }

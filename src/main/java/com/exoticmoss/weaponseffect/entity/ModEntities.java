@@ -41,7 +41,7 @@ public class ModEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<PoisonCloudEntity>> POISON_CLOUD =
             ENTITY_TYPES.registerEntityType("poison_cloud", PoisonCloudEntity::new, MobCategory.MISC,
-                    builder -> builder.sized(1.0F, 1.0F).noLootTable().clientTrackingRange(8).updateInterval(20));
+                    builder -> builder.sized(1.0F, 1.0F).noLootTable().clientTrackingRange(8).updateInterval(2));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ShockwaveEntity>> SHOCKWAVE =
             ENTITY_TYPES.registerEntityType("shockwave", ShockwaveEntity::new, MobCategory.MISC,

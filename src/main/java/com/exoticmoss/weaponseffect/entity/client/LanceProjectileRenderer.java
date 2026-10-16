@@ -15,7 +15,12 @@ import net.minecraft.world.phys.AABB;
 import com.exoticmoss.weaponseffect.entity.custom.LanceProjectileEntity;
 
 /// Draws the thrown Lance (same idea as the vanilla ThrownTridentRenderer).
-public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntity, ThrownTridentRenderState> {
+public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntity, LanceProjectileRenderer.State> {
+    /// The render state of the trident, plus the size (the giant lance of level V is bigger).
+    public static class State extends ThrownTridentRenderState {
+        float scale = 1;
+    }
+
     private final LanceProjectileModel model;
 
     public LanceProjectileRenderer(EntityRendererProvider.Context pContext) {
@@ -24,8 +29,9 @@ public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntit
     }
 
     @Override
-    public void submit(ThrownTridentRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
+        poseStack.scale(state.scale, state.scale, state.scale);
         poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot - 90.0F));
         collector.order(0).submitModel(this.model, Unit.INSTANCE, poseStack, LanceProjectileModel.TEXTURE,
@@ -41,19 +47,20 @@ public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntit
 
     @Override
     protected AABB getBoundingBoxForCulling(LanceProjectileEntity entity) {
-        return super.getBoundingBoxForCulling(entity).inflate(2.5);
+        return super.getBoundingBoxForCulling(entity).inflate(entity.isGiant() ? 2.5 * LanceProjectileEntity.GIANT_SCALE : 2.5);
     }
 
     @Override
-    public ThrownTridentRenderState createRenderState() {
-        return new ThrownTridentRenderState();
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public void extractRenderState(LanceProjectileEntity entity, ThrownTridentRenderState state, float partialTicks) {
+    public void extractRenderState(LanceProjectileEntity entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.yRot = entity.getYRot(partialTicks);
         state.xRot = entity.getXRot(partialTicks);
         state.isFoil = entity.isFoil();
+        state.scale = entity.isGiant() ? LanceProjectileEntity.GIANT_SCALE : 1;
     }
 }

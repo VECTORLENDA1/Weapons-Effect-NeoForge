@@ -15,6 +15,7 @@ import net.minecraft.resources.Identifier;
 import com.exoticmoss.weaponseffect.entity.BlackHoleEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHoleRenderer.State> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("weaponseffect", "textures/entity/black_hole/black_hole.png");
@@ -38,9 +39,17 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHole
 
     /// What the drawing needs, copied from the entity
     /// (Minecraft first "reads" the entity, then "draws" it in a separate step).
+    /// Beams of light when it collapses (Wings of Doom level V), like the death of the Ender Dragon:
+    /// how many, how long (blocks) and their colors (0xAARRGGBB) in the middle and at the tip.
+    private static final int BEAMS = 24;
+    private static final float BEAM_LENGTH = 9.0F;
+    private static final int BEAM_CENTER = 0xE0FFFFFF;
+    private static final int BEAM_TIP = 0x00B080FF;
+
     public static class State extends EntityRenderState {
         float radius;
         float time;
+        boolean collapsing;
     }
 
     public BlackHoleRenderer(EntityRendererProvider.Context context) {
@@ -57,12 +66,13 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHole
         super.extractRenderState(entity, state, partialTicks);
         state.radius = entity.getCurrentRadius();
         state.time = entity.tickCount + partialTicks;
+        state.collapsing = entity.isCollapsing();
     }
 
     // The sphere is much bigger than the entity's hitbox: without this it disappears when the hitbox is off screen
     @Override
     protected AABB getBoundingBoxForCulling(BlackHoleEntity entity) {
-        return super.getBoundingBoxForCulling(entity).inflate(entity.getCurrentRadius() * RING_OUTER * 0.5f);
+        return super.getBoundingBoxForCulling(entity).inflate(Math.max(entity.getCurrentRadius() * RING_OUTER * 0.5f, BEAM_LENGTH));
     }
 
     @Override
@@ -84,7 +94,37 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity, BlackHole
         poseStack.popPose();
 
         poseStack.popPose();
+
+        if (state.collapsing) {
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 3));
+            collector.submitCustomGeometry(poseStack, RING_TYPE, (pose, v) -> renderBeams(pose, v, state.time));
+            poseStack.popPose();
+        }
         super.submit(state, poseStack, collector, camera);
+    }
+
+    /// Beams of light going out of the middle in every direction (always the same directions, so they don't jump).
+    private static void renderBeams(PoseStack.Pose pose, VertexConsumer v, float time) {
+        java.util.Random random = new java.util.Random(432L);
+        for (int i = 0; i < BEAMS; i++) {
+            Vector3f dir = new Vector3f(random.nextFloat() * 2 - 1, random.nextFloat() * 2 - 1, random.nextFloat() * 2 - 1).normalize();
+            Vector3f side = new Vector3f(dir).cross(Math.abs(dir.y) < 0.9F ? new Vector3f(0, 1, 0) : new Vector3f(1, 0, 0)).normalize();
+            float length = BEAM_LENGTH * (0.6F + 0.4F * (float) Math.sin(time * 0.2F + i));
+            float width = length * 0.12F;
+            Vector3f tip = new Vector3f(dir).mul(length);
+            Vector3f a = new Vector3f(tip).add(new Vector3f(side).mul(width));
+            Vector3f b = new Vector3f(tip).sub(new Vector3f(side).mul(width));
+            // a thin triangle from the middle, seen from both sides
+            Shapes.vertex(pose, v, 0, 0, 0, BEAM_CENTER, FULL_BRIGHT, 0, 1, 0);
+            Shapes.vertex(pose, v, a.x, a.y, a.z, BEAM_TIP, FULL_BRIGHT, 0, 1, 0);
+            Shapes.vertex(pose, v, b.x, b.y, b.z, BEAM_TIP, FULL_BRIGHT, 0, 1, 0);
+            Shapes.vertex(pose, v, 0, 0, 0, BEAM_CENTER, FULL_BRIGHT, 0, 1, 0);
+            Shapes.vertex(pose, v, 0, 0, 0, BEAM_CENTER, FULL_BRIGHT, 0, -1, 0);
+            Shapes.vertex(pose, v, b.x, b.y, b.z, BEAM_TIP, FULL_BRIGHT, 0, -1, 0);
+            Shapes.vertex(pose, v, a.x, a.y, a.z, BEAM_TIP, FULL_BRIGHT, 0, -1, 0);
+            Shapes.vertex(pose, v, 0, 0, 0, BEAM_CENTER, FULL_BRIGHT, 0, -1, 0);
+        }
     }
 
     /// A flat ring (visible from both sides) going from the inner color to the outer color.

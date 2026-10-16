@@ -74,6 +74,18 @@ public final class WeaponLevels {
         return ItemStack.EMPTY;
     }
 
+    /// The weapon of this kind the entity has: in the hands first, then anywhere in a player's inventory
+    /// (the ability can still be hitting after the player changed item). Empty if none.
+    public static ItemStack find(LivingEntity entity, Item weapon) {
+        ItemStack stack = held(entity, weapon);
+        if (stack.isEmpty() && entity instanceof Player player) {
+            for (ItemStack slot : player.getInventory()) {
+                if (slot.is(weapon)) return slot;
+            }
+        }
+        return stack;
+    }
+
     /// Level of the weapon of this kind the entity is holding (1 if it has none).
     public static int levelOf(LivingEntity entity, Item weapon) {
         ItemStack stack = held(entity, weapon);
@@ -84,7 +96,7 @@ public final class WeaponLevels {
     /// The weapon (in the hand of the owner) gets experience.
     public static void reward(LivingEntity owner, Item weapon, LivingEntity target) {
         if (owner == null || target == owner || owner.level().isClientSide()) return;
-        addXp(owner, held(owner, weapon), XP_PER_HIT + (target.isDeadOrDying() ? XP_PER_KILL : 0));
+        addXp(owner, find(owner, weapon), XP_PER_HIT + (target.isDeadOrDying() ? XP_PER_KILL : 0));
     }
 
     /// Call it when the weapon hits a mob with a normal hit (left-click).

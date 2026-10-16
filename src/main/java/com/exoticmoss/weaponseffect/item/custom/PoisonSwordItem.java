@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /// (size, duration and poison in PoisonCloudEntity).
 public class PoisonSwordItem extends Item implements AbilityWeapon {
     /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
-    private static final int[] COOLDOWN_TICKS = {200, 180, 160, 140, 0};
+    public static final int[] COOLDOWN_TICKS = {200, 180, 160, 140, 0};
     /// Poison of a hit: seconds and level.
     private static final int HIT_POISON_SECONDS = 10;
     private static final int HIT_POISON_AMPLIFIER = 100;

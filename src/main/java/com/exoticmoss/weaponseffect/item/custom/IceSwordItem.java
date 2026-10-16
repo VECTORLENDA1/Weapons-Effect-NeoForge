@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /// (amount, damage and the effects of each level in IceShardEntity).
 public class IceSwordItem extends Item implements AbilityWeapon {
     /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
-    private static final int[] COOLDOWN_TICKS = {60, 50, 40, 30, 0};
+    public static final int[] COOLDOWN_TICKS = {60, 50, 40, 30, 0};
     /// Freezing of a hit: how long it lasts (seconds) and the level of the Slowness.
     private static final int HIT_FREEZE_SECONDS = 5;
     private static final int HIT_SLOWNESS_AMPLIFIER = 100;

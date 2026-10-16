@@ -35,7 +35,7 @@ public class HammerItem extends Item implements AbilityWeapon {
 
     // ---------------------------------------------------------------- ability
     /// Time between two explosions (ticks, 20 = 1 second).
-    private static final int[] COOLDOWN_TICKS = {50, 45, 40, 35, 0};
+    public static final int[] COOLDOWN_TICKS = {50, 45, 40, 35, 0};
     /// Size of the explosion (radius in blocks) and the damage to every mob inside. The 3D shockwave has the same size.
     private static final float[] EXPLOSION_RADIUS = {7.5F, 8.5F, 9.5F, 10.5F, 12};
     private static final float[] EXPLOSION_DAMAGE = {40, 45, 50, 55, 65};

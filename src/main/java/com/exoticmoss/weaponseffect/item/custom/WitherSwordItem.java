@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 public class WitherSwordItem extends Item implements AbilityWeapon {
     /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
-    private static final int[] COOLDOWN_TICKS = {40, 35, 30, 25, 0};
+    public static final int[] COOLDOWN_TICKS = {40, 35, 30, 25, 0};
 
     public WitherSwordItem(Properties pProperties) {
         super(pProperties);

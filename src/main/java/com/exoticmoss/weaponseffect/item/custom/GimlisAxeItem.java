@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 public class GimlisAxeItem extends Item implements AbilityWeapon {
     /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
-    private static final int[] COOLDOWN_TICKS = {60, 50, 40, 30, 0};
+    public static final int[] COOLDOWN_TICKS = {60, 50, 40, 30, 0};
 
     public GimlisAxeItem(Properties pProperties) {
         super(pProperties);

@@ -3,6 +3,7 @@ package com.exoticmoss.weaponseffect.ritual;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.entity.custom.ShockwaveEntity;
 import com.exoticmoss.weaponseffect.item.ModItems;
+import com.exoticmoss.weaponseffect.level.LevelUpChanges;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -83,8 +84,9 @@ public class SoulRitualEntity extends Entity {
     public static final int OPENING_TICKS = 40;
     public static final int WAVE_DELAY_TICKS = 60;
     public static final int FINISH_TICKS = 60;
-    /// Height of the floating weapon above the core (blocks).
-    public static final double WEAPON_HEIGHT = 2.5;
+    /// Height of the floating weapon above the bottom of the core (blocks). The biggest core (Black Hole)
+    /// with its glow is about 3 blocks tall, so the weapon floats above it.
+    public static final double WEAPON_HEIGHT = 4.2;
 
     // ---------------------------------------------------------------- state
     private static final EntityDataAccessor<ItemStack> DATA_WEAPON = SynchedEntityData.defineId(SoulRitualEntity.class, EntityDataSerializers.ITEM_STACK);
@@ -143,7 +145,7 @@ public class SoulRitualEntity extends Entity {
             return;
         }
         int cores = SOUL_CORES_NEEDED[weaponLevel - 1];
-        if (countSoulCores(player) < cores && !player.hasInfiniteMaterials()) {
+        if (countSoulCores(player) < cores) {
             fail(player, "weaponseffect.ritual.cores", cores);
             return;
         }
@@ -153,8 +155,8 @@ public class SoulRitualEntity extends Entity {
             return;
         }
 
-        // Start: the Soul Cores are used, the weapon goes to float above the core
-        if (!player.hasInfiniteMaterials()) useSoulCores(player, cores);
+        // Start: the Soul Cores are used (also in creative), the weapon goes to float above the core
+        useSoulCores(player, cores);
         SoulRitualEntity ritual = new SoulRitualEntity(ModEntities.SOUL_RITUAL.get(), level);
         ritual.ownerId = player.getUUID();
         ritual.weaponLevel = weaponLevel;
@@ -335,7 +337,7 @@ public class SoulRitualEntity extends Entity {
         while (iterator.hasNext()) {
             Entity entity = level.getEntity(iterator.next());
             if (!(entity instanceof Mob mob) || !mob.isAlive()) {
-                if (entity instanceof LivingEntity dead && dead.isDeadOrDying()) SoulEntity.spawn(level, dead.position(), weaponPosition());
+                if (entity instanceof LivingEntity dead && dead.isDeadOrDying()) SoulEntity.spawn(level, dead.position(), this);
                 iterator.remove();
                 continue;
             }
@@ -378,8 +380,9 @@ public class SoulRitualEntity extends Entity {
     private void succeed(ServerLevel level, ServerPlayer owner) {
         ItemStack weapon = getWeapon().copy();
         WeaponLevels.set(weapon, weaponLevel + 1, 0);
+        // The name and the news are read before giving the weapon back (giving it empties this stack)
+        LevelUpChanges.tell(owner, weapon, weaponLevel, weaponLevel + 1);
         giveBack(level, owner, weapon);
-        owner.sendSystemMessage(Component.translatable("weaponseffect.ritual.success", weapon.getHoverName(), weaponLevel + 1).withStyle(ChatFormatting.LIGHT_PURPLE));
         level.playSound(null, this.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 1.5F, 1.0F);
         ShockwaveEntity.spawn(level, this.position(), DOME_RADIUS, 0x6040E0FF);
         end(level);

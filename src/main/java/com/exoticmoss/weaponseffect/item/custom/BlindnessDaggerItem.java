@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 public class BlindnessDaggerItem extends Item implements AbilityWeapon {
     /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
-    private static final int[] COOLDOWN_TICKS = {300, 260, 220, 180, 0};
+    public static final int[] COOLDOWN_TICKS = {300, 260, 220, 180, 0};
 
     public BlindnessDaggerItem(Properties pProperties) {
         super(pProperties);

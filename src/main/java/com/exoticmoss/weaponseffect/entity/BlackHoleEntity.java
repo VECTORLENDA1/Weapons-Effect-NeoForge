@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect.entity;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -142,6 +143,11 @@ public class BlackHoleEntity extends Entity {
         return this.entityData.get(DATA_RADIUS);
     }
 
+    /// The Gravity Cores of Simple Ores are never destroyed by the black hole.
+    private static boolean isGravityCore(BlockState state) {
+        return BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString().startsWith("simpleores:gravity_core_");
+    }
+
     public void suckBlocksAndEntities() {
         float currentRadius = this.getCurrentRadius();
         float pull = WeaponLevels.pick(PULL_RANGE, weaponLevel);
@@ -153,7 +159,7 @@ public class BlackHoleEntity extends Entity {
             double distance = Math.sqrt(pos.distSqr(centerPos));
             if (distance <= currentRadius) {
                 BlockState state = this.level().getBlockState(pos);
-                if (!state.isAir()) {
+                if (!state.isAir() && !isGravityCore(state)) {
                     if (isLiquid(state)) {
                         this.level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
                     } else if (state.getDestroySpeed(this.level(), pos) >= 0) {

@@ -1,6 +1,12 @@
 package com.exoticmoss.weaponseffect.item;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -42,9 +48,15 @@ public class ModItems {
 
 
     //RITUAL//
+    /// Damage the Soul Core dropped as an item never takes (fire, lava, explosions, lightning, cactus...).
+    /// The list is in data/weaponseffect/tags/damage_type/soul_core_immune.json
+    public static final TagKey<DamageType> SOUL_CORE_IMMUNE =
+            TagKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(MODID, "soul_core_immune"));
+
     /// Spent in the Soul Ritual that raises the level of a weapon (see SoulRitualEntity).
     public static final DeferredItem<Item> SOUL_CORE = ITEMS.registerItem("soul_core", Item::new,
-            p -> p.stacksTo(16).rarity(Rarity.EPIC));
+            p -> p.stacksTo(16).rarity(Rarity.EPIC).delayedComponent(DataComponents.DAMAGE_RESISTANT,
+                    context -> new DamageResistant(context.getOrThrow(SOUL_CORE_IMMUNE))));
 
     public static void Register(IEventBus eventBus) {
         ITEMS.register(eventBus);

@@ -1,8 +1,5 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
-import java.util.UUID;
-import org.jspecify.annotations.Nullable;
-import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.item.custom.WitherSwordItem;
@@ -34,11 +31,7 @@ import net.minecraft.world.phys.Vec3;
 /// dropped items. It never hurts the player who launched the skulls, nor anyone holding a Wither Sword.
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class WitherRainSkull extends WitherSkull implements EntityLimit.Mergeable {
-    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
-    /// Over this, new ones give their power to the closest one instead of being created.
-    public static final int MAX_ALIVE = 40;
-
+public class WitherRainSkull extends WitherSkull {
     /// How many skulls are launched each time.
     public static final int[] SKULL_COUNT = {6, 8, 10, 12, 14};
     /// Damage to the mob hit by the skull.
@@ -60,8 +53,6 @@ public class WitherRainSkull extends WitherSkull implements EntityLimit.Mergeabl
     public static final double SPEED = 0.6;
 
     private int weaponLevel = 1;
-    /// How many projectiles this one counts as (it does their damage too, see EntityLimit).
-    private int power = 1;
 
     public WitherRainSkull(EntityType<? extends WitherRainSkull> type, Level level) {
         super(type, level);
@@ -83,7 +74,7 @@ public class WitherRainSkull extends WitherSkull implements EntityLimit.Mergeabl
             skull.setPos(start.x, start.y, start.z);
             Vec3 spread = new Vec3(level.getRandom().nextDouble() * 0.5 - 0.25, 0, level.getRandom().nextDouble() * 0.5 - 0.25);
             skull.setDeltaMovement(forward.add(spread).normalize().scale(SPEED));
-            EntityLimit.spawnOrMerge(level, skull, MAX_ALIVE);
+            level.addFreshEntity(skull);
         }
         level.playSound(null, owner.blockPosition(), SoundEvents.WITHER_SHOOT, SoundSource.PLAYERS, 0.6F, 1.2F);
     }
@@ -128,7 +119,7 @@ public class WitherRainSkull extends WitherSkull implements EntityLimit.Mergeabl
     @Override
     protected void onHitEntity(EntityHitResult hitResult) {
         if (!(this.level() instanceof ServerLevel level)) return;
-        if (hitResult.getEntity().hurtServer(level, damageSource(), WeaponLevels.pick(DAMAGE, weaponLevel) * power)
+        if (hitResult.getEntity().hurtServer(level, damageSource(), WeaponLevels.pick(DAMAGE, weaponLevel))
                 && hitResult.getEntity() instanceof LivingEntity target) {
             wither(target);
             reward(target);
@@ -153,7 +144,7 @@ public class WitherRainSkull extends WitherSkull implements EntityLimit.Mergeabl
         level.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
         level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.4F, 1.4F);
         float radius = WeaponLevels.pick(EXPLOSION_RADIUS, weaponLevel);
-        float damage = WeaponLevels.pick(EXPLOSION_DAMAGE, weaponLevel) * power;
+        float damage = WeaponLevels.pick(EXPLOSION_DAMAGE, weaponLevel);
         if (radius <= 0 || damage <= 0) return;
 
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(radius))) {
@@ -184,15 +175,5 @@ public class WitherRainSkull extends WitherSkull implements EntityLimit.Mergeabl
     private static boolean isHoldingWitherSword(LivingEntity entity) {
         return entity.getMainHandItem().getItem() instanceof WitherSwordItem
                 || entity.getOffhandItem().getItem() instanceof WitherSwordItem;
-    }
-
-    @Override
-    public @Nullable UUID abilityOwnerId() {
-        return this.getOwner() == null ? null : this.getOwner().getUUID();
-    }
-
-    @Override
-    public void absorb(int count) {
-        power += count;
     }
 }

@@ -1,7 +1,5 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
-import java.util.UUID;
-import com.exoticmoss.weaponseffect.util.EntityLimit;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -45,11 +43,7 @@ import java.util.List;
 ///  - Level V: at the end a giant lance falls in the middle and explodes.
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class LanceProjectileEntity extends AbstractArrow implements EntityLimit.Mergeable {
-    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
-    /// Over this, new ones give their power to the closest one instead of being created.
-    public static final int MAX_ALIVE = 60;
-
+public class LanceProjectileEntity extends AbstractArrow {
     // ---------------------------------------------------------------- Rain of Lances
     /// How many lances fall, and the damage of each one.
     public static final int[] RAIN_COUNT = {12, 15, 18, 21, 25};
@@ -78,8 +72,6 @@ public class LanceProjectileEntity extends AbstractArrow implements EntityLimit.
     private boolean dealtDamage;
     /// true for the lances of the rain (they don't make another rain).
     private boolean isRainLance;
-    /// How many projectiles this one counts as (it does their damage too, see EntityLimit).
-    private int power = 1;
     /// true after this lance already made its rain.
     private boolean rainDone;
     /// Level of the Lance that was thrown.
@@ -141,9 +133,7 @@ public class LanceProjectileEntity extends AbstractArrow implements EntityLimit.
         lance.setOwner(this.getOwner());
         lance.pickup = Pickup.DISALLOWED;
         lance.shoot(0, -1, 0, RAIN_SPEED, giant ? 0 : 2.0F);
-        // The giant lance is always created; the rain lances follow the limit
-        if (giant) level.addFreshEntity(lance);
-        else EntityLimit.spawnOrMerge(level, lance, MAX_ALIVE);
+        level.addFreshEntity(lance);
     }
 
     /// The giant lance explodes when it lands (damage only, no blocks broken).
@@ -240,7 +230,7 @@ public class LanceProjectileEntity extends AbstractArrow implements EntityLimit.
             return;
         }
         if (!isRainLance && !rainDone && this.level() instanceof ServerLevel level) startRain(level, entity.position());
-        float damage = (isRainLance ? WeaponLevels.pick(RAIN_DAMAGE, weaponLevel) : DAMAGE) * power;
+        float damage = isRainLance ? WeaponLevels.pick(RAIN_DAMAGE, weaponLevel) : DAMAGE;
         Entity owner = this.getOwner();
         DamageSource damagesource = this.damageSources().trident(this, owner == null ? this : owner);
         if (this.level() instanceof ServerLevel serverlevel) {
@@ -346,15 +336,5 @@ public class LanceProjectileEntity extends AbstractArrow implements EntityLimit.
     @Override
     public boolean shouldRender(double pX, double pY, double pZ) {
         return true;
-    }
-
-    @Override
-    public @Nullable UUID abilityOwnerId() {
-        return this.getOwner() == null ? null : this.getOwner().getUUID();
-    }
-
-    @Override
-    public void absorb(int count) {
-        power += count;
     }
 }

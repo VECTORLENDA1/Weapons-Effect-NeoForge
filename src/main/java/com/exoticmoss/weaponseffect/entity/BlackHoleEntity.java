@@ -1,7 +1,5 @@
 package com.exoticmoss.weaponseffect.entity;
 
-import org.jspecify.annotations.Nullable;
-import com.exoticmoss.weaponseffect.util.EntityLimit;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -38,11 +36,7 @@ import java.util.UUID;
 ///    and at the end everyone that was in its pull area takes damage.
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class BlackHoleEntity extends Entity implements EntityLimit.Owned {
-    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
-    /// Over this, the oldest one disappears when a new one is made.
-    public static final int MAX_ALIVE = 3;
-
+public class BlackHoleEntity extends Entity {
     /// Biggest size of the black hole (radius in blocks) and how long it lives (ticks, 20 = 1 second).
     public static final float[] MAX_RADIUS = {10, 11, 12, 13, 15};
     public static final int[] LIFETIME = {200, 220, 240, 260, 300};
@@ -303,10 +297,5 @@ public class BlackHoleEntity extends Entity implements EntityLimit.Owned {
 
     private boolean isLiquid(BlockState state) {
         return !state.getFluidState().isEmpty();
-    }
-
-    @Override
-    public @Nullable UUID abilityOwnerId() {
-        return ownerUUID;
     }
 }

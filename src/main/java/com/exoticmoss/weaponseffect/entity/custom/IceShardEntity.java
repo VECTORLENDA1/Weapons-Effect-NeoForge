@@ -1,8 +1,5 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
-import java.util.UUID;
-import org.jspecify.annotations.Nullable;
-import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
@@ -38,11 +35,7 @@ import net.minecraft.world.phys.Vec3;
 /// Drawn in 3D by IceShardRenderer.
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class IceShardEntity extends Projectile implements EntityLimit.Mergeable {
-    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
-    /// Over this, new ones give their power to the closest one instead of being created.
-    public static final int MAX_ALIVE = 48;
-
+public class IceShardEntity extends Projectile {
     /// How many shards appear above the player.
     public static final int[] SHARD_COUNT = {8, 10, 12, 14, 16};
     /// Damage of each shard.
@@ -72,8 +65,6 @@ public class IceShardEntity extends Projectile implements EntityLimit.Mergeable 
     private static final int MAX_FLIGHT_TICKS = 80;
 
     private int slot;
-    /// How many projectiles this one counts as (it does their damage too, see EntityLimit).
-    private int power = 1;
     private int weaponLevel = 1;
     private Vec3 target = Vec3.ZERO;
     private boolean flying;
@@ -99,7 +90,7 @@ public class IceShardEntity extends Projectile implements EntityLimit.Mergeable 
             shard.slot = i;
             shard.target = target;
             shard.hover(owner);
-            EntityLimit.spawnOrMerge(level, shard, MAX_ALIVE);
+            level.addFreshEntity(shard);
         }
         // Level V: shards falling from the sky over the target (at different heights, so they don't land at once)
         for (int i = 0; i < WeaponLevels.pick(SKY_SHARDS, weaponLevel); i++) {
@@ -112,7 +103,7 @@ public class IceShardEntity extends Projectile implements EntityLimit.Mergeable 
             shard.flying = true;
             shard.setDeltaMovement(0, -SPEED, 0);
             shard.setXRot(-90);
-            EntityLimit.spawnOrMerge(level, shard, MAX_ALIVE);
+            level.addFreshEntity(shard);
         }
         level.playSound(null, owner.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.5F, 1.4F);
     }
@@ -174,7 +165,7 @@ public class IceShardEntity extends Projectile implements EntityLimit.Mergeable 
         if (!(this.level() instanceof ServerLevel level)) return;
         Entity owner = this.getOwner();
         var source = owner instanceof Player player ? this.damageSources().playerAttack(player) : this.damageSources().freeze();
-        if (hitResult.getEntity().hurtServer(level, source, WeaponLevels.pick(DAMAGE, weaponLevel) * power) && hitResult.getEntity() instanceof LivingEntity mob) {
+        if (hitResult.getEntity().hurtServer(level, source, WeaponLevels.pick(DAMAGE, weaponLevel)) && hitResult.getEntity() instanceof LivingEntity mob) {
             freeze(mob);
         }
         shatter(level, hitResult.getLocation());
@@ -219,15 +210,5 @@ public class IceShardEntity extends Projectile implements EntityLimit.Mergeable 
     @Override
     public boolean shouldBeSaved() {
         return false;
-    }
-
-    @Override
-    public @Nullable UUID abilityOwnerId() {
-        return this.getOwner() == null ? null : this.getOwner().getUUID();
-    }
-
-    @Override
-    public void absorb(int count) {
-        power += count;
     }
 }

@@ -1,8 +1,5 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
-import java.util.UUID;
-import org.jspecify.annotations.Nullable;
-import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
@@ -38,11 +35,7 @@ import java.util.Set;
 /// The entity stays at the sword; the flames are drawn by FlameWaveRenderer (no particles).
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class FlameWaveEntity extends Entity implements EntityLimit.Owned {
-    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
-    /// Over this, the oldest one disappears when a new one is made.
-    public static final int MAX_ALIVE = 12;
-
+public class FlameWaveEntity extends Entity {
     /// How far the flames reach, measured from the player (blocks). They stop earlier at walls.
     public static final float[] LENGTH = {8, 9, 10, 11, 12};
     /// Total width of the flames at the end (blocks). Mobs touching this width are hit.
@@ -94,7 +87,7 @@ public class FlameWaveEntity extends Entity implements EntityLimit.Owned {
 
     /// The ability: shoots the flames to where the player is aiming.
     public static void launch(ServerLevel level, LivingEntity owner, int weaponLevel) {
-        EntityLimit.spawnReplacingOldest(level, new FlameWaveEntity(level, owner, weaponLevel), MAX_ALIVE);
+        level.addFreshEntity(new FlameWaveEntity(level, owner, weaponLevel));
         level.playSound(null, owner.blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.5F, 0.6F);
         level.playSound(null, owner.blockPosition(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 4.0F, 1.0F);
     }
@@ -269,10 +262,5 @@ public class FlameWaveEntity extends Entity implements EntityLimit.Owned {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
-    }
-
-    @Override
-    public @Nullable UUID abilityOwnerId() {
-        return owner == null ? null : owner.getUUID();
     }
 }

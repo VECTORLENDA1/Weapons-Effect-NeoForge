@@ -145,7 +145,7 @@ public class SoulRitualEntity extends Entity {
             return;
         }
         int cores = SOUL_CORES_NEEDED[weaponLevel - 1];
-        if (countSoulCores(player) < cores) {
+        if (countSoulCores(player) < cores && !player.hasInfiniteMaterials()) {
             fail(player, "weaponseffect.ritual.cores", cores);
             return;
         }
@@ -155,8 +155,8 @@ public class SoulRitualEntity extends Entity {
             return;
         }
 
-        // Start: the Soul Cores are used (also in creative), the weapon goes to float above the core
-        useSoulCores(player, cores);
+        // Start: the Soul Cores are used (not in creative), the weapon goes to float above the core
+        if (!player.hasInfiniteMaterials()) useSoulCores(player, cores);
         SoulRitualEntity ritual = new SoulRitualEntity(ModEntities.SOUL_RITUAL.get(), level);
         ritual.ownerId = player.getUUID();
         ritual.weaponLevel = weaponLevel;

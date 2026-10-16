@@ -37,15 +37,15 @@ public class HammerItem extends Item implements AbilityWeapon {
     /// Time between two explosions (ticks, 20 = 1 second).
     public static final int[] COOLDOWN_TICKS = {50, 45, 40, 35, 0};
     /// Size of the explosion (radius in blocks) and the damage to every mob inside. The 3D shockwave has the same size.
-    private static final float[] EXPLOSION_RADIUS = {7.5F, 8.5F, 9.5F, 10.5F, 12};
-    private static final float[] EXPLOSION_DAMAGE = {40, 45, 50, 55, 65};
+    public static final float[] EXPLOSION_RADIUS = {7.5F, 8.5F, 9.5F, 10.5F, 12};
+    public static final float[] EXPLOSION_DAMAGE = {40, 45, 50, 55, 65};
     /// How strong the mobs are thrown away and up (0 = not moved), and how long they are stunned (seconds).
-    private static final double[] KNOCKBACK = {0, 0, 0.6, 0.7, 0.8};
-    private static final double[] KNOCKBACK_UP = {0, 0, 0.8, 0.9, 1.0};
-    private static final int[] STUN_SECONDS = {0, 0, 3, 3, 4};
+    public static final double[] KNOCKBACK = {0, 0, 0.6, 0.7, 0.8};
+    public static final double[] KNOCKBACK_UP = {0, 0, 0.8, 0.9, 1.0};
+    public static final int[] STUN_SECONDS = {0, 0, 3, 3, 4};
     /// The second explosion (0 = none): radius, damage and how long after the first one (ticks).
-    private static final float[] SECOND_EXPLOSION_RADIUS = {0, 0, 0, 0, 16};
-    private static final float[] SECOND_EXPLOSION_DAMAGE = {0, 0, 0, 0, 40};
+    public static final float[] SECOND_EXPLOSION_RADIUS = {0, 0, 0, 0, 16};
+    public static final float[] SECOND_EXPLOSION_DAMAGE = {0, 0, 0, 0, 40};
     private static final int SECOND_EXPLOSION_DELAY = 10;
     /// Color of the 3D shockwave (0xAARRGGBB).
     private static final int SHOCKWAVE_COLOR = 0x60E8F0FF;

@@ -227,5 +227,20 @@
   "weaponseffect.levelup.gimlis_axe.3": "O machado também acerta no regresso",
   "weaponseffect.levelup.gimlis_axe.5": "Atira 3 machados de uma vez",
   "weaponseffect.levelup.darkness_mace.3": "O impacto atira os mobs ao ar e a zona abranda-os",
-  "weaponseffect.levelup.darkness_mace.5": "Sem recarga: salta e esmaga vezes sem conta"
+  "weaponseffect.levelup.darkness_mace.5": "Sem recarga: salta e esmaga vezes sem conta",
+  "19": "||ENTIDADES||",
+  "entity.weaponseffect.black_hole": "Buraco Negro",
+  "entity.weaponseffect.lance": "Lança",
+  "entity.weaponseffect.wither_rain_skull": "Caveira da Chuva de Definhamento",
+  "entity.weaponseffect.flame_wave": "Olhar Flamejante",
+  "entity.weaponseffect.ice_shard": "Fragmento de Gelo",
+  "entity.weaponseffect.poison_cloud": "Nuvem de Veneno",
+  "entity.weaponseffect.shockwave": "Onda de Choque",
+  "entity.weaponseffect.ice_lotus": "Lótus de Gelo",
+  "entity.weaponseffect.soul_ritual": "Ritual das Almas",
+  "entity.weaponseffect.soul": "Alma",
+  "entity.weaponseffect.smoke_bomb": "Bomba de Fumo",
+  "entity.weaponseffect.dash": "Investida",
+  "entity.weaponseffect.thrown_axe": "Machado Bumerangue",
+  "entity.weaponseffect.darkness_slam": "Impacto Sombrio"
 }

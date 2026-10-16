@@ -227,5 +227,20 @@
   "weaponseffect.levelup.gimlis_axe.3": "The axe also hits on the way back",
   "weaponseffect.levelup.gimlis_axe.5": "Throws 3 axes at once",
   "weaponseffect.levelup.darkness_mace.3": "The slam throws mobs up and the zone slows them",
-  "weaponseffect.levelup.darkness_mace.5": "No cooldown: slam again and again"
+  "weaponseffect.levelup.darkness_mace.5": "No cooldown: slam again and again",
+  "19": "||ENTITIES||",
+  "entity.weaponseffect.black_hole": "Black Hole",
+  "entity.weaponseffect.lance": "Lance",
+  "entity.weaponseffect.wither_rain_skull": "Wither Rain Skull",
+  "entity.weaponseffect.flame_wave": "Blazing Gaze",
+  "entity.weaponseffect.ice_shard": "Ice Shard",
+  "entity.weaponseffect.poison_cloud": "Poison Cloud",
+  "entity.weaponseffect.shockwave": "Shockwave",
+  "entity.weaponseffect.ice_lotus": "Ice Lotus",
+  "entity.weaponseffect.soul_ritual": "Soul Ritual",
+  "entity.weaponseffect.soul": "Soul",
+  "entity.weaponseffect.smoke_bomb": "Smoke Bomb",
+  "entity.weaponseffect.dash": "Dash",
+  "entity.weaponseffect.thrown_axe": "Boomerang Axe",
+  "entity.weaponseffect.darkness_slam": "Dark Slam"
 }

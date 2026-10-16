@@ -2,6 +2,7 @@ package com.exoticmoss.weaponseffect.item.custom;
 
 import com.exoticmoss.weaponseffect.level.Abilities;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import com.exoticmoss.weaponseffect.entity.custom.FlameWaveEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -34,6 +35,7 @@ public class FireSwordItem extends Item implements AbilityWeapon {
 
     @Override
     public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        WeaponLevels.rewardNormalHit(stack, attacker);
         if (!target.fireImmune()) {
             target.setRemainingFireTicks(15 * 20);
             playFlamethrowerSound(target.level(), target.blockPosition());

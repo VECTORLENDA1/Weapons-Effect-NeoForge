@@ -3,6 +3,7 @@ package com.exoticmoss.weaponseffect.item.custom;
 import com.exoticmoss.weaponseffect.entity.custom.DashEntity;
 import com.exoticmoss.weaponseffect.level.Abilities;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -29,6 +30,7 @@ public class SwiftnessDaggerItem extends Item implements AbilityWeapon {
 
     @Override
     public void hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
+        WeaponLevels.rewardNormalHit(pStack, pAttacker);
         pTarget.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 4), pAttacker);
         super.hurtEnemy(pStack, pTarget, pAttacker);
     }

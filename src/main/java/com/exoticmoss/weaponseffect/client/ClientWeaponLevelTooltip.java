@@ -32,7 +32,7 @@ public class ClientWeaponLevelTooltip {
         } else if (WeaponLevels.isReady(stack)) {
             progress = Component.translatable("weaponseffect.level.ready_tooltip", level).withStyle(ChatFormatting.AQUA);
         } else {
-            progress = Component.translatable("weaponseffect.level.xp", WeaponLevels.get(stack).xp(), WeaponLevels.xpNeeded(level))
+            progress = Component.translatable("weaponseffect.level.xp", WeaponLevels.formatXp(WeaponLevels.get(stack).xp()), WeaponLevels.xpNeeded(level))
                     .withStyle(ChatFormatting.DARK_PURPLE);
         }
         lines.add(at + 1, progress);

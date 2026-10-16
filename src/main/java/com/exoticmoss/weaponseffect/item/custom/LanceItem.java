@@ -1,6 +1,7 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import com.exoticmoss.weaponseffect.entity.custom.LanceProjectileEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -36,6 +37,13 @@ public class LanceItem extends Item implements AbilityWeapon {
     }
 
     // Right-click: start pulling the lance back (the trident animation)
+    // Normal hit: a little experience for the weapon
+    @Override
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        WeaponLevels.rewardNormalHit(stack, attacker);
+        super.hurtEnemy(stack, target, attacker);
+    }
+
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         player.startUsingItem(hand);

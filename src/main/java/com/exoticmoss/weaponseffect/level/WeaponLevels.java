@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 ///
 /// HOW IT WORKS
 ///  - Every time an ability hits a mob, the weapon gets XP_PER_HIT; if the mob dies, also XP_PER_KILL.
+///  - Every normal hit (left-click) with the weapon gives XP_PER_NORMAL_HIT (small, so it can't be abused).
 ///  - When the weapon has XP_TO_NEXT_LEVEL experience it is "ready": the experience stops there and
 ///    the weapon must be taken to a Soul Core (tier = current level) to do the ritual and level up.
 ///  - The abilities read their numbers from tables: { level I, II, III, IV, V }.
@@ -24,6 +25,8 @@ public final class WeaponLevels {
     /// Experience given when an ability hits a mob, and extra experience when it kills the mob.
     public static final int XP_PER_HIT = 2;
     public static final int XP_PER_KILL = 10;
+    /// Experience given by a normal hit (left-click) with the weapon.
+    public static final float XP_PER_NORMAL_HIT = 0.1F;
 
     private WeaponLevels() {
     }
@@ -36,7 +39,7 @@ public final class WeaponLevels {
         return Math.clamp(get(stack).level(), 1, MAX_LEVEL);
     }
 
-    public static void set(ItemStack stack, int level, int xp) {
+    public static void set(ItemStack stack, int level, float xp) {
         stack.set(ModDataComponents.WEAPON_LEVEL.get(), new WeaponLevel(Math.clamp(level, 1, MAX_LEVEL), Math.max(0, xp)));
     }
 
@@ -81,16 +84,30 @@ public final class WeaponLevels {
     /// The weapon (in the hand of the owner) gets experience.
     public static void reward(LivingEntity owner, Item weapon, LivingEntity target) {
         if (owner == null || target == owner || owner.level().isClientSide()) return;
-        ItemStack stack = held(owner, weapon);
-        if (stack.isEmpty()) return;
+        addXp(owner, held(owner, weapon), XP_PER_HIT + (target.isDeadOrDying() ? XP_PER_KILL : 0));
+    }
 
+    /// Call it when the weapon hits a mob with a normal hit (left-click).
+    public static void rewardNormalHit(ItemStack weapon, LivingEntity attacker) {
+        if (attacker == null || attacker.level().isClientSide()) return;
+        addXp(attacker, weapon, XP_PER_NORMAL_HIT);
+    }
+
+    /// The experience as text: "12" or "12.3".
+    public static String formatXp(float xp) {
+        return xp == Math.floor(xp) ? String.valueOf((int) xp) : String.format(java.util.Locale.ROOT, "%.1f", xp);
+    }
+
+    /// Adds experience to the weapon (stops when the weapon is ready for the next level).
+    private static void addXp(LivingEntity owner, ItemStack stack, float gained) {
+        if (stack.isEmpty() || !(stack.getItem() instanceof AbilityWeapon)) return;
         int level = level(stack);
         int needed = xpNeeded(level);
-        int xp = get(stack).xp();
+        float xp = get(stack).xp();
         if (needed == 0 || xp >= needed) return; // max level or already ready
 
-        int gained = XP_PER_HIT + (target.isDeadOrDying() ? XP_PER_KILL : 0);
-        int newXp = Math.min(needed, xp + gained);
+        // Rounded to one decimal, so many small 0.1 steps add up exactly
+        float newXp = Math.min(needed, Math.round((xp + gained) * 10) / 10F);
         set(stack, level, newXp);
 
         if (newXp >= needed && owner instanceof Player player) {

@@ -2,6 +2,7 @@ package com.exoticmoss.weaponseffect.item.custom;
 
 import com.exoticmoss.weaponseffect.level.Abilities;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -35,6 +36,7 @@ public class WitherSwordItem extends Item implements AbilityWeapon {
 
     @Override
     public void hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
+        WeaponLevels.rewardNormalHit(pStack, pAttacker);
         pTarget.addEffect(new MobEffectInstance(MobEffects.WITHER, 100, 6), pAttacker);
         super.hurtEnemy(pStack, pTarget, pAttacker);
     }

@@ -36,6 +36,7 @@ public class WingsOfDoomItem extends Item implements AbilityWeapon {
 
     @Override
     public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        WeaponLevels.rewardNormalHit(stack, attacker);
         target.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 4), attacker);
         target.addEffect(new MobEffectInstance(MobEffects.WITHER, 100, 4), attacker);
         target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 3), attacker);

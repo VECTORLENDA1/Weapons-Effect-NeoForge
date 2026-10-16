@@ -3,6 +3,7 @@ package com.exoticmoss.weaponseffect.item.custom;
 import com.exoticmoss.weaponseffect.entity.custom.IceShardEntity;
 import com.exoticmoss.weaponseffect.level.Abilities;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import com.exoticmoss.weaponseffect.util.Freeze;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -36,6 +37,7 @@ public class IceSwordItem extends Item implements AbilityWeapon {
 
     @Override
     public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        WeaponLevels.rewardNormalHit(stack, attacker);
         if (!target.level().isClientSide()) {
             target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, HIT_FREEZE_SECONDS * 20, HIT_SLOWNESS_AMPLIFIER), attacker);
             Freeze.apply(target, HIT_FREEZE_SECONDS);

@@ -56,6 +56,7 @@ public class HammerItem extends Item implements AbilityWeapon {
 
     @Override
     public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        WeaponLevels.rewardNormalHit(stack, attacker);
         target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, HIT_SLOWNESS_SECONDS * 20, HIT_SLOWNESS_AMPLIFIER), attacker);
         super.hurtEnemy(stack, target, attacker);
     }

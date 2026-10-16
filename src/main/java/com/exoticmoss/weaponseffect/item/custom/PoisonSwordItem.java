@@ -2,6 +2,7 @@ package com.exoticmoss.weaponseffect.item.custom;
 
 import com.exoticmoss.weaponseffect.level.Abilities;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
+import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import com.exoticmoss.weaponseffect.entity.custom.PoisonCloudEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -36,6 +37,7 @@ public class PoisonSwordItem extends Item implements AbilityWeapon {
 
     @Override
     public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        WeaponLevels.rewardNormalHit(stack, attacker);
         target.addEffect(new MobEffectInstance(MobEffects.POISON, HIT_POISON_SECONDS * 20, HIT_POISON_AMPLIFIER), attacker);
         super.hurtEnemy(stack, target, attacker);
     }

@@ -36,9 +36,9 @@ public class HammerItem extends Item {
     /// Time between two explosions (ticks, 20 = 1 second).
     private static final int COOLDOWN_TICKS = 50;
     /// Size of the explosion (radius in blocks). The 3D shockwave has the same size.
-    public static final float EXPLOSION_RADIUS = 2.5F;
+    public static final float EXPLOSION_RADIUS = 7.5F;
     /// Damage done to every mob inside the explosion.
-    private static final float EXPLOSION_DAMAGE = 50.0F;
+    private static final float EXPLOSION_DAMAGE = 40.0F;
     /// How strong the mobs are thrown away and up (0 = not moved at all).
     private static final double KNOCKBACK = 0.0;
     private static final double KNOCKBACK_UP = 0.0;

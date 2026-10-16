@@ -84,6 +84,10 @@ public class SoulRitualEntity extends Entity {
     public static final int OPENING_TICKS = 40;
     public static final int WAVE_DELAY_TICKS = 60;
     public static final int FINISH_TICKS = 60;
+    /// How far from the dome the entities stop (blocks), and how far out the server lets a player go
+    /// before correcting them (their own game already stops them at the wall).
+    public static final double WALL_GAP = 0.5;
+    public static final double WALL_TOLERANCE = 1.0;
     /// Height of the floating weapon above the bottom of the core (blocks). The biggest core (Black Hole)
     /// with its glow is about 3 blocks tall, so the weapon floats above it.
     public static final double WEAPON_HEIGHT = 4.2;
@@ -108,6 +112,8 @@ public class SoulRitualEntity extends Entity {
     private int waveSize;
     private boolean ended;
     private final Set<UUID> players = new HashSet<>();
+    /// Only on the player's own game: true while the player is inside the dome.
+    private boolean localPlayerInside;
     private final Set<UUID> monsters = new HashSet<>();
     private ServerBossEvent bossBar;
 
@@ -242,6 +248,10 @@ public class SoulRitualEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
+        if (this.level().isClientSide()) {
+            wallForLocalPlayer();
+            return;
+        }
         if (!(this.level() instanceof ServerLevel level) || ended) return;
 
         ServerPlayer owner = ownerId == null ? null : level.getServer().getPlayerList().getPlayer(ownerId);
@@ -326,7 +336,9 @@ public class SoulRitualEntity extends Entity {
                 bossBar.addPlayer(player);
                 joined = true;
             }
-            if (joined && player.isAlive() && distance > DOME_RADIUS - 0.6) pullInside(player);
+            // The player's own game already stops them at the wall (see wallForLocalPlayer): the server only
+            // corrects players that got further out (lag, ender pearls, teleports...)
+            if (joined && player.isAlive() && distance > DOME_RADIUS + WALL_TOLERANCE) stopAtWall(player, true);
         }
     }
 
@@ -341,7 +353,7 @@ public class SoulRitualEntity extends Entity {
                 iterator.remove();
                 continue;
             }
-            if (domeDistance(mob) > DOME_RADIUS - 0.6) pullInside(mob);
+            if (domeDistance(mob) > DOME_RADIUS - WALL_GAP) stopAtWall(mob, false);
             if (mob.getTarget() == null || !mob.getTarget().isAlive()) mob.setTarget(closestPlayer(level, mob));
         }
     }
@@ -367,15 +379,39 @@ public class SoulRitualEntity extends Entity {
         return entity.getBoundingBox().getCenter().distanceTo(this.position());
     }
 
-    /// Puts the entity back inside the dome, a bit away from the wall (or the roof).
-    private void pullInside(Entity entity) {
+    /// The dome works like a solid wall: an entity that goes past it is put back right on the inside of the
+    /// wall (or the roof) and loses only the speed that was going out, so it slides along the wall
+    /// instead of being thrown back.
+    private void stopAtWall(Entity entity, boolean sendToPlayer) {
         Vec3 center = entity.getBoundingBox().getCenter();
         Vec3 out = center.subtract(this.position()).normalize();
-        Vec3 inside = this.position().add(out.scale(DOME_RADIUS - 1.5));
-        double feet = Math.max(this.getY(), inside.y - entity.getBbHeight() / 2);
-        entity.teleportTo(inside.x, feet, inside.z);
-        entity.setDeltaMovement(Vec3.ZERO);
-        entity.hurtMarked = true;
+        Vec3 inside = this.position().add(out.scale(DOME_RADIUS - WALL_GAP));
+        Vec3 move = inside.subtract(center);
+        double feetY = Math.max(this.getY(), entity.getY() + move.y);
+        Vec3 velocity = entity.getDeltaMovement();
+        double outward = velocity.dot(out);
+        if (outward > 0) entity.setDeltaMovement(velocity.subtract(out.scale(outward)));
+        if (sendToPlayer) {
+            entity.teleportTo(entity.getX() + move.x, feetY, entity.getZ() + move.z);
+            entity.hurtMarked = true;
+        } else {
+            entity.setPos(entity.getX() + move.x, feetY, entity.getZ() + move.z);
+        }
+    }
+
+    /// On the player's own game: the player that was inside the dome can't walk, jump or fly out of it
+    /// (it feels like a wall). Players outside can still walk in (and then they are inside too).
+    private void wallForLocalPlayer() {
+        if (getDomeOpen() <= 0 || getFinishProgress() > 0) return;
+        for (Player player : this.level().players()) {
+            if (!player.isLocalPlayer() || player.isSpectator()) continue;
+            boolean inside = domeDistance(player) <= DOME_RADIUS - WALL_GAP + 0.05;
+            if (!inside && localPlayerInside) {
+                stopAtWall(player, false);
+                inside = true;
+            }
+            localPlayerInside = inside;
+        }
     }
 
     // ---------------------------------------------------------------- the end

@@ -19,7 +19,7 @@ import net.minecraft.world.phys.AABB;
 /// the weapon floating and turning above the core, and a glowing ball around the weapon at the end.
 public class SoulRitualRenderer extends EntityRenderer<SoulRitualEntity, SoulRitualRenderer.State> {
     /// Colors (0xAARRGGBB) of the dome and of the light around the weapon at the end.
-    private static final int DOME_COLOR = 0x284890FF;
+    private static final int DOME_COLOR = 0x144890FF;
     private static final int FINISH_COLOR = 0x9070E0FF;
     /// Size of the floating weapon.
     private static final float WEAPON_SCALE = 1.6F;

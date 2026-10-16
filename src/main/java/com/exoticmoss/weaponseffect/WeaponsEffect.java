@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect;
 
+import com.exoticmoss.weaponseffect.level.ModDataComponents;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -20,6 +21,7 @@ public class WeaponsEffect {
 
     public WeaponsEffect(IEventBus modEventBus, ModContainer modContainer) {
         ModItems.Register(modEventBus);
+        ModDataComponents.register(modEventBus);
         ModEffect.register(modEventBus);
         ModEntities.register(modEventBus);
         ModCreativeModTabs.register(modEventBus);

@@ -1,5 +1,7 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.level.Abilities;
+import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -23,8 +25,9 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 
-public class WitherSwordItem extends Item {
-    private static final int COOLDOWN_TICKS = 40;
+public class WitherSwordItem extends Item implements AbilityWeapon {
+    /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
+    private static final int[] COOLDOWN_TICKS = {40, 35, 30, 25, 0};
 
     public WitherSwordItem(Properties pProperties) {
         super(pProperties);
@@ -50,45 +53,10 @@ public class WitherSwordItem extends Item {
         super.appendHoverText(pStack, pContext, pDisplay, pTooltip, pTooltipFlag);
     }
 
+    // Right-click: the ability (a rain of wither skulls, see WitherRainSkull)
     @Override
-    public InteractionResult use(Level pLevel, Player pPlayer, InteractionHand pHand) {
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-
-        if (pPlayer.getCooldowns().isOnCooldown(itemstack)) {
-            if (!pLevel.isClientSide()) {
-                pPlayer.sendOverlayMessage(Component.translatable("item.wither_sword.cooldown"));
-            }
-            return InteractionResult.FAIL;
-        }
-
-        pPlayer.getCooldowns().addCooldown(itemstack, COOLDOWN_TICKS);
-
-        if (!pLevel.isClientSide()) {
-            launchWitherSkulls(pPlayer, pLevel, WitherRainSkull.SKULL_COUNT);
-        }
-
-        return InteractionResult.SUCCESS;
-    }
-
-    private void launchWitherSkulls(LivingEntity attacker, Level level, int numHeads) {
-        Vec3 startVec = attacker.position().add(0, attacker.getEyeHeight() * 0.5, 0);
-        Vec3 forwardVec = attacker.getLookAngle().normalize();
-        Random rand = new Random();
-
-        for (int i = 0; i < numHeads; i++) {
-            WitherRainSkull witherSkull = new WitherRainSkull(level, attacker);
-            witherSkull.setPos(startVec.x, startVec.y - 0.1, startVec.z);
-
-            Vec3 randomOffset = new Vec3(rand.nextDouble() * 0.5 - 0.25, 0, rand.nextDouble() * 0.5 - 0.25);
-            witherSkull.setDeltaMovement(forwardVec.add(randomOffset).normalize().scale(0.5));
-
-            level.addFreshEntity(witherSkull);
-        }
-        playWitherSound(level, attacker.blockPosition());
-    }
-
-    // Played by the server: every player nearby hears it
-    private void playWitherSound(Level level, BlockPos position) {
-        level.playSound(null, position, SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.0F);
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        return Abilities.use(level, player, hand, COOLDOWN_TICKS, "item.wither_sword.cooldown",
+                (server, user, weapon, weaponLevel) -> WitherRainSkull.launch(server, user, weaponLevel));
     }
 }

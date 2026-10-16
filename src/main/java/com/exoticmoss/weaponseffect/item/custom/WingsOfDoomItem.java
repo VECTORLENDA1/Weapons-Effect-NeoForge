@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -23,7 +24,7 @@ import com.exoticmoss.weaponseffect.entity.BlackHoleEntity;
 import java.util.function.Consumer;
 
 
-public class WingsOfDoomItem extends Item {
+public class WingsOfDoomItem extends Item implements AbilityWeapon {
     /// Cooldown of the black hole ability (in ticks, 20 = 1 second)
     private static final int COOLDOWN_TICKS = 300;
 

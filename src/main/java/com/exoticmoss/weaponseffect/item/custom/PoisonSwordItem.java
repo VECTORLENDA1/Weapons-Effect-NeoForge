@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import com.exoticmoss.weaponseffect.entity.custom.PoisonCloudEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -21,7 +22,7 @@ import java.util.function.Consumer;
 /// Poison Sword. Hits poison the mob.
 /// Ability "Poison Cloud": right-click to make a poison cloud where you aim
 /// (size, duration and poison in PoisonCloudEntity).
-public class PoisonSwordItem extends Item {
+public class PoisonSwordItem extends Item implements AbilityWeapon {
     /// Time between two uses of the ability (ticks, 20 = 1 second).
     private static final int COOLDOWN_TICKS = 200;
     /// Poison of a hit: seconds and level.

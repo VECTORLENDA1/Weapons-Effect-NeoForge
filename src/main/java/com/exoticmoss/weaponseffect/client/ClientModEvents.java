@@ -8,7 +8,8 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.client.renderer.BlackHoleRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.FlameWaveRenderer;
-import com.exoticmoss.weaponseffect.client.renderer.HammerShockwaveRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.ShockwaveRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.IceLotusRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.IceShardRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.PoisonCloudRenderer;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
@@ -32,6 +33,7 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.FLAME_WAVE.get(), FlameWaveRenderer::new);
         event.registerEntityRenderer(ModEntities.ICE_SHARD.get(), IceShardRenderer::new);
         event.registerEntityRenderer(ModEntities.POISON_CLOUD.get(), PoisonCloudRenderer::new);
-        event.registerEntityRenderer(ModEntities.HAMMER_SHOCKWAVE.get(), HammerShockwaveRenderer::new);
+        event.registerEntityRenderer(ModEntities.SHOCKWAVE.get(), ShockwaveRenderer::new);
+        event.registerEntityRenderer(ModEntities.ICE_LOTUS.get(), IceLotusRenderer::new);
     }
 }

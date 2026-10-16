@@ -8,7 +8,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import com.exoticmoss.weaponseffect.entity.custom.LanceProjectileEntity;
 import com.exoticmoss.weaponseffect.entity.custom.WitherRainSkull;
 import com.exoticmoss.weaponseffect.entity.custom.FlameWaveEntity;
-import com.exoticmoss.weaponseffect.entity.custom.HammerShockwaveEntity;
+import com.exoticmoss.weaponseffect.entity.custom.ShockwaveEntity;
+import com.exoticmoss.weaponseffect.entity.custom.IceLotusEntity;
 import com.exoticmoss.weaponseffect.entity.custom.IceShardEntity;
 import com.exoticmoss.weaponseffect.entity.custom.PoisonCloudEntity;
 
@@ -42,9 +43,13 @@ public class ModEntities {
             ENTITY_TYPES.registerEntityType("poison_cloud", PoisonCloudEntity::new, MobCategory.MISC,
                     builder -> builder.sized(1.0F, 1.0F).noLootTable().clientTrackingRange(8).updateInterval(20));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<HammerShockwaveEntity>> HAMMER_SHOCKWAVE =
-            ENTITY_TYPES.registerEntityType("hammer_shockwave", HammerShockwaveEntity::new, MobCategory.MISC,
-                    builder -> builder.sized(0.5F, 0.5F).noLootTable().clientTrackingRange(8).updateInterval(20));
+    public static final DeferredHolder<EntityType<?>, EntityType<ShockwaveEntity>> SHOCKWAVE =
+            ENTITY_TYPES.registerEntityType("shockwave", ShockwaveEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.5F, 0.5F).noLootTable().clientTrackingRange(10).updateInterval(20));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<IceLotusEntity>> ICE_LOTUS =
+            ENTITY_TYPES.registerEntityType("ice_lotus", IceLotusEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.8F, 0.4F).noLootTable().clientTrackingRange(8).updateInterval(20));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

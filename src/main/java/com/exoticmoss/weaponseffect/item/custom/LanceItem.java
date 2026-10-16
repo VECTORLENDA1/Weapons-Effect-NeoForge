@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import com.exoticmoss.weaponseffect.entity.custom.LanceProjectileEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,7 @@ import java.util.function.Consumer;
 /// Lance. Thrown like a trident: hold right-click to pull it back, release to throw.
 /// Ability "Rain of Lances": when the thrown lance hits something, lances fall from the sky around it
 /// (amount, damage and size in LanceProjectileEntity).
-public class LanceItem extends Item {
+public class LanceItem extends Item implements AbilityWeapon {
     /// How long right-click must be held before the lance can be thrown (ticks, the same as the trident).
     private static final int CHARGE_TICKS = 10;
     /// How fast the lance is thrown (the trident is 2.5).

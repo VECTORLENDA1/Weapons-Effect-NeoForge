@@ -1,5 +1,7 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.level.Abilities;
+import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import com.exoticmoss.weaponseffect.entity.custom.FlameWaveEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -22,8 +24,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Random;
 import java.util.function.Consumer;
 
-public class FireSwordItem extends Item {
-    private static final int COOLDOWN_TICKS = 40;
+public class FireSwordItem extends Item implements AbilityWeapon {
+    /// Time between two uses of the ability for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
+    private static final int[] COOLDOWN_TICKS = {40, 35, 30, 25, 0};
 
     public FireSwordItem(Properties pProperties) {
         super(pProperties);
@@ -54,25 +57,11 @@ public class FireSwordItem extends Item {
         super.appendHoverText(pStack, pContext, pDisplay, pTooltip, pTooltipFlag);
     }
 
+    // Right-click: the ability (a wave of flames, see FlameWaveEntity)
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-
-        if (player.getCooldowns().isOnCooldown(stack)) {
-            if (!level.isClientSide()) {
-                player.sendOverlayMessage(Component.translatable("item.fire.sword.cooldown"));
-            }
-            return InteractionResult.FAIL;
-        }
-
-        player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
-
-        // A wave of flames (see FlameWaveEntity): done by the server and sent to every player nearby
-        if (level instanceof ServerLevel serverLevel) {
-            FlameWaveEntity.launch(serverLevel, player);
-        }
-
-        return InteractionResult.SUCCESS;
+        return Abilities.use(level, player, hand, COOLDOWN_TICKS, "item.fire.sword.cooldown",
+                (server, user, weapon, weaponLevel) -> FlameWaveEntity.launch(server, user, weaponLevel));
     }
 
     private void spawnParticles(Level level, Vec3 position, int particleCount, double width, double height) {

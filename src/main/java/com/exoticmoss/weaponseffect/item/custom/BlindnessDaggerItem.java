@@ -1,5 +1,6 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -12,7 +13,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
 
-public class BlindnessDaggerItem extends Item {
+public class BlindnessDaggerItem extends Item implements AbilityWeapon {
     public BlindnessDaggerItem(Properties pProperties) {
         super(pProperties);
     }

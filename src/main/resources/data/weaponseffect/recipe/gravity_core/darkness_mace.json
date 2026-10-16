@@ -3,9 +3,11 @@
   "tier": 2,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:zenithra_block", "count": 4 },
-    { "item": "simpleores:zenithra", "count": 4 },
-    { "item": "minecraft:end_rod", "count": 5 }
+    { "item": "simpleores:zenithra_block", "count": 6 },
+    { "item": "minecraft:echo_shard", "count": 4 },
+    { "item": "minecraft:sculk", "count": 16 },
+    { "item": "minecraft:obsidian", "count": 8 },
+    { "item": "minecraft:breeze_rod", "count": 2 }
   ],
   "result": {
     "id": "weaponseffect:darkness_mace"

@@ -3,8 +3,10 @@
   "tier": 1,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:astralite", "count": 3 },
-    { "item": "minecraft:stick", "count": 4 }
+    { "item": "simpleores:astralite_block", "count": 3 },
+    { "item": "minecraft:blue_ice", "count": 4 },
+    { "item": "minecraft:snowball", "count": 16 },
+    { "item": "minecraft:stick", "count": 2 }
   ],
   "result": {
     "id": "weaponseffect:ice_sword"

@@ -3,8 +3,11 @@
   "tier": 1,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:nexalite_block", "count": 3 },
-    { "item": "minecraft:stick", "count": 4 }
+    { "item": "simpleores:nexalite_block", "count": 4 },
+    { "item": "minecraft:wither_skeleton_skull", "count": 1 },
+    { "item": "minecraft:wither_rose", "count": 4 },
+    { "item": "minecraft:soul_sand", "count": 8 },
+    { "item": "minecraft:stick", "count": 2 }
   ],
   "result": {
     "id": "weaponseffect:wither_sword"

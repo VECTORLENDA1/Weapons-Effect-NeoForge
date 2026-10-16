@@ -3,9 +3,13 @@
   "tier": 4,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:obscuridium_block", "count": 4 },
-    { "item": "simpleores:obscurite_block", "count": 3 },
-    { "item": "minecraft:breeze_rod", "count": 5 }
+    { "item": "simpleores:obscuridium_block", "count": 8 },
+    { "item": "simpleores:obscurite_block", "count": 6 },
+    { "item": "minecraft:nether_star", "count": 3 },
+    { "item": "minecraft:elytra", "count": 1 },
+    { "item": "minecraft:dragon_breath", "count": 8 },
+    { "item": "minecraft:echo_shard", "count": 8 },
+    { "item": "minecraft:breeze_rod", "count": 8 }
   ],
   "result": {
     "id": "weaponseffect:wings_of_doom"

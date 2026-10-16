@@ -3,7 +3,9 @@
   "tier": 1,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:nexalite", "count": 5 },
+    { "item": "simpleores:nexalite_block", "count": 5 },
+    { "item": "minecraft:iron_block", "count": 3 },
+    { "item": "minecraft:leather", "count": 4 },
     { "item": "minecraft:stick", "count": 4 }
   ],
   "result": {

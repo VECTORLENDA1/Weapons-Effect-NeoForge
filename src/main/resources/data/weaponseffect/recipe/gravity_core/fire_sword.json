@@ -3,8 +3,10 @@
   "tier": 1,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:ignithra_block", "count": 3 },
-    { "item": "minecraft:blaze_rod", "count": 4 }
+    { "item": "simpleores:ignithra_block", "count": 4 },
+    { "item": "minecraft:blaze_rod", "count": 6 },
+    { "item": "minecraft:magma_block", "count": 8 },
+    { "item": "minecraft:fire_charge", "count": 4 }
   ],
   "result": {
     "id": "weaponseffect:fire_sword"

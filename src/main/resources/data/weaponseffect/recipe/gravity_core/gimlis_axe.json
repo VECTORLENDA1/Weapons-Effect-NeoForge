@@ -3,9 +3,11 @@
   "tier": 2,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:zenithra", "count": 4 },
-    { "item": "simpleores:celestine", "count": 4 },
-    { "item": "minecraft:stick", "count": 5 }
+    { "item": "simpleores:zenithra_block", "count": 4 },
+    { "item": "simpleores:celestine_block", "count": 4 },
+    { "item": "minecraft:iron_block", "count": 4 },
+    { "item": "minecraft:gold_block", "count": 2 },
+    { "item": "minecraft:stick", "count": 4 }
   ],
   "result": {
     "id": "weaponseffect:gimlis_axe"

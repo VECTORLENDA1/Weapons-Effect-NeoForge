@@ -3,9 +3,12 @@
   "tier": 3,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:zenithra_block", "count": 6 },
-    { "item": "simpleores:celestine_block", "count": 6 },
-    { "item": "minecraft:end_rod", "count": 5 }
+    { "item": "simpleores:zenithra_block", "count": 10 },
+    { "item": "simpleores:celestine_block", "count": 10 },
+    { "item": "minecraft:diamond_block", "count": 4 },
+    { "item": "minecraft:iron_block", "count": 8 },
+    { "item": "minecraft:anvil", "count": 2 },
+    { "item": "minecraft:end_rod", "count": 4 }
   ],
   "result": {
     "id": "weaponseffect:hammer"

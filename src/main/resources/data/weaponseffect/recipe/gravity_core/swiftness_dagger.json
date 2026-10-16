@@ -3,8 +3,11 @@
   "tier": 1,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:astralite", "count": 2 },
-    { "item": "minecraft:stick", "count": 1 }
+    { "item": "simpleores:astralite_block", "count": 2 },
+    { "item": "minecraft:sugar", "count": 16 },
+    { "item": "minecraft:feather", "count": 8 },
+    { "item": "minecraft:rabbit_foot", "count": 1 },
+    { "item": "minecraft:stick", "count": 2 }
   ],
   "result": {
     "id": "weaponseffect:swiftness_dagger"

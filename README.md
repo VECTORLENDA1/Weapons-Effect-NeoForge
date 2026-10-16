@@ -20,20 +20,19 @@ The recipes are in `src/main/resources/data/weaponseffect/recipe/gravity_core/`
 
 | Weapon | Core (minimum tier) | Ingredients |
 |---|---|---|
-| Blindness Dagger | Sun (1) | 2 Nexalite, 1 Stick |
-| Swiftness Dagger | Sun (1) | 2 Astralite, 1 Stick |
-| Poison Sword | Sun (1) | 3 Nexalite, 4 Sticks |
-| Ice Sword | Sun (1) | 3 Astralite, 4 Sticks |
-| Lance | Sun (1) | 5 Nexalite, 4 Sticks |
-| Wither Sword | Sun (1) | 3 Nexalite Blocks, 4 Sticks |
-| Fire Sword | Sun (1) | 3 Ignithra Blocks, 4 Blaze Rods |
-| Gimli's Axe | Red Giant (2) | 4 Zenithra, 4 Celestine, 5 Sticks |
-| Darkness Mace | Red Giant (2) | 4 Zenithra Blocks, 4 Zenithra, 5 End Rods |
-| Hammer | Pulsar (3) | 6 Zenithra Blocks, 6 Celestine Blocks, 5 End Rods |
-| Wings of Doom | Black Hole (4) | 4 Obscuridium Blocks, 3 Obscurite Blocks, 5 Breeze Rods |
+| Blindness Dagger | Sun (1) | 2 Nexalite Blocks, 8 Ink Sacs, 2 Fermented Spider Eyes, 2 Sticks |
+| Swiftness Dagger | Sun (1) | 2 Astralite Blocks, 16 Sugar, 8 Feathers, 1 Rabbit's Foot, 2 Sticks |
+| Poison Sword | Sun (1) | 3 Nexalite Blocks, 8 Spider Eyes, 4 Poisonous Potatoes, 2 Pufferfish, 2 Sticks |
+| Ice Sword | Sun (1) | 3 Astralite Blocks, 4 Blue Ice, 16 Snowballs, 2 Sticks |
+| Lance | Sun (1) | 5 Nexalite Blocks, 3 Iron Blocks, 4 Leather, 4 Sticks |
+| Wither Sword | Sun (1) | 4 Nexalite Blocks, 1 Wither Skeleton Skull, 4 Wither Roses, 8 Soul Sand, 2 Sticks |
+| Fire Sword | Sun (1) | 4 Ignithra Blocks, 6 Blaze Rods, 8 Magma Blocks, 4 Fire Charges |
+| Gimli's Axe | Red Giant (2) | 4 Zenithra Blocks, 4 Celestine Blocks, 4 Iron Blocks, 2 Gold Blocks, 4 Sticks |
+| Darkness Mace | Red Giant (2) | 6 Zenithra Blocks, 4 Echo Shards, 16 Sculk, 8 Obsidian, 2 Breeze Rods |
+| Hammer | Pulsar (3) | 10 Zenithra Blocks, 10 Celestine Blocks, 4 Diamond Blocks, 8 Iron Blocks, 2 Anvils, 4 End Rods |
+| Wings of Doom | Black Hole (4) | 8 Obscuridium Blocks, 6 Obscurite Blocks, 3 Nether Stars, 1 Elytra, 8 Dragon's Breath, 8 Echo Shards, 8 Breeze Rods |
 
-The amounts are the same as in the old 5x5 crafting table recipes. Craft time:
-10s (Sun), 8s (Red Giant), 4s (Pulsar), instant (Black Hole).
+Craft time: 10s (Sun), 8s (Red Giant), 4s (Pulsar), instant (Black Hole).
 
 JEI
 ==========

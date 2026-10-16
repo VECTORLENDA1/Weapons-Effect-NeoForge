@@ -3,8 +3,11 @@
   "tier": 1,
   "time_per_tier": [200, 160, 80, 0],
   "ingredients": [
-    { "item": "simpleores:nexalite", "count": 3 },
-    { "item": "minecraft:stick", "count": 4 }
+    { "item": "simpleores:nexalite_block", "count": 3 },
+    { "item": "minecraft:spider_eye", "count": 8 },
+    { "item": "minecraft:poisonous_potato", "count": 4 },
+    { "item": "minecraft:pufferfish", "count": 2 },
+    { "item": "minecraft:stick", "count": 2 }
   ],
   "result": {
     "id": "weaponseffect:poison_sword"

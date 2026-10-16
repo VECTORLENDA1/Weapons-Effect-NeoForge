@@ -1,5 +1,8 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
+import java.util.UUID;
+import org.jspecify.annotations.Nullable;
+import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
@@ -32,7 +35,11 @@ import java.util.Set;
 /// Drawn in 3D by SmokeBombRenderer (no particles).
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class SmokeBombEntity extends Entity {
+public class SmokeBombEntity extends Entity implements EntityLimit.Owned {
+    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
+    /// Over this, the oldest one disappears when a new one is made.
+    public static final int MAX_ALIVE = 4;
+
     /// Size of the smoke (blocks) and how long it stays (seconds).
     public static final float[] RADIUS = {4, 4.5F, 5, 5.5F, 6};
     public static final int[] SMOKE_SECONDS = {5, 6, 7, 8, 10};
@@ -68,7 +75,7 @@ public class SmokeBombEntity extends Entity {
         smoke.owner = owner;
         smoke.entityData.set(DATA_LEVEL, weaponLevel);
         smoke.setPos(owner.getX(), owner.getY(), owner.getZ());
-        level.addFreshEntity(smoke);
+        EntityLimit.spawnReplacingOldest(level, smoke, MAX_ALIVE);
 
         owner.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, WeaponLevels.pick(INVISIBILITY_SECONDS, weaponLevel) * 20, 0, false, false, true));
         int speed = WeaponLevels.pick(SPEED_SECONDS, weaponLevel);
@@ -147,5 +154,10 @@ public class SmokeBombEntity extends Entity {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
+    }
+
+    @Override
+    public @Nullable UUID abilityOwnerId() {
+        return owner == null ? null : owner.getUUID();
     }
 }

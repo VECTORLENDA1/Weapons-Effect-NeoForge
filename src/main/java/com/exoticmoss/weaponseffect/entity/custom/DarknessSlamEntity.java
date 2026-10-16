@@ -1,5 +1,8 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
+import java.util.UUID;
+import org.jspecify.annotations.Nullable;
+import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.effect.ModEffect;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
@@ -35,7 +38,11 @@ import java.util.Set;
 /// (drawn by DarknessSlamRenderer).
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class DarknessSlamEntity extends Entity {
+public class DarknessSlamEntity extends Entity implements EntityLimit.Owned {
+    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
+    /// Over this, the oldest one disappears when a new one is made.
+    public static final int MAX_ALIVE = 6;
+
     /// The leap: speed up and forward (bigger = higher and longer).
     public static final double[] LEAP_UP = {0.9, 0.95, 1.0, 1.05, 1.1};
     public static final double[] LEAP_FORWARD = {0.9, 1.0, 1.1, 1.2, 1.3};
@@ -79,7 +86,7 @@ public class DarknessSlamEntity extends Entity {
         slam.owner = owner;
         slam.entityData.set(DATA_LEVEL, weaponLevel);
         slam.setPos(owner.getX(), owner.getY(), owner.getZ());
-        level.addFreshEntity(slam);
+        EntityLimit.spawnReplacingOldest(level, slam, MAX_ALIVE);
 
         Vec3 forward = owner.getLookAngle().multiply(1, 0, 1).normalize().scale(WeaponLevels.pick(LEAP_FORWARD, weaponLevel));
         owner.setDeltaMovement(forward.x, WeaponLevels.pick(LEAP_UP, weaponLevel), forward.z);
@@ -190,5 +197,10 @@ public class DarknessSlamEntity extends Entity {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
+    }
+
+    @Override
+    public @Nullable UUID abilityOwnerId() {
+        return owner == null ? null : owner.getUUID();
     }
 }

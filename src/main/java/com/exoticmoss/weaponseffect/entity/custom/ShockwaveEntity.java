@@ -1,5 +1,7 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
+import java.util.UUID;
+import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -27,7 +29,11 @@ import org.jspecify.annotations.Nullable;
 /// Used by the explosions (Hammer, giant lance, ice lotus...). It can also do the damage itself
 /// (a "blast"), even after a delay (the second explosion of the Hammer at level V).
 /// Every mob touching the sphere of the blast takes the SAME damage, close or far from the middle.
-public class ShockwaveEntity extends Entity {
+public class ShockwaveEntity extends Entity implements EntityLimit.Owned {
+    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
+    /// Over this, new explosions still do their damage but are not drawn.
+    public static final int MAX_ALIVE = 16;
+
     /// How long the shockwave is seen (ticks, 20 = 1 second).
     public static final int DURATION = 14;
 
@@ -60,6 +66,10 @@ public class ShockwaveEntity extends Entity {
         wave.entityData.set(DATA_DELAY, delay);
         wave.blast = blast;
         wave.setPos(at.x, at.y, at.z);
+        if (delay == 0 && EntityLimit.isFull(level, wave, MAX_ALIVE)) {
+            wave.explode(level);   // only the damage, without the look
+            return;
+        }
         level.addFreshEntity(wave);
         if (delay == 0) wave.explode(level);
     }
@@ -140,5 +150,10 @@ public class ShockwaveEntity extends Entity {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
+    }
+
+    @Override
+    public @Nullable UUID abilityOwnerId() {
+        return blast == null ? null : blast.owner().getUUID();
     }
 }

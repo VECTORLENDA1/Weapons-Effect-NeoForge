@@ -1,5 +1,8 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
+import java.util.UUID;
+import org.jspecify.annotations.Nullable;
+import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
@@ -34,7 +37,11 @@ import java.util.Set;
 /// Drawn by ThrownAxeRenderer (the axe itself, spinning).
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class ThrownAxeEntity extends Entity {
+public class ThrownAxeEntity extends Entity implements EntityLimit.Mergeable {
+    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
+    /// Over this, new ones give their power to the closest one instead of being created.
+    public static final int MAX_ALIVE = 12;
+
     /// How far the axe flies before coming back (blocks).
     public static final float[] RANGE = {10, 12, 14, 16, 18};
     /// Damage to each mob it touches, and Slowness given to it (seconds).
@@ -57,6 +64,8 @@ public class ThrownAxeEntity extends Entity {
 
     private LivingEntity owner;
     private int weaponLevel = 1;
+    /// How many projectiles this one counts as (it does their damage too, see EntityLimit).
+    private int power = 1;
     private Vec3 start = Vec3.ZERO;
     private boolean returning;
     private final Set<LivingEntity> hitGoing = new HashSet<>();
@@ -80,7 +89,7 @@ public class ThrownAxeEntity extends Entity {
             axe.setPos(axe.start.x, axe.start.y, axe.start.z);
             axe.setYRot(yaw);
             axe.setDeltaMovement(Vec3.directionFromRotation(owner.getXRot(), yaw).scale(SPEED));
-            level.addFreshEntity(axe);
+            EntityLimit.spawnOrMerge(level, axe, MAX_ALIVE);
         }
         level.playSound(null, owner.blockPosition(), SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 1.0F, 0.7F);
     }
@@ -132,7 +141,7 @@ public class ThrownAxeEntity extends Entity {
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.4),
                 target -> target != owner && !hit.contains(target))) {
             hit.add(target);
-            if (target.hurtServer(level, source, WeaponLevels.pick(DAMAGE, weaponLevel))) {
+            if (target.hurtServer(level, source, WeaponLevels.pick(DAMAGE, weaponLevel) * power)) {
                 target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, WeaponLevels.pick(SLOWNESS_SECONDS, weaponLevel) * 20, 2), owner);
                 level.playSound(null, target.blockPosition(), SoundEvents.TRIDENT_HIT, SoundSource.PLAYERS, 1.0F, 0.8F);
                 WeaponLevels.reward(owner, ModItems.GIMLIS_AXE.get(), target);
@@ -162,5 +171,15 @@ public class ThrownAxeEntity extends Entity {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
+    }
+
+    @Override
+    public @Nullable UUID abilityOwnerId() {
+        return owner == null ? null : owner.getUUID();
+    }
+
+    @Override
+    public void absorb(int count) {
+        power += count;
     }
 }

@@ -1,5 +1,8 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
+import java.util.UUID;
+import org.jspecify.annotations.Nullable;
+import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
@@ -31,7 +34,11 @@ import net.minecraft.world.phys.Vec3;
 /// Drawn in 3D by PoisonCloudRenderer (the same size where mobs get poisoned).
 ///
 /// TABLES: one number for each level { I, II, III, IV, V }.
-public class PoisonCloudEntity extends Entity {
+public class PoisonCloudEntity extends Entity implements EntityLimit.Owned {
+    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
+    /// Over this, the oldest one disappears when a new one is made.
+    public static final int MAX_ALIVE = 6;
+
     /// Size of the cloud (blocks): radius and height.
     public static final float[] RADIUS = {4, 4.5F, 5, 5.5F, 6};
     public static final float[] HEIGHT = {2.5F, 2.75F, 3, 3.25F, 3.5F};
@@ -71,7 +78,7 @@ public class PoisonCloudEntity extends Entity {
         cloud.owner = owner;
         cloud.entityData.set(DATA_LEVEL, weaponLevel);
         cloud.setPos(target.x, target.y, target.z);
-        level.addFreshEntity(cloud);
+        EntityLimit.spawnReplacingOldest(level, cloud, MAX_ALIVE);
         level.playSound(null, target.x, target.y, target.z, SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.5F, 0.6F);
     }
 
@@ -168,5 +175,10 @@ public class PoisonCloudEntity extends Entity {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
+    }
+
+    @Override
+    public @Nullable UUID abilityOwnerId() {
+        return owner == null ? null : owner.getUUID();
     }
 }

@@ -1,5 +1,8 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import java.util.UUID;
+import org.jspecify.annotations.Nullable;
+import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.ChatFormatting;
@@ -107,7 +110,7 @@ public class WingsOfDoomItem extends Item implements AbilityWeapon {
 
             BlackHoleEntity blackHole = new BlackHoleEntity(world, spawnPosition.x, spawnPosition.y, spawnPosition.z, weaponLevel, player.getUUID());
 
-            world.addFreshEntity(blackHole);
+            if (world instanceof ServerLevel server) EntityLimit.spawnReplacingOldest(server, blackHole, BlackHoleEntity.MAX_ALIVE);
 
             //Cooldown of the black hole ability
             int cooldown = WeaponLevels.pick(COOLDOWN_TICKS, weaponLevel);

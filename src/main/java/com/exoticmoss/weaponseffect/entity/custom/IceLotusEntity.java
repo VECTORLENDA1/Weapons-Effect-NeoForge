@@ -1,5 +1,8 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
+import java.util.UUID;
+import org.jspecify.annotations.Nullable;
+import com.exoticmoss.weaponseffect.util.EntityLimit;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
@@ -26,7 +29,11 @@ import net.minecraft.world.phys.Vec3;
 
 /// An ice lotus (Ice Sword, level V): grows where a shard from the sky lands. When a mob touches it,
 /// it explodes, hurting and freezing the mobs around. Drawn in 3D by IceLotusRenderer.
-public class IceLotusEntity extends Entity {
+public class IceLotusEntity extends Entity implements EntityLimit.Owned {
+    /// Most of these a player can have at once (more would make the game lag, see EntityLimit).
+    /// Over this, the oldest one disappears when a new one is made.
+    public static final int MAX_ALIVE = 24;
+
     /// The explosion when a mob touches the lotus: radius (blocks), damage and freezing (seconds).
     public static final float EXPLOSION_RADIUS = 2.5F;
     public static final float EXPLOSION_DAMAGE = 8.0F;
@@ -51,7 +58,7 @@ public class IceLotusEntity extends Entity {
         lotus.entityData.set(DATA_LIFETIME, seconds * 20);
         lotus.setPos(at.x, at.y, at.z);
         lotus.setYRot(level.getRandom().nextFloat() * 360);
-        level.addFreshEntity(lotus);
+        EntityLimit.spawnReplacingOldest(level, lotus, MAX_ALIVE);
     }
 
     /// From 0 to 1: how open the lotus is (it opens at the start and closes at the end).
@@ -114,5 +121,10 @@ public class IceLotusEntity extends Entity {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
+    }
+
+    @Override
+    public @Nullable UUID abilityOwnerId() {
+        return owner == null ? null : owner.getUUID();
     }
 }

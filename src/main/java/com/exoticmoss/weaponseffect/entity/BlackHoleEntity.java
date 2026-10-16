@@ -11,15 +11,16 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import com.exoticmoss.weaponseffect.item.ModItems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,14 +142,8 @@ public class BlackHoleEntity extends Entity {
             // Dropped items and experience are never pulled or destroyed (e.g. the Nether Star of a Wither)
             if (entity instanceof ItemEntity || entity instanceof ExperienceOrb) continue;
 
-            if (entity instanceof Player player) {
-                // Players holding the Wings of Doom (right or left hand) are not pulled
-                if (player.getMainHandItem().getItem() == ModItems.WINGS_OF_DOOM.get()
-                        || player.getOffhandItem().getItem() == ModItems.WINGS_OF_DOOM.get()) {
-                    continue;
-                }
-            }
-
+            // Big mobs made of parts (the Ender Dragon): the closest part counts
+            Entity target = entity instanceof EnderDragonPart part ? part.parentMob : entity;
             Vec3 directionToBlackHole = this.position().subtract(entity.position()).normalize();
             double distance = entity.distanceTo(this);
 
@@ -176,13 +171,42 @@ public class BlackHoleEntity extends Entity {
 
             double killRadius = currentRadius * 0.6;//Area of killradius insade the Black Hole
 
-            if (distance <= killRadius) {
-                if (entity instanceof LivingEntity) {
-                    entity.hurt(this.level().damageSources().magic(), 10000.0F);
-                } else {
-                    entity.discard();
-                }
+            if (distance <= killRadius && this.level() instanceof ServerLevel level) {
+                annihilate(level, target);
             }
+        }
+    }
+
+    /// Kills anything inside the black hole, no matter what: creative players, bosses, mobs with
+    /// immortality from other mods... Only the player who made the black hole is safe (see ownerUUID).
+    private static void annihilate(ServerLevel level, Entity entity) {
+        if (!entity.isAlive()) return;
+
+        // The Ender Dragon only dies with its own death (it flies to the portal, explodes and drops its experience)
+        if (entity instanceof EnderDragon dragon) {
+            if (dragon.getPhaseManager().getCurrentPhase().getPhase() != EnderDragonPhase.DYING) {
+                dragon.setHealth(1.0F);
+                dragon.getPhaseManager().setPhase(EnderDragonPhase.DYING);
+            }
+            return;
+        }
+        // Things that are not alive (arrows, boats, falling blocks...) just disappear
+        if (!(entity instanceof LivingEntity living)) {
+            entity.discard();
+            return;
+        }
+
+        // Like the /kill command: also works on players in creative
+        living.invulnerableTime = 0;
+        living.kill(level);
+        // Something stopped the death (e.g. armor that makes you immortal): force it
+        if (living.isAlive()) {
+            living.setHealth(0.0F);
+            living.die(level.damageSources().genericKill());
+        }
+        // Still alive? Mobs are removed from the world (players can't be removed)
+        if (living.isAlive() && !(living instanceof Player)) {
+            living.discard();
         }
     }
 

@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -32,12 +33,31 @@ import java.util.Collection;
 import java.util.List;
 
 /// The thrown Lance. Works like a trident (also with Loyalty), but does more damage.
+/// Ability "Rain of Lances": the first time the thrown lance hits something (a mob or a block),
+/// lances fall from the sky around that place. Those falling lances can't be picked up and
+/// disappear a moment after landing.
 public class LanceProjectileEntity extends AbstractArrow {
+    // ---------------------------------------------------------------- Rain of Lances
+    /// How many lances fall.
+    public static final int RAIN_COUNT = 12;
+    /// Damage of each falling lance.
+    public static final float RAIN_DAMAGE = 6.0F;
+    /// Size of the rain: radius around the hit (blocks) and how high the lances start (blocks above the hit).
+    public static final float RAIN_RADIUS = 4.0F;
+    public static final float RAIN_HEIGHT = 12.0F;
+    /// How fast the lances fall (blocks per tick) and how long they stay in the ground before disappearing (ticks).
+    public static final float RAIN_SPEED = 2.0F;
+    public static final int RAIN_LANCE_LIFETIME = 30;
+
     private static final EntityDataAccessor<Byte> ID_LOYALTY = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Boolean> ID_FOIL = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     /// Damage done when the lance hits a mob.
     private static final float DAMAGE = 10.0F;
     private boolean dealtDamage;
+    /// true for the lances of the rain (they don't make another rain).
+    private boolean isRainLance;
+    /// true after this lance already made its rain.
+    private boolean rainDone;
     public int clientSideReturnTridentTickCount;
 
     public LanceProjectileEntity(EntityType<? extends LanceProjectileEntity> pEntityType, Level pLevel) {
@@ -64,8 +84,32 @@ public class LanceProjectileEntity extends AbstractArrow {
         pBuilder.define(ID_FOIL, false);
     }
 
+    /// The ability: lances fall from the sky around this place.
+    private void startRain(ServerLevel level, Vec3 center) {
+        rainDone = true;
+        for (int i = 0; i < RAIN_COUNT; i++) {
+            // A random place inside the circle, and a random height so they don't all land at once
+            double angle = level.getRandom().nextDouble() * Math.PI * 2;
+            double distance = Math.sqrt(level.getRandom().nextDouble()) * RAIN_RADIUS;
+            double height = RAIN_HEIGHT + level.getRandom().nextDouble() * 6;
+            LanceProjectileEntity lance = new LanceProjectileEntity(level,
+                    center.x + Math.cos(angle) * distance, center.y + height, center.z + Math.sin(angle) * distance,
+                    new ItemStack(ModItems.LANCE.get()));
+            lance.isRainLance = true;
+            lance.setOwner(this.getOwner());
+            lance.pickup = Pickup.DISALLOWED;
+            lance.shoot(0, -1, 0, RAIN_SPEED, 2.0F);
+            level.addFreshEntity(lance);
+        }
+        level.playSound(null, center.x, center.y, center.z, SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 1.0F, 1.4F);
+    }
+
     @Override
     public void tick() {
+        if (isRainLance && this.inGroundTime > RAIN_LANCE_LIFETIME) {
+            this.discard();
+            return;
+        }
         if (this.inGroundTime > 4) {
             this.dealtDamage = true;
         }
@@ -124,10 +168,23 @@ public class LanceProjectileEntity extends AbstractArrow {
         return hit != null ? List.of(hit) : List.of();
     }
 
+    // The falling lances never hit the player who threw the lance
+    @Override
+    protected boolean canHitEntity(Entity entity) {
+        return !(isRainLance && entity == this.getOwner()) && super.canHitEntity(entity);
+    }
+
+    @Override
+    protected void onHitBlock(BlockHitResult hitResult) {
+        super.onHitBlock(hitResult);
+        if (!isRainLance && !rainDone && this.level() instanceof ServerLevel level) startRain(level, hitResult.getLocation());
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult pResult) {
         Entity entity = pResult.getEntity();
-        float damage = DAMAGE;
+        if (!isRainLance && !rainDone && this.level() instanceof ServerLevel level) startRain(level, entity.position());
+        float damage = isRainLance ? RAIN_DAMAGE : DAMAGE;
         Entity owner = this.getOwner();
         DamageSource damagesource = this.damageSources().trident(this, owner == null ? this : owner);
         if (this.level() instanceof ServerLevel serverlevel) {

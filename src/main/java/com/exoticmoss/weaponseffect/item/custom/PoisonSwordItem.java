@@ -1,34 +1,67 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.entity.custom.PoisonCloudEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
+/// Poison Sword. Hits poison the mob.
+/// Ability "Poison Cloud": right-click to make a poison cloud where you aim
+/// (size, duration and poison in PoisonCloudEntity).
 public class PoisonSwordItem extends Item {
-    public PoisonSwordItem(Properties pProperties) {
-        super(pProperties);
+    /// Time between two uses of the ability (ticks, 20 = 1 second).
+    private static final int COOLDOWN_TICKS = 200;
+    /// Poison of a hit: seconds and level.
+    private static final int HIT_POISON_SECONDS = 10;
+    private static final int HIT_POISON_AMPLIFIER = 100;
+
+    public PoisonSwordItem(Properties properties) {
+        super(properties);
     }
 
     @Override
-    public void hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        pTarget.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 100), pAttacker);
-        super.hurtEnemy(pStack, pTarget, pAttacker);
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        target.addEffect(new MobEffectInstance(MobEffects.POISON, HIT_POISON_SECONDS * 20, HIT_POISON_AMPLIFIER), attacker);
+        super.hurtEnemy(stack, target, attacker);
+    }
+
+    // Right-click: the ability
+    @Override
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.getCooldowns().isOnCooldown(stack)) {
+            if (!level.isClientSide()) player.sendOverlayMessage(Component.translatable("item.poison.sword.cooldown"));
+            return InteractionResult.FAIL;
+        }
+        player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
+        if (level instanceof ServerLevel serverLevel) PoisonCloudEntity.launch(serverLevel, player);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay pDisplay, Consumer<Component> pTooltip, TooltipFlag pTooltipFlag) {
-        pTooltip.accept(Component.translatable("poison.sword.tooltip").withStyle(ChatFormatting.WHITE));
-        pTooltip.accept(Component.translatable("poison.line.2"));
-        pTooltip.accept(Component.translatable("poison.immunities").withStyle(ChatFormatting.WHITE));
-        pTooltip.accept(Component.translatable("poison.immunities.tooltip").withStyle(ChatFormatting.GREEN));
-        super.appendHoverText(pStack, pContext, pDisplay, pTooltip, pTooltipFlag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.translatable("poison.sword.tooltip").withStyle(ChatFormatting.WHITE));
+        tooltip.accept(Component.translatable("poison.line.2"));
+        tooltip.accept(Component.translatable("poison.immunities").withStyle(ChatFormatting.WHITE));
+        tooltip.accept(Component.translatable("poison.immunities.tooltip").withStyle(ChatFormatting.GREEN));
+        tooltip.accept(Component.translatable("poison.line.3"));
+        tooltip.accept(Component.translatable("poison.ability").withStyle(ChatFormatting.WHITE));
+        tooltip.accept(Component.translatable("poison.ability.name").withStyle(ChatFormatting.GREEN));
+        tooltip.accept(Component.translatable("poison.line.4"));
+        tooltip.accept(Component.translatable("poison.ability.description").withStyle(ChatFormatting.WHITE));
+        super.appendHoverText(stack, context, display, tooltip, flag);
     }
 }

@@ -1,8 +1,9 @@
 package com.exoticmoss.weaponseffect.item.custom;
 
+import com.exoticmoss.weaponseffect.entity.ModEntities;
+import com.exoticmoss.weaponseffect.entity.custom.HammerShockwaveEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -17,89 +18,103 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
 import java.util.function.Consumer;
 
+/// Hammer. Hits give Slowness. Ability "Explosion": right-click a block to make an explosion on top of it.
+/// Every mob inside the explosion takes the SAME damage, close or far from the middle.
+/// The explosion doesn't break blocks and never hurts the player using the hammer.
 public class HammerItem extends Item {
+    // ---------------------------------------------------------------- normal hits
+    /// Slowness given when hitting a mob: seconds and level (0 = Slowness I, 3 = Slowness IV...).
+    private static final int HIT_SLOWNESS_SECONDS = 10;
+    private static final int HIT_SLOWNESS_AMPLIFIER = 3;
+
+    // ---------------------------------------------------------------- ability
+    /// Time between two explosions (ticks, 20 = 1 second).
     private static final int COOLDOWN_TICKS = 50;
-    /// Radius (in blocks) of the explosion of the ability.
-    private static final float EXPLOSION_RADIUS = 2.5F;
+    /// Size of the explosion (radius in blocks). The 3D shockwave has the same size.
+    public static final float EXPLOSION_RADIUS = 2.5F;
     /// Damage done to every mob inside the explosion.
     private static final float EXPLOSION_DAMAGE = 50.0F;
+    /// How strong the mobs are thrown away and up (0 = not moved at all).
+    private static final double KNOCKBACK = 0.0;
+    private static final double KNOCKBACK_UP = 0.0;
+    /// Slowness given to the mobs inside the explosion: seconds and level (0 seconds = none).
+    private static final int EXPLOSION_SLOWNESS_SECONDS = 0;
+    private static final int EXPLOSION_SLOWNESS_AMPLIFIER = 3;
 
-    public HammerItem(Properties pProperties) {
-        super(pProperties);
+    public HammerItem(Properties properties) {
+        super(properties);
     }
 
     @Override
-    public void hurtEnemy(ItemStack pStack, LivingEntity pTarget, LivingEntity pAttacker) {
-        pTarget.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 200, 3), pAttacker);
-        super.hurtEnemy(pStack, pTarget, pAttacker);
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, HIT_SLOWNESS_SECONDS * 20, HIT_SLOWNESS_AMPLIFIER), attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay pDisplay, Consumer<Component> pTooltip, TooltipFlag pTooltipFlag) {
-        pTooltip.accept(Component.translatable("hammer.tooltip").withStyle(ChatFormatting.WHITE));
-        pTooltip.accept(Component.translatable("hammer.line.2"));
-        pTooltip.accept(Component.translatable("hammer.ability").withStyle(ChatFormatting.WHITE));
-        pTooltip.accept(Component.translatable("hammer.ability.name").withStyle(ChatFormatting.WHITE));
-        pTooltip.accept(Component.translatable("hammer.line.3"));
-        pTooltip.accept(Component.translatable("hammer.ability.description").withStyle(ChatFormatting.WHITE));
-        super.appendHoverText(pStack, pContext, pDisplay, pTooltip, pTooltipFlag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.translatable("hammer.tooltip").withStyle(ChatFormatting.WHITE));
+        tooltip.accept(Component.translatable("hammer.line.2"));
+        tooltip.accept(Component.translatable("hammer.ability").withStyle(ChatFormatting.WHITE));
+        tooltip.accept(Component.translatable("hammer.ability.name").withStyle(ChatFormatting.WHITE));
+        tooltip.accept(Component.translatable("hammer.line.3"));
+        tooltip.accept(Component.translatable("hammer.ability.description").withStyle(ChatFormatting.WHITE));
+        super.appendHoverText(stack, context, display, tooltip, flag);
     }
 
-    // Right-click on a block: an explosion on top of it that hurts every mob around (but doesn't break blocks)
+    // Right-click on a block: the explosion on top of it
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        ItemStack stack = context.getItemInHand();
         Player player = context.getPlayer();
-        Level level = context.getLevel();
-
-        if (player == null) {
-            return InteractionResult.PASS;
-        }
+        ItemStack stack = context.getItemInHand();
+        if (player == null) return InteractionResult.PASS;
 
         if (player.getCooldowns().isOnCooldown(stack)) {
-            if (!level.isClientSide()) {
-                player.sendOverlayMessage(Component.translatable("item.hammer.cooldown"));
-            }
+            if (!context.getLevel().isClientSide()) player.sendOverlayMessage(Component.translatable("item.hammer.cooldown"));
             return InteractionResult.FAIL;
         }
-
         player.getCooldowns().addCooldown(stack, COOLDOWN_TICKS);
 
-        if (level instanceof ServerLevel serverLevel) {
+        if (context.getLevel() instanceof ServerLevel level) {
             BlockPos pos = context.getClickedPos();
-            explode(serverLevel, player, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5);
+            explode(level, player, Vec3.atBottomCenterOf(pos.above()));
         }
         return InteractionResult.SUCCESS;
     }
 
-    private void explode(ServerLevel level, Player player, double x, double y, double z) {
-        // Damage every mob inside the radius (not the player using the hammer)
-        float radius = EXPLOSION_RADIUS;
-        AABB area = new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius);
-        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, area, entity -> entity != player);
-        for (LivingEntity entity : entities) {
-            entity.hurtServer(level, player.damageSources().playerAttack(player), EXPLOSION_DAMAGE);
-        }
+    private static void explode(ServerLevel level, Player player, Vec3 center) {
+        // Every mob touching the sphere of the explosion gets the full damage
+        AABB area = new AABB(center, center).inflate(EXPLOSION_RADIUS);
+        for (LivingEntity mob : level.getEntitiesOfClass(LivingEntity.class, area, mob -> mob != player)) {
+            Vec3 closest = closestPoint(mob.getBoundingBox(), center);
+            if (closest.distanceTo(center) > EXPLOSION_RADIUS) continue;
 
-        // Sound and particles (sent to every player nearby)
-        level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1.0F,
-                (1.0F + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2F) * 0.7F);
-        level.sendParticles(ParticleTypes.EXPLOSION, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
-
-        // Ring of gusts around the explosion
-        int range = 5;
-        for (int dx = -range; dx <= range; ++dx) {
-            for (int dz = -range; dz <= range; ++dz) {
-                double particleX = x + dx + (level.getRandom().nextDouble() - 0.5D);
-                double particleZ = z + dz + (level.getRandom().nextDouble() - 0.5D);
-                level.sendParticles(ParticleTypes.GUST, particleX, y, particleZ, 1, 0.0, 0.0, 0.0, 0.0);
+            mob.hurtServer(level, player.damageSources().playerAttack(player), EXPLOSION_DAMAGE);
+            if (EXPLOSION_SLOWNESS_SECONDS > 0) {
+                mob.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, EXPLOSION_SLOWNESS_SECONDS * 20, EXPLOSION_SLOWNESS_AMPLIFIER), player);
+            }
+            if (KNOCKBACK > 0 || KNOCKBACK_UP > 0) {
+                Vec3 away = mob.position().subtract(center).multiply(1, 0, 1).normalize().scale(KNOCKBACK);
+                mob.push(away.x, KNOCKBACK_UP, away.z);
+                mob.hurtMarked = true;
             }
         }
+
+        // The 3D shockwave and the sound
+        HammerShockwaveEntity shockwave = new HammerShockwaveEntity(ModEntities.HAMMER_SHOCKWAVE.get(), level);
+        shockwave.setPos(center.x, center.y, center.z);
+        level.addFreshEntity(shockwave);
+        level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1.0F, 0.7F);
+        level.playSound(null, center.x, center.y, center.z, SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.PLAYERS, 1.2F, 0.8F);
+    }
+
+    /// The point of the box nearest to the center (to know if a big mob touches the explosion).
+    private static Vec3 closestPoint(AABB box, Vec3 point) {
+        return new Vec3(Math.clamp(point.x, box.minX, box.maxX), Math.clamp(point.y, box.minY, box.maxY), Math.clamp(point.z, box.minZ, box.maxZ));
     }
 }

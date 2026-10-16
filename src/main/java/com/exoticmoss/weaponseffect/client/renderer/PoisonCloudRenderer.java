@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 
@@ -20,7 +21,7 @@ public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, Poiso
     private static final int INSIDE = 0x80307020;
 
     public static class State extends EntityRenderState {
-        float size, time;
+        float size, opacity, time;
     }
 
     public PoisonCloudRenderer(EntityRendererProvider.Context context) {
@@ -36,6 +37,7 @@ public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, Poiso
     public void extractRenderState(PoisonCloudEntity entity, State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.size = entity.getSize(partialTicks);
+        state.opacity = entity.getOpacity(partialTicks);
         state.time = entity.tickCount + partialTicks;
     }
 
@@ -47,7 +49,9 @@ public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, Poiso
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-        if (state.size <= 0.01F) return;
+        if (state.size <= 0.01F || state.opacity <= 0.01F) return;
+        int outside = fade(OUTSIDE, state.opacity);
+        int inside = fade(INSIDE, state.opacity);
         float radius = PoisonCloudEntity.RADIUS * state.size;
         float height = PoisonCloudEntity.HEIGHT * state.size;
 
@@ -63,11 +67,16 @@ public class PoisonCloudRenderer extends EntityRenderer<PoisonCloudEntity, Poiso
             poseStack.translate(Mth.cos(angle) * distance, y, Mth.sin(angle) * distance);
             poseStack.scale(1, height / radius * 1.1F, 1); // flatter than a ball
             collector.submitCustomGeometry(poseStack, Shapes.TRANSLUCENT, (pose, v) -> {
-                Shapes.sphere(pose, v, puff * 0.6F, INSIDE, Shapes.FULL_BRIGHT, 0.15F, time);
-                Shapes.sphere(pose, v, puff, OUTSIDE, Shapes.FULL_BRIGHT, 0.2F, time);
+                Shapes.sphere(pose, v, puff * 0.6F, inside, Shapes.FULL_BRIGHT, 0.15F, time);
+                Shapes.sphere(pose, v, puff, outside, Shapes.FULL_BRIGHT, 0.2F, time);
             });
             poseStack.popPose();
         }
         super.submit(state, poseStack, collector, camera);
+    }
+
+    /// The same color, more see-through.
+    private static int fade(int color, float opacity) {
+        return ARGB.color(Math.round(ARGB.alpha(color) * opacity), color);
     }
 }

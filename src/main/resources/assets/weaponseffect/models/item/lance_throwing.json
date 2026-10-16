@@ -1,0 +1,21 @@
+{
+  "parent": "weaponseffect:item/lance",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [180, 0, 0],
+      "translation": [0, -8.75, 0]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [180, 0, 0],
+      "translation": [0, -8.75, 0]
+    },
+    "firstperson_righthand": {
+      "rotation": [-13.41, 15, 3.43],
+      "translation": [0, 2.5, -0.5]
+    },
+    "firstperson_lefthand": {
+      "rotation": [-13.41, 15, 3.43],
+      "translation": [0, 2.5, -0.5]
+    }
+  }
+}

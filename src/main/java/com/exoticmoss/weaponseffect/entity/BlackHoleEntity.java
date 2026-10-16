@@ -8,6 +8,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -136,6 +138,9 @@ public class BlackHoleEntity extends Entity {
                 entity -> !(entity instanceof BlackHoleEntity) && !entity.getUUID().equals(this.ownerUUID));
 
         for (Entity entity : entities) {
+            // Dropped items and experience are never pulled or destroyed (e.g. the Nether Star of a Wither)
+            if (entity instanceof ItemEntity || entity instanceof ExperienceOrb) continue;
+
             if (entity instanceof Player player) {
                 // Players holding the Wings of Doom (right or left hand) are not pulled
                 if (player.getMainHandItem().getItem() == ModItems.WINGS_OF_DOOM.get()

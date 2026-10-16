@@ -26,7 +26,8 @@ public class PoisonCloudEntity extends Entity {
     /// Size of the cloud (blocks): radius and height.
     public static final float RADIUS = 4.0F;
     public static final float HEIGHT = 2.5F;
-    /// How long the cloud lasts (ticks, 20 = 1 second), how long it takes to grow and to fade at the end.
+    /// How long the cloud lasts (ticks, 20 = 1 second), how long it takes to grow at the start
+    /// and how long it takes to fade away at the end (it keeps its size while fading).
     public static final int DURATION = 200;
     public static final int GROW_TICKS = 20;
     public static final int FADE_TICKS = 30;
@@ -53,12 +54,14 @@ public class PoisonCloudEntity extends Entity {
         level.playSound(null, target.x, target.y, target.z, SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.5F, 0.6F);
     }
 
-    /// Size of the cloud right now, from 0 to 1 (grows at the start, shrinks at the end).
+    /// Size of the cloud right now, from 0 to 1 (grows at the start).
     public float getSize(float partialTicks) {
-        float age = this.tickCount + partialTicks;
-        float grow = Mth.clamp(age / GROW_TICKS, 0, 1);
-        float fade = Mth.clamp((DURATION - age) / FADE_TICKS, 0, 1);
-        return Math.min(grow, fade);
+        return Mth.clamp((this.tickCount + partialTicks) / GROW_TICKS, 0, 1);
+    }
+
+    /// How visible the cloud is, from 1 to 0 (fades away at the end).
+    public float getOpacity(float partialTicks) {
+        return Mth.clamp((DURATION - this.tickCount - partialTicks) / FADE_TICKS, 0, 1);
     }
 
     @Override

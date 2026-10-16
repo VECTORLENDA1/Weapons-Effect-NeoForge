@@ -12,6 +12,10 @@ import com.exoticmoss.weaponseffect.entity.custom.ShockwaveEntity;
 import com.exoticmoss.weaponseffect.entity.custom.IceLotusEntity;
 import com.exoticmoss.weaponseffect.entity.custom.IceShardEntity;
 import com.exoticmoss.weaponseffect.entity.custom.PoisonCloudEntity;
+import com.exoticmoss.weaponseffect.entity.custom.DarknessSlamEntity;
+import com.exoticmoss.weaponseffect.entity.custom.DashEntity;
+import com.exoticmoss.weaponseffect.entity.custom.SmokeBombEntity;
+import com.exoticmoss.weaponseffect.entity.custom.ThrownAxeEntity;
 import com.exoticmoss.weaponseffect.ritual.SoulEntity;
 import com.exoticmoss.weaponseffect.ritual.SoulRitualEntity;
 
@@ -60,6 +64,22 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<SoulEntity>> SOUL =
             ENTITY_TYPES.registerEntityType("soul", SoulEntity::new, MobCategory.MISC,
                     builder -> builder.sized(0.3F, 0.3F).noLootTable().clientTrackingRange(8).updateInterval(1));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<SmokeBombEntity>> SMOKE_BOMB =
+            ENTITY_TYPES.registerEntityType("smoke_bomb", SmokeBombEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.5F, 0.5F).noLootTable().clientTrackingRange(8).updateInterval(20));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<DashEntity>> DASH =
+            ENTITY_TYPES.registerEntityType("dash", DashEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.5F, 0.5F).noLootTable().clientTrackingRange(8).updateInterval(1));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownAxeEntity>> THROWN_AXE =
+            ENTITY_TYPES.registerEntityType("thrown_axe", ThrownAxeEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.8F, 0.8F).noLootTable().clientTrackingRange(8).updateInterval(1));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<DarknessSlamEntity>> DARKNESS_SLAM =
+            ENTITY_TYPES.registerEntityType("darkness_slam", DarknessSlamEntity::new, MobCategory.MISC,
+                    builder -> builder.sized(0.5F, 0.5F).noLootTable().clientTrackingRange(8).updateInterval(1));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

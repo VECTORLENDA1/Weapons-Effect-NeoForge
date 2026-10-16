@@ -12,7 +12,11 @@ import com.exoticmoss.weaponseffect.client.renderer.ShockwaveRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.IceLotusRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.IceShardRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.PoisonCloudRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.DarknessSlamRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.DashRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.SmokeBombRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.SoulRenderer;
+import com.exoticmoss.weaponseffect.client.renderer.ThrownAxeRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.SoulRitualRenderer;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
 import com.exoticmoss.weaponseffect.entity.client.LanceProjectileModel;
@@ -39,5 +43,9 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.ICE_LOTUS.get(), IceLotusRenderer::new);
         event.registerEntityRenderer(ModEntities.SOUL_RITUAL.get(), SoulRitualRenderer::new);
         event.registerEntityRenderer(ModEntities.SOUL.get(), SoulRenderer::new);
+        event.registerEntityRenderer(ModEntities.SMOKE_BOMB.get(), SmokeBombRenderer::new);
+        event.registerEntityRenderer(ModEntities.DASH.get(), DashRenderer::new);
+        event.registerEntityRenderer(ModEntities.THROWN_AXE.get(), ThrownAxeRenderer::new);
+        event.registerEntityRenderer(ModEntities.DARKNESS_SLAM.get(), DarknessSlamRenderer::new);
     }
 }

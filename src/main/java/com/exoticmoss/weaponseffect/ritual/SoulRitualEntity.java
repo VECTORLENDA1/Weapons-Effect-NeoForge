@@ -319,7 +319,7 @@ public class SoulRitualEntity extends Entity {
     /// Players inside the dome join the ritual; players of the ritual can't leave the dome.
     private void keepPlayersInside(ServerLevel level) {
         for (ServerPlayer player : level.players()) {
-            double distance = horizontalDistance(player.position());
+            double distance = domeDistance(player);
             boolean joined = players.contains(player.getUUID());
             if (!joined && distance <= DOME_RADIUS && player.isAlive() && !player.isSpectator()) {
                 players.add(player.getUUID());
@@ -341,7 +341,7 @@ public class SoulRitualEntity extends Entity {
                 iterator.remove();
                 continue;
             }
-            if (horizontalDistance(mob.position()) > DOME_RADIUS - 0.6) pullInside(mob);
+            if (domeDistance(mob) > DOME_RADIUS - 0.6) pullInside(mob);
             if (mob.getTarget() == null || !mob.getTarget().isAlive()) mob.setTarget(closestPlayer(level, mob));
         }
     }
@@ -361,15 +361,19 @@ public class SoulRitualEntity extends Entity {
         return closest;
     }
 
-    private double horizontalDistance(Vec3 pos) {
-        return pos.subtract(this.position()).horizontalDistance();
+    /// Distance from the middle of the dome to the middle of the entity's body. The dome is a ball,
+    /// so this works for the sides and for the top (no flying or pearling out over it).
+    private double domeDistance(Entity entity) {
+        return entity.getBoundingBox().getCenter().distanceTo(this.position());
     }
 
-    /// Puts the entity back inside the dome, a bit away from the wall.
+    /// Puts the entity back inside the dome, a bit away from the wall (or the roof).
     private void pullInside(Entity entity) {
-        Vec3 out = entity.position().subtract(this.position()).multiply(1, 0, 1).normalize();
+        Vec3 center = entity.getBoundingBox().getCenter();
+        Vec3 out = center.subtract(this.position()).normalize();
         Vec3 inside = this.position().add(out.scale(DOME_RADIUS - 1.5));
-        entity.teleportTo(inside.x, Math.max(entity.getY(), this.getY()), inside.z);
+        double feet = Math.max(this.getY(), inside.y - entity.getBbHeight() / 2);
+        entity.teleportTo(inside.x, feet, inside.z);
         entity.setDeltaMovement(Vec3.ZERO);
         entity.hurtMarked = true;
     }

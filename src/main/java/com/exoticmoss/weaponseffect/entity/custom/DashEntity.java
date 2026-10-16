@@ -1,6 +1,10 @@
 package com.exoticmoss.weaponseffect.entity.custom;
 
+import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +24,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 import java.util.Set;
 
 /// The Swiftness Dagger ability ("Dash"): the player shoots forward to where they are aiming and hurts
@@ -46,6 +53,12 @@ public class DashEntity extends Entity {
     public static final double VERTICAL = 0.5;
     /// Ticks after the dash without fall damage.
     public static final int SAFE_LANDING_TICKS = 30;
+    /// Dashes allowed in the air before touching the ground again, for each level { I, II, III, IV, V }.
+    /// (On the ground the dash only waits for the cooldown.)
+    public static final int[] AIR_DASHES = {1, 1, 1, 1, 2};
+
+    /// Dashes each player already used in the air (cleared when they touch the ground).
+    private static final Map<UUID, Integer> AIR_DASHES_USED = new HashMap<>();
 
     private LivingEntity owner;
     private Vec3 direction = Vec3.ZERO;
@@ -57,8 +70,18 @@ public class DashEntity extends Entity {
         this.noPhysics = true;
     }
 
+    /// True if the player can dash now: always on the ground, in the air only AIR_DASHES times.
+    public static boolean canDash(Player player, int weaponLevel) {
+        if (player.onGround()) {
+            AIR_DASHES_USED.remove(player.getUUID());
+            return true;
+        }
+        return AIR_DASHES_USED.getOrDefault(player.getUUID(), 0) < WeaponLevels.pick(AIR_DASHES, weaponLevel);
+    }
+
     /// The ability: the player dashes to where they are aiming.
     public static void launch(ServerLevel level, Player owner, int weaponLevel) {
+        if (!owner.onGround()) AIR_DASHES_USED.merge(owner.getUUID(), 1, Integer::sum);
         DashEntity dash = new DashEntity(ModEntities.DASH.get(), level);
         dash.owner = owner;
         dash.weaponLevel = weaponLevel;
@@ -107,6 +130,18 @@ public class DashEntity extends Entity {
                 target.addEffect(new MobEffectInstance(MobEffects.POISON, poison * 20, WeaponLevels.pick(POISON_AMPLIFIER, weaponLevel)), owner);
             }
             WeaponLevels.reward(owner, ModItems.SWIFTNESS_DAGGER.get(), target);
+        }
+    }
+
+    /// Touching the ground gives back the dashes in the air.
+    @EventBusSubscriber(modid = WeaponsEffect.MODID)
+    public static class Landing {
+        @SubscribeEvent
+        public static void onPlayerTick(PlayerTickEvent.Post event) {
+            Player player = event.getEntity();
+            if (!player.level().isClientSide() && player.onGround() && !AIR_DASHES_USED.isEmpty()) {
+                AIR_DASHES_USED.remove(player.getUUID());
+            }
         }
     }
 

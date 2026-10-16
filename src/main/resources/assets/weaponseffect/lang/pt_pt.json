@@ -242,5 +242,7 @@
   "entity.weaponseffect.smoke_bomb": "Bomba de Fumo",
   "entity.weaponseffect.dash": "Investida",
   "entity.weaponseffect.thrown_axe": "Machado Bumerangue",
-  "entity.weaponseffect.darkness_slam": "Impacto Sombrio"
+  "entity.weaponseffect.darkness_slam": "Impacto Sombrio",
+  "weaponseffect.ability.ground": "Só a partir do chão",
+  "weaponseffect.ability.air_dashes": "Sem investidas no ar: toca no chão"
 }

@@ -52,7 +52,9 @@ public class SwiftnessDaggerItem extends Item implements AbilityWeapon {
     // Right-click: the ability (a dash to where you aim, see DashEntity)
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        // In the air only a few dashes until the player touches the ground again (see DashEntity.AIR_DASHES)
         return Abilities.use(level, player, hand, COOLDOWN_TICKS, "item.swiftness.dagger.cooldown",
+                DashEntity::canDash, "weaponseffect.ability.air_dashes",
                 (server, user, weapon, weaponLevel) -> DashEntity.launch(server, user, weaponLevel));
     }
 }

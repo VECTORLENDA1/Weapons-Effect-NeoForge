@@ -53,7 +53,9 @@ public class DarknessMaceItem extends Item implements AbilityWeapon {
     // Right-click: the ability (a leap and a slam that leaves a darkness zone, see DarknessSlamEntity)
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        // Only from the ground: no jumping again and again in the air to fly
         return Abilities.use(level, player, hand, COOLDOWN_TICKS, "item.darkness.mace.cooldown",
+                (user, weaponLevel) -> user.onGround(), "weaponseffect.ability.ground",
                 (server, user, weapon, weaponLevel) -> DarknessSlamEntity.leap(server, user, weaponLevel));
     }
 }

@@ -35,7 +35,7 @@ public class ModEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<WitherRainSkull>> WITHER_RAIN_SKULL =
             ENTITY_TYPES.registerEntityType("wither_rain_skull", WitherRainSkull::new, MobCategory.MISC,
-                    builder -> builder.sized(0.3125F, 0.3125F).noLootTable().clientTrackingRange(4).updateInterval(10));
+                    builder -> builder.sized(0.3125F, 0.3125F).noLootTable().clientTrackingRange(4).updateInterval(1));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FlameWaveEntity>> FLAME_WAVE =
             ENTITY_TYPES.registerEntityType("flame_wave", FlameWaveEntity::new, MobCategory.MISC,

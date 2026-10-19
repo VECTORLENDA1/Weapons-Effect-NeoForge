@@ -40,7 +40,7 @@ import java.util.UUID;
 public class BlackHoleEntity extends Entity {
     /// Biggest size of the black hole (radius in blocks) and how long it lives (ticks, 20 = 1 second).
     public static final float[] MAX_RADIUS = {10, 13, 16, 19, 25};
-    public static final int[] LIFETIME = {200, 250, 300, 350, 400};
+    public static final int[] LIFETIME = {200, 300, 400, 500, 600};
     /// How far it pulls: the size of the black hole times this number.
     public static final float[] PULL_RANGE = {3, 5, 7, 9, 12};
     /// Levels where it collapses with beams of light, and the damage of the collapse.
@@ -49,8 +49,8 @@ public class BlackHoleEntity extends Entity {
 
 
     private static final float MIN_RADIUS = 0.5F;
-    private static final float GROWTH_RATE = 0.05F;
-    private static final float SHRINK_RATE = 0.08F;
+    private static final float GROWTH_RATE = 0.3F;
+    private static final float SHRINK_RATE = 0.1F;
     private static final int DEFAULT_HOLD_TICKS = 60; // 3 segundos a 20 tps
     /// Every how many ticks the whole inside of the black hole is checked for blocks again (see swallowBlocks).
     private static final int FULL_CHECK_TICKS = 20;

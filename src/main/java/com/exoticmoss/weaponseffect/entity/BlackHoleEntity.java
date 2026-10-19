@@ -138,10 +138,9 @@ public class BlackHoleEntity extends Entity {
 
         this.entityData.set(DATA_RADIUS, radius);
 
-        // Só suga blocos/entidades enquanto está a crescer ou parada no máximo, não enquanto encolhe
-        if (this.phase != Phase.SHRINKING) {
-            this.suckBlocksAndEntities();
-        }
+        // Sucks blocks and entities in every phase, also while it collapses: the pull zones follow the
+        // current size, so the pull gets weaker and closer as the black hole gets smaller
+        this.suckBlocksAndEntities();
     }
 
     public float getCurrentRadius() {

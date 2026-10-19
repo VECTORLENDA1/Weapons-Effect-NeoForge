@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "weaponseffect:fire_sword",
+    "weaponseffect:wither_sword",
+    "weaponseffect:ice_sword",
+    "weaponseffect:poison_sword",
+    "weaponseffect:blindness_dagger",
+    "weaponseffect:swiftness_dagger",
+    "weaponseffect:darkness_mace",
+    "weaponseffect:gimlis_axe",
+    "weaponseffect:lance",
+    "weaponseffect:hammer",
+    "weaponseffect:wings_of_doom"
+  ]
+}

@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 public class WingsOfDoomItem extends Item implements AbilityWeapon {
     /// Cooldown of the black hole ability (in ticks, 20 = 1 second)
     /// Time between two black holes for each level { I, II, III, IV, V } (ticks, 20 = 1 second).
-    public static final int[] COOLDOWN_TICKS = {300, 260, 220, 180, 0};
+    public static final int[] COOLDOWN_TICKS = {300, 225, 150, 75, 0};
 
     public WingsOfDoomItem(Properties pProperties) {
         super(pProperties);

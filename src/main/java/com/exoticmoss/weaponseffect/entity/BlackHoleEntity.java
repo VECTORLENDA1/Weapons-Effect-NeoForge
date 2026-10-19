@@ -20,6 +20,7 @@ import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import com.exoticmoss.weaponseffect.entity.custom.ShockwaveEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -51,6 +52,8 @@ public class BlackHoleEntity extends Entity {
     private static final float GROWTH_RATE = 0.05F;
     private static final float SHRINK_RATE = 0.08F;
     private static final int DEFAULT_HOLD_TICKS = 60; // 3 segundos a 20 tps
+    /// Every how many ticks the whole inside of the black hole is checked for blocks again (see swallowBlocks).
+    private static final int FULL_CHECK_TICKS = 20;
 
 
     // Raio sincronizado entre servidor e cliente — ESSENCIAL para o renderer ver o crescimento
@@ -67,6 +70,8 @@ public class BlackHoleEntity extends Entity {
     private float maxRadius;
     private UUID ownerUUID;
     private int weaponLevel = 1;
+    /// Up to this radius the blocks were already removed.
+    private float clearedRadius;
 
     public BlackHoleEntity(EntityType<? extends BlackHoleEntity> entityType, Level level) {
         super(entityType, level);
@@ -152,22 +157,8 @@ public class BlackHoleEntity extends Entity {
         float currentRadius = this.getCurrentRadius();
         float pull = WeaponLevels.pick(PULL_RANGE, weaponLevel);
         int range = (int) Math.ceil(getCurrentRadius() * pull);
-        BlockPos centerPos = this.blockPosition();
 
-        List<BlockPos> blocksToRemove = new ArrayList<>();
-        for (BlockPos pos : BlockPos.betweenClosed(centerPos.offset(-range, -range, -range), centerPos.offset(range, range, range))) {
-            double distance = Math.sqrt(pos.distSqr(centerPos));
-            if (distance <= currentRadius) {
-                BlockState state = this.level().getBlockState(pos);
-                if (!state.isAir() && !isGravityCore(state)) {
-                    if (isLiquid(state)) {
-                        this.level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-                    } else if (state.getDestroySpeed(this.level(), pos) >= 0) {
-                        this.level().destroyBlock(pos, false);
-                    }
-                }
-            }
-        }
+        swallowBlocks(currentRadius);
 
         List<Entity> entities = this.level().getEntities(this, this.getBoundingBox().inflate(range),
                 entity -> !(entity instanceof BlackHoleEntity) && !entity.getUUID().equals(this.ownerUUID));
@@ -217,6 +208,41 @@ public class BlackHoleEntity extends Entity {
                 }
             }
         }
+    }
+
+    /// Removes the blocks inside the black hole, without making the game lag:
+    ///  - only the blocks inside the black hole are checked (not the whole pull area);
+    ///  - each tick only the new "shell" is checked (the part it grew since the last tick), because
+    ///    the inside is already empty; once every FULL_CHECK_TICKS the whole inside is checked again
+    ///    (for water/lava that flowed in, or blocks placed by players);
+    ///  - the blocks disappear without break particles/sounds and without updating their neighbours
+    ///    (thousands of those at once are what made the game freeze).
+    private void swallowBlocks(float radius) {
+        boolean fullCheck = this.tickCount % FULL_CHECK_TICKS == 0;
+        double inner = fullCheck ? -1 : Math.max(0, clearedRadius - 1);
+        if (!fullCheck && radius <= clearedRadius) return;
+
+        double innerSqr = inner < 0 ? -1 : inner * inner;
+        double outerSqr = radius * radius;
+        int r = (int) Math.ceil(radius);
+        BlockPos center = this.blockPosition();
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        Level level = this.level();
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -r; dy <= r; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    double d = dx * dx + dy * dy + dz * dz;
+                    if (d > outerSqr || d < innerSqr) continue;
+                    pos.set(center.getX() + dx, center.getY() + dy, center.getZ() + dz);
+                    BlockState state = level.getBlockState(pos);
+                    if (state.isAir() || isGravityCore(state)) continue;
+                    if (isLiquid(state) || state.getDestroySpeed(level, pos) >= 0) {
+                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+                    }
+                }
+            }
+        }
+        clearedRadius = Math.max(clearedRadius, radius);
     }
 
     /// The player who made the black hole (null if not online).

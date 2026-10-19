@@ -48,8 +48,8 @@ public class BlackHoleEntity extends Entity {
 
 
     private static final float MIN_RADIUS = 0.5F;
-    private static final float GROWTH_RATE = 0.1F;
-    private static final float SHRINK_RATE = 0.1F;
+    private static final float GROWTH_RATE = 0.05F;
+    private static final float SHRINK_RATE = 0.08F;
     private static final int DEFAULT_HOLD_TICKS = 60; // 3 segundos a 20 tps
 
 

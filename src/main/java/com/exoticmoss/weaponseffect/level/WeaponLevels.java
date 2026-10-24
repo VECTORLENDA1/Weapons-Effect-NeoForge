@@ -14,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 /// HOW IT WORKS
 ///  - Every time an ability hits a mob, the weapon gets XP_PER_HIT; if the mob dies, also XP_PER_KILL.
 ///  - Every normal hit (left-click) with the weapon gives XP_PER_NORMAL_HIT (small, so it can't be abused).
+///  - The effects of the abilities count too (see EffectCredit): XP_PER_EFFECT_DAMAGE for every damage
+///    the mob takes from Wither/Poison/burning/freezing, and half of XP_PER_KILL if it dies from it.
 ///  - When the weapon has XP_TO_NEXT_LEVEL experience it is "ready": the experience stops there and
 ///    the weapon must be taken to a Soul Core (tier = current level) to do the ritual and level up.
 ///  - The abilities read their numbers from tables: { level I, II, III, IV, V }.
@@ -27,6 +29,8 @@ public final class WeaponLevels {
     public static final float XP_PER_KILL = 3F;
     /// Experience given by a normal hit (left-click) with the weapon.
     public static final float XP_PER_NORMAL_HIT = 0.1F;
+    /// Experience for each damage a mob takes from the effect of an ability (Wither, Poison, fire, freezing).
+    public static final float XP_PER_EFFECT_DAMAGE = 0.2F;
 
     private WeaponLevels() {
     }
@@ -97,6 +101,14 @@ public final class WeaponLevels {
     public static void reward(LivingEntity owner, Item weapon, LivingEntity target) {
         if (owner == null || target == owner || owner.level().isClientSide()) return;
         addXp(owner, find(owner, weapon), XP_PER_HIT + (target.isDeadOrDying() ? XP_PER_KILL : 0));
+        // The effects the ability gave (Wither, Poison, fire...) also give experience later
+        EffectCredit.remember(owner, weapon, target);
+    }
+
+    /// Call it when a mob takes damage from the effect of an ability of this weapon (see EffectCredit).
+    public static void rewardEffect(LivingEntity owner, Item weapon, boolean killed) {
+        if (owner == null || owner.level().isClientSide()) return;
+        addXp(owner, find(owner, weapon), killed ? XP_PER_KILL / 2 : XP_PER_EFFECT_DAMAGE);
     }
 
     /// Call it when the weapon hits a mob with a normal hit (left-click).

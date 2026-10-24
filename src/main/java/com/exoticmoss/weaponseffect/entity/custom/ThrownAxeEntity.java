@@ -72,7 +72,7 @@ public class ThrownAxeEntity extends Entity {
         int count = WeaponLevels.pick(AXE_COUNT, weaponLevel);
         for (int i = 0; i < count; i++) {
             float yaw = owner.getYRot() + (i - (count - 1) / 2F) * SPREAD_DEGREES;
-            ThrownAxeEntity axe = new ThrownAxeEntity(ModEntities.THROWN_AXE.get(), level);
+            ThrownAxeEntity axe = new ThrownAxeEntity(ModEntities.THROWN_AXE, level);
             axe.owner = owner;
             axe.weaponLevel = weaponLevel;
             axe.entityData.set(DATA_ITEM, weapon.copyWithCount(1));
@@ -135,7 +135,7 @@ public class ThrownAxeEntity extends Entity {
             if (target.hurtServer(level, source, WeaponLevels.pick(DAMAGE, weaponLevel))) {
                 target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, WeaponLevels.pick(SLOWNESS_SECONDS, weaponLevel) * 20, 2), owner);
                 level.playSound(null, target.blockPosition(), SoundEvents.TRIDENT_HIT, SoundSource.PLAYERS, 1.0F, 0.8F);
-                WeaponLevels.reward(owner, ModItems.GIMLIS_AXE.get(), target);
+                WeaponLevels.reward(owner, ModItems.GIMLIS_AXE, target);
             }
         }
     }

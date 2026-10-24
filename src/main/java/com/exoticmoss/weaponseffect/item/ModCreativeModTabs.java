@@ -1,46 +1,44 @@
 package com.exoticmoss.weaponseffect.item;
 
-import net.minecraft.core.registries.Registries;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 import static com.exoticmoss.weaponseffect.WeaponsEffect.MODID;
 
 
 //Creates the mod tab in the creative inventory, with all the weapons
 public class ModCreativeModTabs {
-    public static final net.neoforged.neoforge.registries.DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
-            net.neoforged.neoforge.registries.DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WEAPONS_EFFECT = CREATIVE_MODE_TABS.register("weapons_effect",
-            () -> CreativeModeTab.builder()
+    public static final CreativeModeTab WEAPONS_EFFECT = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB,
+            Identifier.fromNamespaceAndPath(MODID, "weapons_effect"),
+            FabricCreativeModeTab.builder()
             .title(Component.translatable("creativetab.weapons_effect"))
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> ModItems.WINGS_OF_DOOM.get().getDefaultInstance())
+            .icon(() -> ModItems.WINGS_OF_DOOM.getDefaultInstance())
             .displayItems((parameters, output) -> {
 
 
                     //WEAPONS//
-                    output.accept(ModItems.FIRE_SWORD.get());
-                    output.accept(ModItems.WITHER_SWORD.get());
-                    output.accept(ModItems.BLINDNESS_DAGGER.get());
-                    output.accept(ModItems.DARKNESS_MACE.get());
-                    output.accept(ModItems.GIMLIS_AXE.get());
-                    output.accept(ModItems.ICE_SWORD.get());
-                    output.accept(ModItems.LANCE.get());
-                    output.accept(ModItems.POISON_SWORD.get());
-                    output.accept(ModItems.HAMMER.get());
-                    output.accept(ModItems.WINGS_OF_DOOM.get());
-                    output.accept(ModItems.SWIFTNESS_DAGGER.get());
+                    output.accept(ModItems.FIRE_SWORD);
+                    output.accept(ModItems.WITHER_SWORD);
+                    output.accept(ModItems.BLINDNESS_DAGGER);
+                    output.accept(ModItems.DARKNESS_MACE);
+                    output.accept(ModItems.GIMLIS_AXE);
+                    output.accept(ModItems.ICE_SWORD);
+                    output.accept(ModItems.LANCE);
+                    output.accept(ModItems.POISON_SWORD);
+                    output.accept(ModItems.HAMMER);
+                    output.accept(ModItems.WINGS_OF_DOOM);
+                    output.accept(ModItems.SWIFTNESS_DAGGER);
 
                     //RITUAL//
-                    output.accept(ModItems.SOUL_CORE.get());
+                    output.accept(ModItems.SOUL_CORE);
             })
                 .build());
 
-    public static void register(net.neoforged.bus.api.IEventBus eventBus) {
-        CREATIVE_MODE_TABS.register(eventBus);
+    /// Loads the class, so the tab above is registered.
+    public static void register() {
     }
 }

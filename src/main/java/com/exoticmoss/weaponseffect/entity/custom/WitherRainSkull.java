@@ -59,7 +59,7 @@ public class WitherRainSkull extends WitherSkull {
     }
 
     private WitherRainSkull(Level level, LivingEntity owner, int weaponLevel) {
-        this(ModEntities.WITHER_RAIN_SKULL.get(), level);
+        this(ModEntities.WITHER_RAIN_SKULL, level);
         this.setOwner(owner);
         this.weaponLevel = weaponLevel;
         this.setDangerous(BLUE[weaponLevel - 1]);
@@ -165,7 +165,7 @@ public class WitherRainSkull extends WitherSkull {
     }
 
     private void reward(LivingEntity target) {
-        if (this.getOwner() instanceof LivingEntity owner) WeaponLevels.reward(owner, ModItems.WITHER_SWORD.get(), target);
+        if (this.getOwner() instanceof LivingEntity owner) WeaponLevels.reward(owner, ModItems.WITHER_SWORD, target);
     }
 
     private DamageSource damageSource() {

@@ -54,7 +54,7 @@ public class ShockwaveEntity extends Entity {
 
     /// An explosion that also does damage, after "delay" ticks (0 = now).
     public static void blast(ServerLevel level, Vec3 at, float radius, int color, int delay, @Nullable Blast blast) {
-        ShockwaveEntity wave = new ShockwaveEntity(ModEntities.SHOCKWAVE.get(), level);
+        ShockwaveEntity wave = new ShockwaveEntity(ModEntities.SHOCKWAVE, level);
         wave.entityData.set(DATA_RADIUS, radius);
         wave.entityData.set(DATA_COLOR, color);
         wave.entityData.set(DATA_DELAY, delay);

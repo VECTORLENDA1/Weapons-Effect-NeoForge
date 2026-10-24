@@ -41,7 +41,7 @@ public final class LevelUpChanges {
     private static Map<Item, List<Stat>> stats() {
         if (stats != null) return stats;
         stats = new HashMap<>();
-        stats.put(ModItems.FIRE_SWORD.get(), List.of(
+        stats.put(ModItems.FIRE_SWORD, List.of(
                 stat("damage", l -> WeaponLevels.pick(FlameWaveEntity.DAMAGE, l)),
                 stat("length", l -> WeaponLevels.pick(FlameWaveEntity.LENGTH, l)),
                 stat("width", l -> WeaponLevels.pick(FlameWaveEntity.WIDTH, l)),
@@ -49,7 +49,7 @@ public final class LevelUpChanges {
                 seconds("ground_fire", l -> WeaponLevels.pick(FlameWaveEntity.GROUND_FIRE_SECONDS, l)),
                 stat("ground_fire_damage", l -> WeaponLevels.pick(FlameWaveEntity.GROUND_FIRE_DAMAGE, l)),
                 cooldown(FireSwordItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.WITHER_SWORD.get(), List.of(
+        stats.put(ModItems.WITHER_SWORD, List.of(
                 stat("skulls", l -> WeaponLevels.pick(WitherRainSkull.SKULL_COUNT, l)),
                 stat("damage", l -> WeaponLevels.pick(WitherRainSkull.DAMAGE, l)),
                 seconds("wither", l -> WeaponLevels.pick(WitherRainSkull.WITHER_SECONDS, l)),
@@ -57,53 +57,53 @@ public final class LevelUpChanges {
                 stat("explosion_radius", l -> WeaponLevels.pick(WitherRainSkull.EXPLOSION_RADIUS, l)),
                 stat("explosion_damage", l -> WeaponLevels.pick(WitherRainSkull.EXPLOSION_DAMAGE, l)),
                 cooldown(WitherSwordItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.ICE_SWORD.get(), List.of(
+        stats.put(ModItems.ICE_SWORD, List.of(
                 stat("shards", l -> WeaponLevels.pick(IceShardEntity.SHARD_COUNT, l)),
                 stat("damage", l -> WeaponLevels.pick(IceShardEntity.DAMAGE, l)),
                 seconds("freeze", l -> WeaponLevels.pick(IceShardEntity.FREEZE_SECONDS, l)),
                 stat("slowness_level", l -> WeaponLevels.pick(IceShardEntity.SLOWNESS_AMPLIFIER, l) + 1),
                 stat("area_freeze_radius", l -> WeaponLevels.pick(IceShardEntity.AREA_FREEZE_RADIUS, l)),
                 cooldown(IceSwordItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.LANCE.get(), List.of(
+        stats.put(ModItems.LANCE, List.of(
                 stat("lances", l -> WeaponLevels.pick(LanceProjectileEntity.RAIN_COUNT, l)),
                 stat("damage", l -> WeaponLevels.pick(LanceProjectileEntity.RAIN_DAMAGE, l)),
                 stat("radius", l -> WeaponLevels.pick(LanceProjectileEntity.RAIN_RADIUS, l)),
                 seconds("weakness", l -> WeaponLevels.pick(LanceProjectileEntity.WEAKNESS_SECONDS, l))));
-        stats.put(ModItems.POISON_SWORD.get(), List.of(
+        stats.put(ModItems.POISON_SWORD, List.of(
                 stat("radius", l -> WeaponLevels.pick(PoisonCloudEntity.RADIUS, l)),
                 seconds("duration", l -> WeaponLevels.pick(PoisonCloudEntity.DURATION, l) / 20.0),
                 seconds("poison", l -> WeaponLevels.pick(PoisonCloudEntity.POISON_SECONDS, l)),
                 stat("poison_level", l -> WeaponLevels.pick(PoisonCloudEntity.POISON_AMPLIFIER, l) + 1),
                 cooldown(PoisonSwordItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.HAMMER.get(), List.of(
+        stats.put(ModItems.HAMMER, List.of(
                 stat("radius", l -> WeaponLevels.pick(HammerItem.EXPLOSION_RADIUS, l)),
                 stat("damage", l -> WeaponLevels.pick(HammerItem.EXPLOSION_DAMAGE, l)),
                 stat("knockback", l -> WeaponLevels.pick(HammerItem.KNOCKBACK, l)),
                 seconds("stun", l -> WeaponLevels.pick(HammerItem.STUN_SECONDS, l)),
                 cooldown(HammerItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.WINGS_OF_DOOM.get(), List.of(
+        stats.put(ModItems.WINGS_OF_DOOM, List.of(
                 stat("radius", l -> WeaponLevels.pick(BlackHoleEntity.MAX_RADIUS, l)),
                 seconds("duration", l -> WeaponLevels.pick(BlackHoleEntity.LIFETIME, l) / 20.0),
                 stat("pull_range", l -> WeaponLevels.pick(BlackHoleEntity.PULL_RANGE, l)),
                 cooldown(WingsOfDoomItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.BLINDNESS_DAGGER.get(), List.of(
+        stats.put(ModItems.BLINDNESS_DAGGER, List.of(
                 stat("radius", l -> WeaponLevels.pick(SmokeBombEntity.RADIUS, l)),
                 seconds("duration", l -> WeaponLevels.pick(SmokeBombEntity.SMOKE_SECONDS, l)),
                 seconds("blindness", l -> WeaponLevels.pick(SmokeBombEntity.BLINDNESS_SECONDS, l)),
                 seconds("invisibility", l -> WeaponLevels.pick(SmokeBombEntity.INVISIBILITY_SECONDS, l)),
                 cooldown(BlindnessDaggerItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.SWIFTNESS_DAGGER.get(), List.of(
+        stats.put(ModItems.SWIFTNESS_DAGGER, List.of(
                 stat("distance", l -> WeaponLevels.pick(DashEntity.DISTANCE, l)),
                 stat("damage", l -> WeaponLevels.pick(DashEntity.DAMAGE, l)),
                 seconds("poison", l -> WeaponLevels.pick(DashEntity.POISON_SECONDS, l)),
                 cooldown(SwiftnessDaggerItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.GIMLIS_AXE.get(), List.of(
+        stats.put(ModItems.GIMLIS_AXE, List.of(
                 stat("range", l -> WeaponLevels.pick(ThrownAxeEntity.RANGE, l)),
                 stat("damage", l -> WeaponLevels.pick(ThrownAxeEntity.DAMAGE, l)),
                 seconds("slowness", l -> WeaponLevels.pick(ThrownAxeEntity.SLOWNESS_SECONDS, l)),
                 stat("axes", l -> WeaponLevels.pick(ThrownAxeEntity.AXE_COUNT, l)),
                 cooldown(GimlisAxeItem.COOLDOWN_TICKS)));
-        stats.put(ModItems.DARKNESS_MACE.get(), List.of(
+        stats.put(ModItems.DARKNESS_MACE, List.of(
                 stat("radius", l -> WeaponLevels.pick(DarknessSlamEntity.SLAM_RADIUS, l)),
                 stat("damage", l -> WeaponLevels.pick(DarknessSlamEntity.SLAM_DAMAGE, l)),
                 stat("zone_radius", l -> WeaponLevels.pick(DarknessSlamEntity.ZONE_RADIUS, l)),

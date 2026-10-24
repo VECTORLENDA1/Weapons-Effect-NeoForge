@@ -8,24 +8,38 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import com.mojang.serialization.Codec;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.tags.DamageTypeTags;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.item.custom.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /// Effects the player gets while holding a weapon (main hand or off hand),
 /// and the effects the weapons make the player immune to (main hand or off hand).
-@EventBusSubscriber(modid = WeaponsEffect.MODID)
 public class EventEffectItems {
 
     public static final String EFFECT_TAG = "ItemEffectApplied";
+
+    /// The "EFFECT_TAG + effect" marks of the effects that were given by a weapon (saved with the player).
+    private static final AttachmentType<Set<String>> APPLIED_EFFECTS = AttachmentRegistry.createPersistent(
+            Identifier.fromNamespaceAndPath(WeaponsEffect.MODID, "item_effects_applied"),
+            Codec.STRING.listOf().xmap(list -> (Set<String>) new HashSet<>(list), ArrayList::new));
+
+    /// Hooks (the player tick hooks are called from PlayerMixin, the effect hook from LivingEntityMixin).
+    public static void register() {
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !onFireDamage(entity, source));
+    }
 
     /// Effect given while holding the weapon -> amplifier of the effect for each weapon (0 = level I, 1 = level II...).
     /// If the player holds two weapons with the same effect, the first one of the list wins.
@@ -66,9 +80,7 @@ public class EventEffectItems {
             MobEffects.WITHER, List.of(WitherSwordItem.class, WingsOfDoomItem.class)
     );
 
-    @SubscribeEvent
-    public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
-            Player player = event.getEntity();
+    public static void onPlayerTickPre(Player player) {
             // Effects are given by the server (the client receives them automatically)
             if (player.level().isClientSide()) {
                 return;
@@ -92,13 +104,11 @@ public class EventEffectItems {
 
     /// Stops the effect from being given at all while a weapon that is immune to it is held
     /// (e.g. the Wither Boss attacks don't give Wither while holding the Wither Sword).
-    @SubscribeEvent
-    public static void onEffectApplicable(MobEffectEvent.Applicable event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        List<Class<? extends Item>> weapons = IMMUNITIES.get(event.getEffectInstance().getEffect());
-        if (weapons != null && holdsAny(player, weapons)) {
-            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
-        }
+    /// Returns false when the effect must not be applied.
+    public static boolean onEffectApplicable(LivingEntity entity, MobEffectInstance effect) {
+        if (!(entity instanceof Player player)) return true;
+        List<Class<? extends Item>> weapons = IMMUNITIES.get(effect.getEffect());
+        return weapons == null || !holdsAny(player, weapons);
     }
 
     /// True if the player holds one of these weapons in the right hand or in the left hand (offhand).
@@ -130,12 +140,25 @@ public class EventEffectItems {
             if (currentEffect == null || currentEffect.getAmplifier() < amplifier
                     || (currentEffect.getAmplifier() == amplifier && !currentEffect.isInfiniteDuration())) {
                 player.addEffect(new MobEffectInstance(effect, MobEffectInstance.INFINITE_DURATION, amplifier, false, false, true));
-                player.getPersistentData().putBoolean(tag, true);
+                setMark(player, tag, true);
             }
-        } else if (player.getPersistentData().getBooleanOr(tag, false)) {
+        } else if (hasMark(player, tag)) {
             player.removeEffect(effect);
-            player.getPersistentData().remove(tag);
+            setMark(player, tag, false);
         }
+    }
+
+    private static boolean hasMark(Player player, String tag) {
+        Set<String> marks = player.getAttached(APPLIED_EFFECTS);
+        return marks != null && marks.contains(tag);
+    }
+
+    private static void setMark(Player player, String tag, boolean value) {
+        Set<String> marks = player.getAttached(APPLIED_EFFECTS);
+        Set<String> copy = marks == null ? new HashSet<>() : new HashSet<>(marks);
+        if (value ? !copy.add(tag) : !copy.remove(tag)) return;
+        if (copy.isEmpty()) player.removeAttached(APPLIED_EFFECTS);
+        else player.setAttached(APPLIED_EFFECTS, copy);
     }
 
     // ---------------------------------------------------------------- fire and lava immunity
@@ -152,9 +175,7 @@ public class EventEffectItems {
 
     /// The player never catches fire: no fire on the screen and no flames on the body
     /// (on both sides, so the client doesn't show the fire even for a moment).
-    @SubscribeEvent
-    public static void onPlayerTickPost(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
+    public static void onPlayerTickPost(Player player) {
         if (!isFireProof(player)) return;
 
         player.clearFire();
@@ -164,12 +185,9 @@ public class EventEffectItems {
     }
 
     /// No damage at all from fire, lava, magma blocks, fireballs...
-    @SubscribeEvent
-    public static void onFireDamage(LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof Player player && isFireProof(player)
-                && event.getSource().is(DamageTypeTags.IS_FIRE)) {
-            event.setCanceled(true);
-        }
+    /// Returns true when the damage must be cancelled.
+    public static boolean onFireDamage(LivingEntity entity, DamageSource source) {
+        return entity instanceof Player player && isFireProof(player) && source.is(DamageTypeTags.IS_FIRE);
     }
 
     private static void removeIfPresent(Player player, Holder<MobEffect> effect) {

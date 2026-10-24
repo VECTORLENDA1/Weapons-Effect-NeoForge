@@ -163,7 +163,7 @@ public class SoulRitualEntity extends Entity {
 
         // Start: the Soul Cores are used (not in creative), the weapon goes to float above the core
         if (!player.hasInfiniteMaterials()) useSoulCores(player, cores);
-        SoulRitualEntity ritual = new SoulRitualEntity(ModEntities.SOUL_RITUAL.get(), level);
+        SoulRitualEntity ritual = new SoulRitualEntity(ModEntities.SOUL_RITUAL, level);
         ritual.ownerId = player.getUUID();
         ritual.weaponLevel = weaponLevel;
         ritual.totalWaves = weaponLevel * WAVES_PER_LEVEL;
@@ -192,7 +192,7 @@ public class SoulRitualEntity extends Entity {
     private static int countSoulCores(Player player) {
         int count = 0;
         for (ItemStack stack : player.getInventory()) {
-            if (stack.is(ModItems.SOUL_CORE.get())) count += stack.getCount();
+            if (stack.is(ModItems.SOUL_CORE)) count += stack.getCount();
         }
         return count;
     }
@@ -200,7 +200,7 @@ public class SoulRitualEntity extends Entity {
     private static void useSoulCores(Player player, int amount) {
         for (ItemStack stack : player.getInventory()) {
             if (amount <= 0) return;
-            if (stack.is(ModItems.SOUL_CORE.get())) {
+            if (stack.is(ModItems.SOUL_CORE)) {
                 int used = Math.min(amount, stack.getCount());
                 stack.shrink(used);
                 amount -= used;

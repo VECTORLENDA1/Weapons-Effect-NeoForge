@@ -32,7 +32,7 @@ public final class WeaponLevels {
     }
 
     public static WeaponLevel get(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.WEAPON_LEVEL.get(), WeaponLevel.DEFAULT);
+        return stack.getOrDefault(ModDataComponents.WEAPON_LEVEL, WeaponLevel.DEFAULT);
     }
 
     public static int level(ItemStack stack) {
@@ -40,7 +40,7 @@ public final class WeaponLevels {
     }
 
     public static void set(ItemStack stack, int level, float xp) {
-        stack.set(ModDataComponents.WEAPON_LEVEL.get(), new WeaponLevel(Math.clamp(level, 1, MAX_LEVEL), Math.max(0, xp)));
+        stack.set(ModDataComponents.WEAPON_LEVEL, new WeaponLevel(Math.clamp(level, 1, MAX_LEVEL), Math.max(0, xp)));
     }
 
     /// Experience needed for the next level (0 at the max level).

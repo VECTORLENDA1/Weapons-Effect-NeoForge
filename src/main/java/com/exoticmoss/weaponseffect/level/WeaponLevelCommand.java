@@ -1,6 +1,5 @@
 package com.exoticmoss.weaponseffect.level;
 
-import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,20 +9,16 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 /// Command to test the levels (needs cheats / operator), always on the weapon in the main hand:
 ///  - /weaponlevel set <1-5>   -> puts the weapon at that level (with 0 XP) and shows what changed
 ///  - /weaponlevel xp <amount> -> gives XP to the weapon
 ///  - /weaponlevel ready       -> fills the XP, so the weapon is ready for the Soul Ritual
-@EventBusSubscriber(modid = WeaponsEffect.MODID)
 public class WeaponLevelCommand {
 
-    @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("weaponlevel")
+    public static void register() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) -> dispatcher.register(Commands.literal("weaponlevel")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("set")
                         .then(Commands.argument("level", IntegerArgumentType.integer(1, WeaponLevels.MAX_LEVEL))
@@ -31,7 +26,7 @@ public class WeaponLevelCommand {
                 .then(Commands.literal("xp")
                         .then(Commands.argument("amount", FloatArgumentType.floatArg(0))
                                 .executes(c -> addXp(c, FloatArgumentType.getFloat(c, "amount")))))
-                .then(Commands.literal("ready").executes(WeaponLevelCommand::ready)));
+                .then(Commands.literal("ready").executes(WeaponLevelCommand::ready))));
     }
 
     private static int setLevel(CommandContext<CommandSourceStack> context, int level) throws CommandSyntaxException {

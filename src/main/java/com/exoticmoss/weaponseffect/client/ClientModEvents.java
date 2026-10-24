@@ -1,11 +1,8 @@
 package com.exoticmoss.weaponseffect.client;
 
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.minecraft.client.renderer.entity.WitherSkullRenderer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.client.renderer.BlackHoleRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.FlameWaveRenderer;
 import com.exoticmoss.weaponseffect.client.renderer.ShockwaveRenderer;
@@ -24,28 +21,26 @@ import com.exoticmoss.weaponseffect.entity.client.LanceProjectileRenderer;
 
 
 // Client only: how the mod's entities are drawn
-@EventBusSubscriber(modid = WeaponsEffect.MODID, value = Dist.CLIENT)
+// (called from WeaponsEffectClient)
 public class ClientModEvents {
-    @SubscribeEvent
-    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(LanceProjectileModel.LAYER_LOCATION, LanceProjectileModel::createBodyLayer);
+    public static void registerLayers() {
+        ModelLayerRegistry.registerModelLayer(LanceProjectileModel.LAYER_LOCATION, LanceProjectileModel::createBodyLayer);
     }
 
-    @SubscribeEvent
-    public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
-        event.registerEntityRenderer(ModEntities.LANCE.get(), LanceProjectileRenderer::new);
-        event.registerEntityRenderer(ModEntities.WITHER_RAIN_SKULL.get(), WitherSkullRenderer::new);
-        event.registerEntityRenderer(ModEntities.FLAME_WAVE.get(), FlameWaveRenderer::new);
-        event.registerEntityRenderer(ModEntities.ICE_SHARD.get(), IceShardRenderer::new);
-        event.registerEntityRenderer(ModEntities.POISON_CLOUD.get(), PoisonCloudRenderer::new);
-        event.registerEntityRenderer(ModEntities.SHOCKWAVE.get(), ShockwaveRenderer::new);
-        event.registerEntityRenderer(ModEntities.ICE_LOTUS.get(), IceLotusRenderer::new);
-        event.registerEntityRenderer(ModEntities.SOUL_RITUAL.get(), SoulRitualRenderer::new);
-        event.registerEntityRenderer(ModEntities.SOUL.get(), SoulRenderer::new);
-        event.registerEntityRenderer(ModEntities.SMOKE_BOMB.get(), SmokeBombRenderer::new);
-        event.registerEntityRenderer(ModEntities.DASH.get(), DashRenderer::new);
-        event.registerEntityRenderer(ModEntities.THROWN_AXE.get(), ThrownAxeRenderer::new);
-        event.registerEntityRenderer(ModEntities.DARKNESS_SLAM.get(), DarknessSlamRenderer::new);
+    public static void onRegisterEntityRenderers() {
+        EntityRendererRegistry.register(ModEntities.BLACK_HOLE, BlackHoleRenderer::new);
+        EntityRendererRegistry.register(ModEntities.LANCE, LanceProjectileRenderer::new);
+        EntityRendererRegistry.register(ModEntities.WITHER_RAIN_SKULL, WitherSkullRenderer::new);
+        EntityRendererRegistry.register(ModEntities.FLAME_WAVE, FlameWaveRenderer::new);
+        EntityRendererRegistry.register(ModEntities.ICE_SHARD, IceShardRenderer::new);
+        EntityRendererRegistry.register(ModEntities.POISON_CLOUD, PoisonCloudRenderer::new);
+        EntityRendererRegistry.register(ModEntities.SHOCKWAVE, ShockwaveRenderer::new);
+        EntityRendererRegistry.register(ModEntities.ICE_LOTUS, IceLotusRenderer::new);
+        EntityRendererRegistry.register(ModEntities.SOUL_RITUAL, SoulRitualRenderer::new);
+        EntityRendererRegistry.register(ModEntities.SOUL, SoulRenderer::new);
+        EntityRendererRegistry.register(ModEntities.SMOKE_BOMB, SmokeBombRenderer::new);
+        EntityRendererRegistry.register(ModEntities.DASH, DashRenderer::new);
+        EntityRendererRegistry.register(ModEntities.THROWN_AXE, ThrownAxeRenderer::new);
+        EntityRendererRegistry.register(ModEntities.DARKNESS_SLAM, DarknessSlamRenderer::new);
     }
 }

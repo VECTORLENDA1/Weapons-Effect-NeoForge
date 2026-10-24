@@ -45,7 +45,7 @@ public class IceLotusEntity extends Entity {
     }
 
     public static void grow(ServerLevel level, LivingEntity owner, Vec3 at, int weaponLevel, int seconds) {
-        IceLotusEntity lotus = new IceLotusEntity(ModEntities.ICE_LOTUS.get(), level);
+        IceLotusEntity lotus = new IceLotusEntity(ModEntities.ICE_LOTUS, level);
         lotus.owner = owner;
         lotus.weaponLevel = weaponLevel;
         lotus.entityData.set(DATA_LIFETIME, seconds * 20);
@@ -84,7 +84,7 @@ public class IceLotusEntity extends Entity {
             mob.hurtServer(level, source, EXPLOSION_DAMAGE);
             mob.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, FREEZE_SECONDS * 20, 3), owner);
             Freeze.apply(mob, FREEZE_SECONDS);
-            if (owner != null) WeaponLevels.reward(owner, ModItems.ICE_SWORD.get(), mob);
+            if (owner != null) WeaponLevels.reward(owner, ModItems.ICE_SWORD, mob);
         }
         level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.2F, 0.7F);
         level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.POWDER_SNOW_BREAK, SoundSource.PLAYERS, 1.2F, 0.8F);

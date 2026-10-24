@@ -78,7 +78,7 @@ public class BlackHoleEntity extends Entity {
     }
 
     public BlackHoleEntity(Level world, double x, double y, double z, int weaponLevel, UUID ownerUUID) {
-        this(ModEntities.BLACK_HOLE.get(), world);
+        this(ModEntities.BLACK_HOLE, world);
         this.setPos(x, y, z);
         this.weaponLevel = weaponLevel;
         this.lifetime = WeaponLevels.pick(LIFETIME, weaponLevel);
@@ -168,7 +168,7 @@ public class BlackHoleEntity extends Entity {
 
             // Players holding the Wings of Doom in the MAIN hand (right) are not pulled or killed.
             // Checked every tick: changing slot (or holding it in the left hand) gives no protection
-            if (entity instanceof Player player && player.getMainHandItem().is(ModItems.WINGS_OF_DOOM.get())) continue;
+            if (entity instanceof Player player && player.getMainHandItem().is(ModItems.WINGS_OF_DOOM)) continue;
 
             // Big mobs made of parts (the Ender Dragon): the closest part counts
             Entity target = entity instanceof EnderDragonPart part ? part.parentMob : entity;
@@ -203,7 +203,7 @@ public class BlackHoleEntity extends Entity {
                 boolean wasAlive = target.isAlive();
                 annihilate(level, target);
                 if (wasAlive && target instanceof LivingEntity killed && getOwner(level) instanceof LivingEntity owner) {
-                    WeaponLevels.reward(owner, ModItems.WINGS_OF_DOOM.get(), killed);
+                    WeaponLevels.reward(owner, ModItems.WINGS_OF_DOOM, killed);
                 }
             }
         }
@@ -257,9 +257,9 @@ public class BlackHoleEntity extends Entity {
         var source = owner instanceof Player player ? level.damageSources().playerAttack(player) : level.damageSources().magic();
         for (LivingEntity mob : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(range))) {
             if (mob == owner || mob.distanceTo(this) > range) continue;
-            if (mob instanceof Player player && player.getMainHandItem().is(ModItems.WINGS_OF_DOOM.get())) continue;
+            if (mob instanceof Player player && player.getMainHandItem().is(ModItems.WINGS_OF_DOOM)) continue;
             mob.hurtServer(level, source, COLLAPSE_DAMAGE);
-            if (owner instanceof LivingEntity livingOwner) WeaponLevels.reward(livingOwner, ModItems.WINGS_OF_DOOM.get(), mob);
+            if (owner instanceof LivingEntity livingOwner) WeaponLevels.reward(livingOwner, ModItems.WINGS_OF_DOOM, mob);
         }
         ShockwaveEntity.spawn(level, this.position(), (float) range, 0x50E0D8FF);
     }

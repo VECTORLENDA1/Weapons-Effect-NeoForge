@@ -22,7 +22,7 @@ import java.util.Map;
 /// already show up in the "Gravitational Craft" category that Simple Ores adds to JEI
 /// (press R/U on a weapon). This plugin adds an information page to every weapon, saying
 /// which Gravity Core can make it and what the weapon does.
-@JeiPlugin
+@JeiPlugin // (on Fabric the plugin is loaded from the "jei_mod_plugin" entrypoint of fabric.mod.json)
 public class JEIWeaponsEffectPlugin implements IModPlugin {
     /// Names of the Gravity Core tiers (translations come from Simple Ores).
     private static final String[] CORE_TIERS = {
@@ -41,18 +41,18 @@ public class JEIWeaponsEffectPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         // Weapon -> minimum Gravity Core tier of its recipe (keep it equal to the "tier" in the recipe files)
         Map<ItemLike, Integer> weapons = new LinkedHashMap<>();
-        weapons.put(ModItems.BLINDNESS_DAGGER.get(), 1);
-        weapons.put(ModItems.SWIFTNESS_DAGGER.get(), 1);
-        weapons.put(ModItems.POISON_SWORD.get(), 1);
-        weapons.put(ModItems.ICE_SWORD.get(), 1);
-        weapons.put(ModItems.LANCE.get(), 1);
-        weapons.put(ModItems.WITHER_SWORD.get(), 1);
-        weapons.put(ModItems.FIRE_SWORD.get(), 1);
-        weapons.put(ModItems.GIMLIS_AXE.get(), 2);
-        weapons.put(ModItems.DARKNESS_MACE.get(), 2);
-        weapons.put(ModItems.HAMMER.get(), 3);
-        weapons.put(ModItems.WINGS_OF_DOOM.get(), 4);
-        weapons.put(ModItems.SOUL_CORE.get(), 1);
+        weapons.put(ModItems.BLINDNESS_DAGGER, 1);
+        weapons.put(ModItems.SWIFTNESS_DAGGER, 1);
+        weapons.put(ModItems.POISON_SWORD, 1);
+        weapons.put(ModItems.ICE_SWORD, 1);
+        weapons.put(ModItems.LANCE, 1);
+        weapons.put(ModItems.WITHER_SWORD, 1);
+        weapons.put(ModItems.FIRE_SWORD, 1);
+        weapons.put(ModItems.GIMLIS_AXE, 2);
+        weapons.put(ModItems.DARKNESS_MACE, 2);
+        weapons.put(ModItems.HAMMER, 3);
+        weapons.put(ModItems.WINGS_OF_DOOM, 4);
+        weapons.put(ModItems.SOUL_CORE, 1);
 
         weapons.forEach((weapon, tier) -> {
             String name = BuiltInRegistries.ITEM.getKey(weapon.asItem()).getPath();

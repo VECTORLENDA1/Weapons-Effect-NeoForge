@@ -39,7 +39,7 @@ public class SoulEntity extends Entity {
     }
 
     public static void spawn(ServerLevel level, Vec3 from, SoulRitualEntity ritual) {
-        SoulEntity soul = new SoulEntity(ModEntities.SOUL.get(), level);
+        SoulEntity soul = new SoulEntity(ModEntities.SOUL, level);
         soul.ritual = ritual;
         soul.angle = level.getRandom().nextDouble() * Math.PI * 2;
         soul.radius = ORBIT_MIN_RADIUS + level.getRandom().nextDouble() * (ORBIT_MAX_RADIUS - ORBIT_MIN_RADIUS);

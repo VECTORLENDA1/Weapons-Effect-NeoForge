@@ -75,7 +75,7 @@ public class DarknessSlamEntity extends Entity {
 
     /// The ability: the player leaps forward (the slam happens when they land).
     public static void leap(ServerLevel level, Player owner, int weaponLevel) {
-        DarknessSlamEntity slam = new DarknessSlamEntity(ModEntities.DARKNESS_SLAM.get(), level);
+        DarknessSlamEntity slam = new DarknessSlamEntity(ModEntities.DARKNESS_SLAM, level);
         slam.owner = owner;
         slam.entityData.set(DATA_LEVEL, weaponLevel);
         slam.setPos(owner.getX(), owner.getY(), owner.getZ());
@@ -148,7 +148,7 @@ public class DarknessSlamEntity extends Entity {
         int weaponLevel = getWeaponLevel();
         this.entityData.set(DATA_LANDED_AT, this.tickCount);
         ShockwaveEntity.blast(level, this.position(), WeaponLevels.pick(SLAM_RADIUS, weaponLevel), SLAM_COLOR, 0,
-                new ShockwaveEntity.Blast(owner, ModItems.DARKNESS_MACE.get(), WeaponLevels.pick(SLAM_DAMAGE, weaponLevel),
+                new ShockwaveEntity.Blast(owner, ModItems.DARKNESS_MACE, WeaponLevels.pick(SLAM_DAMAGE, weaponLevel),
                         0, WeaponLevels.pick(KNOCK_UP, weaponLevel), 0));
         level.playSound(null, this.blockPosition(), SoundEvents.SCULK_SHRIEKER_SHRIEK, SoundSource.PLAYERS, 1.0F, 0.6F);
     }
@@ -163,7 +163,7 @@ public class DarknessSlamEntity extends Entity {
                         && mob.position().subtract(this.position()).horizontalDistance() <= radius + mob.getBbWidth() / 2)) {
             mob.addEffect(new MobEffectInstance(ModEffect.DISORIENTED, WeaponLevels.pick(DISORIENTED_SECONDS, weaponLevel) * 20, 0), owner);
             if (slowness > 0) mob.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, slowness * 20, 2), owner);
-            if (rewarded.add(mob)) WeaponLevels.reward(owner, ModItems.DARKNESS_MACE.get(), mob);
+            if (rewarded.add(mob)) WeaponLevels.reward(owner, ModItems.DARKNESS_MACE, mob);
         }
     }
 

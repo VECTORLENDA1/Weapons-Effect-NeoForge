@@ -75,7 +75,7 @@ public class FlameWaveEntity extends Entity {
     }
 
     private FlameWaveEntity(Level level, LivingEntity owner, int weaponLevel) {
-        this(ModEntities.FLAME_WAVE.get(), level);
+        this(ModEntities.FLAME_WAVE, level);
         this.owner = owner;
         this.entityData.set(DATA_LEVEL, weaponLevel);
         // Comes out of the sword, a bit in front of the player, in the direction the player is aiming
@@ -201,7 +201,7 @@ public class FlameWaveEntity extends Entity {
             hit.add(target);
             target.setRemainingFireTicks(WeaponLevels.pick(FIRE_SECONDS, weaponLevel) * 20);
             target.hurtServer(level, damageSource(owner), WeaponLevels.pick(DAMAGE, weaponLevel));
-            WeaponLevels.reward(owner, ModItems.FIRE_SWORD.get(), target);
+            WeaponLevels.reward(owner, ModItems.FIRE_SWORD, target);
         }
     }
 
@@ -217,7 +217,7 @@ public class FlameWaveEntity extends Entity {
                 if (target == owner || target.fireImmune()) continue;
                 target.setRemainingFireTicks(Math.max(target.getRemainingFireTicks(), 60));
                 target.hurtServer(level, damageSource(owner), damage);
-                WeaponLevels.reward(owner, ModItems.FIRE_SWORD.get(), target);
+                WeaponLevels.reward(owner, ModItems.FIRE_SWORD, target);
             }
         }
     }

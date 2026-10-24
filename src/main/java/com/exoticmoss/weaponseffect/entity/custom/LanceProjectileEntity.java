@@ -83,14 +83,14 @@ public class LanceProjectileEntity extends AbstractArrow {
     }
 
     public LanceProjectileEntity(Level pLevel, LivingEntity pShooter, ItemStack pPickupItemStack) {
-        super(ModEntities.LANCE.get(), pShooter, pLevel, pPickupItemStack, null);
+        super(ModEntities.LANCE, pShooter, pLevel, pPickupItemStack, null);
         this.weaponLevel = WeaponLevels.level(pPickupItemStack);
         this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(pPickupItemStack));
         this.entityData.set(ID_FOIL, pPickupItemStack.hasFoil());
     }
 
     public LanceProjectileEntity(Level pLevel, double pX, double pY, double pZ, ItemStack pPickupItemStack) {
-        super(ModEntities.LANCE.get(), pX, pY, pZ, pLevel, pPickupItemStack, pPickupItemStack);
+        super(ModEntities.LANCE, pX, pY, pZ, pLevel, pPickupItemStack, pPickupItemStack);
         this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(pPickupItemStack));
         this.entityData.set(ID_FOIL, pPickupItemStack.hasFoil());
     }
@@ -126,7 +126,7 @@ public class LanceProjectileEntity extends AbstractArrow {
     }
 
     private void spawnFalling(ServerLevel level, Vec3 at, boolean giant) {
-        LanceProjectileEntity lance = new LanceProjectileEntity(level, at.x, at.y, at.z, new ItemStack(ModItems.LANCE.get()));
+        LanceProjectileEntity lance = new LanceProjectileEntity(level, at.x, at.y, at.z, new ItemStack(ModItems.LANCE));
         lance.isRainLance = true;
         lance.weaponLevel = weaponLevel;
         lance.entityData.set(ID_GIANT, giant);
@@ -140,7 +140,7 @@ public class LanceProjectileEntity extends AbstractArrow {
     private void giantExplosion(ServerLevel level) {
         if (!(this.getOwner() instanceof LivingEntity owner)) return;
         ShockwaveEntity.blast(level, this.position(), GIANT_RADIUS, 0x70D0D8FF, 0,
-                new ShockwaveEntity.Blast(owner, ModItems.LANCE.get(), GIANT_DAMAGE, 0.6, 0.6, 0));
+                new ShockwaveEntity.Blast(owner, ModItems.LANCE, GIANT_DAMAGE, 0.6, 0.6, 0));
         this.discard();
     }
 
@@ -252,7 +252,7 @@ public class LanceProjectileEntity extends AbstractArrow {
                 this.doPostHurtEffects(livingentity);
                 int weakness = WeaponLevels.pick(WEAKNESS_SECONDS, weaponLevel);
                 if (isRainLance && weakness > 0) livingentity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, weakness * 20, 1), owner);
-                if (owner instanceof LivingEntity livingOwner) WeaponLevels.reward(livingOwner, ModItems.LANCE.get(), livingentity);
+                if (owner instanceof LivingEntity livingOwner) WeaponLevels.reward(livingOwner, ModItems.LANCE, livingentity);
             }
         }
 
@@ -288,7 +288,7 @@ public class LanceProjectileEntity extends AbstractArrow {
 
     @Override
     protected ItemStack getDefaultPickupItem() {
-        return new ItemStack(ModItems.LANCE.get());
+        return new ItemStack(ModItems.LANCE);
     }
 
     @Override

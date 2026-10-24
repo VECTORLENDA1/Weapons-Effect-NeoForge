@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "license": "${mod_license}",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.exoticmoss.weaponseffect.WeaponsEffect"
+    ],
+    "client": [
+      "com.exoticmoss.weaponseffect.client.WeaponsEffectClient"
+    ],
+    "jei_mod_plugin": [
+      "com.exoticmoss.weaponseffect.compat.JEIWeaponsEffectPlugin"
+    ]
+  },
+  "mixins": [
+    "weaponseffect.mixins.json",
+    {
+      "config": "weaponseffect.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version_range}",
+    "java": ">=25",
+    "fabric-api": "*",
+    "simpleores": "${simpleores_version_range}"
+  },
+  "suggests": {
+    "jei": "*"
+  }
+}

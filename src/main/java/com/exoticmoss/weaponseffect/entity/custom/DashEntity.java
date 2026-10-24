@@ -2,9 +2,6 @@ package com.exoticmoss.weaponseffect.entity.custom;
 
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.entity.ModEntities;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import com.exoticmoss.weaponseffect.item.ModItems;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.server.level.ServerLevel;
@@ -82,7 +79,7 @@ public class DashEntity extends Entity {
     /// The ability: the player dashes to where they are aiming.
     public static void launch(ServerLevel level, Player owner, int weaponLevel) {
         if (!owner.onGround()) AIR_DASHES_USED.merge(owner.getUUID(), 1, Integer::sum);
-        DashEntity dash = new DashEntity(ModEntities.DASH.get(), level);
+        DashEntity dash = new DashEntity(ModEntities.DASH, level);
         dash.owner = owner;
         dash.weaponLevel = weaponLevel;
         Vec3 look = owner.getLookAngle();
@@ -129,16 +126,14 @@ public class DashEntity extends Entity {
             if (poison > 0) {
                 target.addEffect(new MobEffectInstance(MobEffects.POISON, poison * 20, WeaponLevels.pick(POISON_AMPLIFIER, weaponLevel)), owner);
             }
-            WeaponLevels.reward(owner, ModItems.SWIFTNESS_DAGGER.get(), target);
+            WeaponLevels.reward(owner, ModItems.SWIFTNESS_DAGGER, target);
         }
     }
 
     /// Touching the ground gives back the dashes in the air.
-    @EventBusSubscriber(modid = WeaponsEffect.MODID)
+    /// Called at the end of every player tick (see PlayerMixin).
     public static class Landing {
-        @SubscribeEvent
-        public static void onPlayerTick(PlayerTickEvent.Post event) {
-            Player player = event.getEntity();
+        public static void onPlayerTick(Player player) {
             if (!player.level().isClientSide() && player.onGround() && !AIR_DASHES_USED.isEmpty()) {
                 AIR_DASHES_USED.remove(player.getUUID());
             }

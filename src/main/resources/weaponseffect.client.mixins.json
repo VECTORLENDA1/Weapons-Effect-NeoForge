@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.exoticmoss.weaponseffect.mixin.client",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "FogRendererMixin",
+    "ScreenEffectRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

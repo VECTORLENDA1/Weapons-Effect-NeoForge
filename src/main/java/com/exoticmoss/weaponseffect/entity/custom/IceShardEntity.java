@@ -77,7 +77,7 @@ public class IceShardEntity extends Projectile {
     }
 
     private IceShardEntity(Level level, LivingEntity owner, int weaponLevel) {
-        this(ModEntities.ICE_SHARD.get(), level);
+        this(ModEntities.ICE_SHARD, level);
         this.setOwner(owner);
         this.weaponLevel = weaponLevel;
     }
@@ -187,7 +187,7 @@ public class IceShardEntity extends Projectile {
         mob.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, WeaponLevels.pick(FREEZE_SECONDS, weaponLevel) * 20,
                 WeaponLevels.pick(SLOWNESS_AMPLIFIER, weaponLevel)), this.getOwner());
         Freeze.apply(mob, WeaponLevels.pick(FREEZE_SECONDS, weaponLevel));
-        if (this.getOwner() instanceof LivingEntity owner) WeaponLevels.reward(owner, ModItems.ICE_SWORD.get(), mob);
+        if (this.getOwner() instanceof LivingEntity owner) WeaponLevels.reward(owner, ModItems.ICE_SWORD, mob);
     }
 
     /// The shard breaks; at level III and up it also freezes the mobs around.

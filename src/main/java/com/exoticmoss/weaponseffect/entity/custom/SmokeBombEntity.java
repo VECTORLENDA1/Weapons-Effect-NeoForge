@@ -64,7 +64,7 @@ public class SmokeBombEntity extends Entity {
 
     /// The ability: the smoke appears around the player.
     public static void launch(ServerLevel level, Player owner, int weaponLevel) {
-        SmokeBombEntity smoke = new SmokeBombEntity(ModEntities.SMOKE_BOMB.get(), level);
+        SmokeBombEntity smoke = new SmokeBombEntity(ModEntities.SMOKE_BOMB, level);
         smoke.owner = owner;
         smoke.entityData.set(DATA_LEVEL, weaponLevel);
         smoke.setPos(owner.getX(), owner.getY(), owner.getZ());
@@ -121,7 +121,7 @@ public class SmokeBombEntity extends Entity {
             mob.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, WeaponLevels.pick(BLINDNESS_SECONDS, weaponLevel) * 20, 0), owner);
             if (weakness > 0) mob.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, weakness * 20, 1), owner);
             if (lose && mob instanceof Mob monster && monster.getTarget() == owner) monster.setTarget(null);
-            if (rewarded.add(mob)) WeaponLevels.reward(owner, ModItems.BLINDNESS_DAGGER.get(), mob);
+            if (rewarded.add(mob)) WeaponLevels.reward(owner, ModItems.BLINDNESS_DAGGER, mob);
         }
     }
 

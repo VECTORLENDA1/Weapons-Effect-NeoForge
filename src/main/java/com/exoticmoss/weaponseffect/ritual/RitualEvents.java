@@ -1,6 +1,5 @@
 package com.exoticmoss.weaponseffect.ritual;
 
-import com.exoticmoss.weaponseffect.WeaponsEffect;
 import com.exoticmoss.weaponseffect.level.AbilityWeapon;
 import com.exoticmoss.weaponseffect.level.WeaponLevels;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -8,52 +7,56 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 
 /// Starts and ends the Soul Rituals (see SoulRitualEntity).
-@EventBusSubscriber(modid = WeaponsEffect.MODID)
 public class RitualEvents {
+
+    public static void register() {
+        UseBlockCallback.EVENT.register(RitualEvents::onRightClickCore);
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> onDeath(entity));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onLogout(handler.player));
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> onServerStopping());
+    }
 
     /// Right-click on a Gravity Core of Simple Ores with a "ready" weapon in the main hand: starts the ritual
     /// (instead of putting the weapon in the core).
-    @SubscribeEvent
-    public static void onRightClickCore(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getHand() != InteractionHand.MAIN_HAND) return;
-        ItemStack weapon = event.getEntity().getMainHandItem();
-        if (!(weapon.getItem() instanceof AbilityWeapon) || !WeaponLevels.isReady(weapon)) return;
-        String block = BuiltInRegistries.BLOCK.getKey(event.getLevel().getBlockState(event.getPos()).getBlock()).toString();
+    public static InteractionResult onRightClickCore(Player clicker, Level level, InteractionHand hand, BlockHitResult hit) {
+        if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+        ItemStack weapon = clicker.getMainHandItem();
+        if (!(weapon.getItem() instanceof AbilityWeapon) || !WeaponLevels.isReady(weapon)) return InteractionResult.PASS;
+        BlockPos pos = hit.getBlockPos();
+        String block = BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()).toString();
         int tier = SoulRitualEntity.coreTier(block);
-        if (tier == 0) return;
+        if (tier == 0) return InteractionResult.PASS;
 
-        event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.SUCCESS);
-        if (event.getEntity() instanceof ServerPlayer player) SoulRitualEntity.tryStart(player, event.getPos(), tier);
+        if (clicker instanceof ServerPlayer player) SoulRitualEntity.tryStart(player, pos, tier);
+        return InteractionResult.SUCCESS;
     }
 
     /// The player who started a ritual died: the ritual fails.
-    @SubscribeEvent
-    public static void onDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    public static void onDeath(LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer player)) return;
         SoulRitualEntity ritual = SoulRitualEntity.of(player.getUUID());
         if (ritual != null) ritual.failBecauseOwnerDied(player.level(), player);
     }
 
     /// The player who started a ritual left the game: the ritual stops and the weapon goes back as it was.
-    @SubscribeEvent
-    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    public static void onLogout(ServerPlayer player) {
         SoulRitualEntity ritual = SoulRitualEntity.of(player.getUUID());
         if (ritual != null && ritual.level() instanceof net.minecraft.server.level.ServerLevel level) ritual.abort(level, player);
     }
 
     /// The server is closing: every ritual stops and the weapons go back to their players.
-    @SubscribeEvent
-    public static void onServerStopping(ServerStoppingEvent event) {
+    public static void onServerStopping() {
         for (SoulRitualEntity ritual : SoulRitualEntity.all()) {
             if (ritual.level() instanceof net.minecraft.server.level.ServerLevel level) {
                 ritual.abort(level, ritual.getOwnerPlayer(level));

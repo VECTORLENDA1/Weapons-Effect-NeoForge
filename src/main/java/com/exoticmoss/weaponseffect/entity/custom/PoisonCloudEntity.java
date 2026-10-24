@@ -67,7 +67,7 @@ public class PoisonCloudEntity extends Entity {
     /// The ability: a poison cloud where the player is aiming.
     public static void launch(ServerLevel level, LivingEntity owner, int weaponLevel) {
         Vec3 target = Aim.target(owner, RANGE);
-        PoisonCloudEntity cloud = new PoisonCloudEntity(ModEntities.POISON_CLOUD.get(), level);
+        PoisonCloudEntity cloud = new PoisonCloudEntity(ModEntities.POISON_CLOUD, level);
         cloud.owner = owner;
         cloud.entityData.set(DATA_LEVEL, weaponLevel);
         cloud.setPos(target.x, target.y, target.z);
@@ -142,7 +142,7 @@ public class PoisonCloudEntity extends Entity {
             if (wither > 0) mob.addEffect(new MobEffectInstance(MobEffects.WITHER, wither * 20, 1), owner);
             int nausea = WeaponLevels.pick(NAUSEA_SECONDS, weaponLevel);
             if (nausea > 0) mob.addEffect(new MobEffectInstance(MobEffects.NAUSEA, nausea * 20, 0), owner);
-            if (owner != null) WeaponLevels.reward(owner, ModItems.POISON_SWORD.get(), mob);
+            if (owner != null) WeaponLevels.reward(owner, ModItems.POISON_SWORD, mob);
         }
     }
 

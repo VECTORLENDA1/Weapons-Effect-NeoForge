@@ -12,7 +12,7 @@ public class EffectCreditEvents {
 
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Post event) {
-        if (!event.getEntity().level().isClientSide()) EffectCredit.onDamage(event.getEntity(), event.getSource(), event.getNewDamage());
+        if (!event.getEntity().level().isClientSide()) EffectCredit.onDamage(event.getEntity(), event.getSource(), event.getHealthDamage());
     }
 
     @SubscribeEvent

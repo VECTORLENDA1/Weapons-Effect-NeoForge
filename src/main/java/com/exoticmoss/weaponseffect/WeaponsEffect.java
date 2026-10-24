@@ -29,6 +29,7 @@ public class WeaponsEffect implements ModInitializer {
 
         EventEffectItems.register();
         EffectEvents.register();
+        com.exoticmoss.weaponseffect.level.EffectCreditEvents.register();
         WeaponLevelCommand.register();
         RitualEvents.register();
     }

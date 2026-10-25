@@ -1,12 +1,13 @@
 package com.exoticmoss.weaponseffect.level;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.Vec3;
@@ -97,7 +98,8 @@ public final class EffectCredit {
     }
 
     private static boolean isSlime(LivingEntity mob) {
-        return mob.getType() == EntityType.SLIME || mob.getType() == EntityType.MAGMA_CUBE;
+        Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType());
+        return id.getNamespace().equals("minecraft") && (id.getPath().equals("slime") || id.getPath().equals("magma_cube"));
     }
 
     /// A mob turned into another one (e.g. a villager hit by lightning): the new mob keeps the credit of the old one.

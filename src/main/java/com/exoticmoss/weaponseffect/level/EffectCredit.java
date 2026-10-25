@@ -6,11 +6,15 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,6 +34,17 @@ public final class EffectCredit {
 
     /// Mob -> who gets the experience of its effects.
     private static final Map<UUID, Credit> CREDITS = new HashMap<>();
+
+    /// A slime (or magma cube) with credit that died: the small slimes that appear at that place soon after
+    /// are its children and take its credit (see onJoin).
+    private record Split(ServerLevel level, Vec3 pos, Credit credit, long time) {
+    }
+
+    private static final List<Split> SPLITS = new ArrayList<>();
+    /// The small slimes appear when the body of the big one goes away (1 second after dying): they must
+    /// appear within SPLIT_TICKS after the death and SPLIT_DISTANCE blocks of where it died.
+    private static final int SPLIT_TICKS = 60;
+    private static final double SPLIT_DISTANCE = 4;
 
     private EffectCredit() {
     }
@@ -55,12 +70,37 @@ public final class EffectCredit {
             LivingEntity owner = owner(mob);
             if (owner != null) WeaponLevels.rewardEffect(owner, CREDITS.get(mob.getUUID()).weapon(), true);
         }
-        // The credit is NOT forgotten here: a big slime only splits when its body goes away (after dying),
-        // and its small slimes take the credit (see inherit). Old credits are cleaned in remember().
+        // A slime splits into smaller slimes when its body goes away: they will take its credit (see onJoin)
+        Credit credit = CREDITS.get(mob.getUUID());
+        if (credit != null && isSlime(mob) && mob.level() instanceof ServerLevel level) {
+            long now = level.getGameTime();
+            SPLITS.removeIf(split -> now - split.time() > SPLIT_TICKS);
+            SPLITS.add(new Split(level, mob.position(), credit, now));
+        }
+        CREDITS.remove(mob.getUUID());
     }
 
-    /// A mob turned into another one, or a slime split into smaller slimes (they are born with the same effects):
-    /// the new mob keeps the credit of the old one.
+    /// A mob appeared in the world: if it is a small slime born from a big one with credit, it takes the credit.
+    public static void onJoin(Entity entity) {
+        if (SPLITS.isEmpty() || !(entity instanceof LivingEntity mob) || !isSlime(mob)
+                || !(mob.level() instanceof ServerLevel level) || CREDITS.containsKey(mob.getUUID())) return;
+        long now = level.getGameTime();
+        for (Split split : SPLITS) {
+            if (split.level() == level && now - split.time() <= SPLIT_TICKS
+                    && split.pos().distanceToSqr(mob.position()) <= SPLIT_DISTANCE * SPLIT_DISTANCE) {
+                // The small slime gets a fresh time, like if the ability had just hit it
+                Credit credit = split.credit();
+                CREDITS.put(mob.getUUID(), new Credit(credit.owner(), credit.weapon(), Math.max(credit.until(), now + CREDIT_SECONDS * 20L)));
+                return;
+            }
+        }
+    }
+
+    private static boolean isSlime(LivingEntity mob) {
+        return mob.getType() == EntityType.SLIME || mob.getType() == EntityType.MAGMA_CUBE;
+    }
+
+    /// A mob turned into another one (e.g. a villager hit by lightning): the new mob keeps the credit of the old one.
     public static void inherit(LivingEntity from, LivingEntity to) {
         Credit credit = CREDITS.get(from.getUUID());
         if (credit != null && !from.getUUID().equals(to.getUUID())) CREDITS.put(to.getUUID(), credit);

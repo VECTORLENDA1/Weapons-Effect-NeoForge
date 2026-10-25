@@ -3,6 +3,7 @@ package com.exoticmoss.weaponseffect.level;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -25,5 +26,11 @@ public class EffectCreditEvents {
     @SubscribeEvent
     public static void onConversion(LivingConversionEvent.Post event) {
         if (!event.getEntity().level().isClientSide()) EffectCredit.inherit(event.getEntity(), event.getOutcome());
+    }
+
+    /// The small slimes born from a big slime
+    @SubscribeEvent
+    public static void onJoin(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide() && !event.loadedFromDisk()) EffectCredit.onJoin(event.getEntity());
     }
 }

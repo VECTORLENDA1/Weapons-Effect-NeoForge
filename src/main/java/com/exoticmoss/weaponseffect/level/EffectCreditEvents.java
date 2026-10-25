@@ -9,5 +9,8 @@ public class EffectCreditEvents {
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamage, damageTaken, blocked) ->
                 EffectCredit.onDamage(entity, source, damageTaken));
         ServerLivingEntityEvents.AFTER_DEATH.register(EffectCredit::onDeath);
+        // A slime splitting into smaller slimes (or a mob turning into another one)
+        ServerLivingEntityEvents.MOB_CONVERSION.register((previous, converted, conversion) ->
+                EffectCredit.inherit(previous, converted));
     }
 }

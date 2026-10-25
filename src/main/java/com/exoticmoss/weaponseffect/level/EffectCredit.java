@@ -55,7 +55,15 @@ public final class EffectCredit {
             LivingEntity owner = owner(mob);
             if (owner != null) WeaponLevels.rewardEffect(owner, CREDITS.get(mob.getUUID()).weapon(), true);
         }
-        CREDITS.remove(mob.getUUID());
+        // The credit is NOT forgotten here: a big slime only splits when its body goes away (after dying),
+        // and its small slimes take the credit (see inherit). Old credits are cleaned in remember().
+    }
+
+    /// A mob turned into another one, or a slime split into smaller slimes (they are born with the same effects):
+    /// the new mob keeps the credit of the old one.
+    public static void inherit(LivingEntity from, LivingEntity to) {
+        Credit credit = CREDITS.get(from.getUUID());
+        if (credit != null && !from.getUUID().equals(to.getUUID())) CREDITS.put(to.getUUID(), credit);
     }
 
     /// Damage that comes from an effect: Wither, Poison, burning (after the flames) or freezing.

@@ -3,6 +3,7 @@ package com.exoticmoss.weaponseffect.level;
 import com.exoticmoss.weaponseffect.WeaponsEffect;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
@@ -18,5 +19,11 @@ public class EffectCreditEvents {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (!event.getEntity().level().isClientSide()) EffectCredit.onDeath(event.getEntity(), event.getSource());
+    }
+
+    /// A slime splitting into smaller slimes (or a mob turning into another one)
+    @SubscribeEvent
+    public static void onConversion(LivingConversionEvent.Post event) {
+        if (!event.getEntity().level().isClientSide()) EffectCredit.inherit(event.getEntity(), event.getOutcome());
     }
 }

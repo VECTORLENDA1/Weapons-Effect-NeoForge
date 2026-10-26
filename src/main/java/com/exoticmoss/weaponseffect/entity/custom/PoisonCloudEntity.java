@@ -105,7 +105,7 @@ public class PoisonCloudEntity extends Entity {
             this.discard();
             return;
         }
-        if (FOLLOW[getWeaponLevel() - 1]) followClosestMonster(level);
+        if (WeaponLevels.pick(FOLLOW, getWeaponLevel())) followClosestMonster(level);
         // Poisons the mobs inside every half second
         if (this.tickCount % 10 == 0) poisonMobsInside(level);
     }

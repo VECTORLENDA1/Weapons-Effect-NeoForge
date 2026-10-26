@@ -146,6 +146,11 @@ public class SoulRitualEntity extends Entity {
             fail(player, "weaponseffect.ritual.already");
             return;
         }
+        // Level V (or more, with the command): there is no next level
+        if (weaponLevel >= WeaponLevels.MAX_LEVEL) {
+            fail(player, "weaponseffect.level.max");
+            return;
+        }
         if (tier < weaponLevel) {
             fail(player, "weaponseffect.ritual.tier", Component.translatable(TIER_NAMES[weaponLevel - 1]));
             return;

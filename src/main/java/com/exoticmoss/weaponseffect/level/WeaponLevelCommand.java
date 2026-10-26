@@ -15,7 +15,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /// Command to test the levels (needs cheats / operator), always on the weapon in the main hand:
-///  - /weaponlevel set <1-5>   -> puts the weapon at that level (with 0 XP) and shows what changed
+///  - /weaponlevel set <1-100> -> puts the weapon at that level (with 0 XP) and shows what changed
+///                               (above 5 only with this command: see WeaponLevels.COMMAND_MAX_LEVEL)
 ///  - /weaponlevel xp <amount> -> gives XP to the weapon
 ///  - /weaponlevel ready       -> fills the XP, so the weapon is ready for the Soul Ritual
 @EventBusSubscriber(modid = WeaponsEffect.MODID)
@@ -26,7 +27,7 @@ public class WeaponLevelCommand {
         event.getDispatcher().register(Commands.literal("weaponlevel")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("set")
-                        .then(Commands.argument("level", IntegerArgumentType.integer(1, WeaponLevels.MAX_LEVEL))
+                        .then(Commands.argument("level", IntegerArgumentType.integer(1, WeaponLevels.COMMAND_MAX_LEVEL))
                                 .executes(c -> setLevel(c, IntegerArgumentType.getInteger(c, "level")))))
                 .then(Commands.literal("xp")
                         .then(Commands.argument("amount", FloatArgumentType.floatArg(0))

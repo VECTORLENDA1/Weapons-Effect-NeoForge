@@ -126,10 +126,10 @@ public class BlackHoleEntity extends Entity {
                 }
             }
             case SHRINKING -> {
-                if (COLLAPSE[weaponLevel - 1]) this.entityData.set(DATA_COLLAPSING, true);
+                if (WeaponLevels.pick(COLLAPSE, weaponLevel)) this.entityData.set(DATA_COLLAPSING, true);
                 radius = Math.max(radius - SHRINK_RATE, 0.0F);
                 if (radius <= 0.0F) {
-                    if (COLLAPSE[weaponLevel - 1] && this.level() instanceof ServerLevel level) collapse(level);
+                    if (WeaponLevels.pick(COLLAPSE, weaponLevel) && this.level() instanceof ServerLevel level) collapse(level);
                     this.discard();
                     return;
                 }

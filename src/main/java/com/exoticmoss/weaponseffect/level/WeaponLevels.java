@@ -19,9 +19,16 @@ import net.minecraft.world.item.ItemStack;
 ///  - When the weapon has XP_TO_NEXT_LEVEL experience it is "ready": the experience stops there and
 ///    the weapon must be taken to a Soul Core (tier = current level) to do the ritual and level up.
 ///  - The abilities read their numbers from tables: { level I, II, III, IV, V }.
+///  - Only with the command (/weaponlevel set) a weapon can go above level V, up to COMMAND_MAX_LEVEL: then the
+///    numbers that grow with the level keep growing, ABOVE_MAX_GROWTH of the level V value for every level more
+///    (the ones that get smaller, like the cooldowns, stay as in level V).
 public final class WeaponLevels {
     /// Highest level of a weapon.
     public static final int MAX_LEVEL = 5;
+    /// Highest level with the command (/weaponlevel set).
+    public static final int COMMAND_MAX_LEVEL = 100;
+    /// Above level V: how much more each level gives (0.05 = +5% of the level V value per level).
+    public static final double ABOVE_MAX_GROWTH = 0.05;
     /// Experience needed to be ready for the next level: { I -> II, II -> III, III -> IV, IV -> V }.
     public static final int[] XP_TO_NEXT_LEVEL = {1000, 2500, 4000, 8000};
     /// Experience given when an ability hits a mob, and extra experience when it kills the mob.
@@ -40,11 +47,11 @@ public final class WeaponLevels {
     }
 
     public static int level(ItemStack stack) {
-        return Math.clamp(get(stack).level(), 1, MAX_LEVEL);
+        return Math.clamp(get(stack).level(), 1, COMMAND_MAX_LEVEL);
     }
 
     public static void set(ItemStack stack, int level, float xp) {
-        stack.set(ModDataComponents.WEAPON_LEVEL.get(), new WeaponLevel(Math.clamp(level, 1, MAX_LEVEL), Math.max(0, xp)));
+        stack.set(ModDataComponents.WEAPON_LEVEL.get(), new WeaponLevel(Math.clamp(level, 1, COMMAND_MAX_LEVEL), Math.max(0, xp)));
     }
 
     /// Experience needed for the next level (0 at the max level).
@@ -58,17 +65,33 @@ public final class WeaponLevels {
         return level < MAX_LEVEL && get(stack).xp() >= xpNeeded(level);
     }
 
-    /// The value of a table for this level ({ level I, II, III, IV, V }).
+    /// The value of a table for this level ({ level I, II, III, IV, V }). Above the table (command levels):
+    /// see extend.
     public static int pick(int[] table, int level) {
-        return table[Math.clamp(level, 1, table.length) - 1];
+        if (level <= table.length) return table[Math.max(1, level) - 1];
+        return (int) Math.round(extend(table[table.length - 1], table.length > 1 ? table[table.length - 2] : table[0], level, table.length));
     }
 
     public static float pick(float[] table, int level) {
-        return table[Math.clamp(level, 1, table.length) - 1];
+        if (level <= table.length) return table[Math.max(1, level) - 1];
+        return (float) extend(table[table.length - 1], table.length > 1 ? table[table.length - 2] : table[0], level, table.length);
     }
 
     public static double pick(double[] table, int level) {
+        if (level <= table.length) return table[Math.max(1, level) - 1];
+        return extend(table[table.length - 1], table.length > 1 ? table[table.length - 2] : table[0], level, table.length);
+    }
+
+    /// Yes/no tables: above the table, the last value.
+    public static boolean pick(boolean[] table, int level) {
         return table[Math.clamp(level, 1, table.length) - 1];
+    }
+
+    /// Above the last level of a table: a value that grows with the level keeps growing (ABOVE_MAX_GROWTH of the
+    /// last value per level); a value that gets smaller or stays the same (cooldowns...) stays as the last one.
+    private static double extend(double last, double beforeLast, int level, int length) {
+        if (last <= beforeLast) return last;
+        return last * (1 + ABOVE_MAX_GROWTH * (level - length));
     }
 
     /// The weapon of this kind the entity is holding (right hand first, then left). Empty if none.

@@ -121,7 +121,7 @@ public class LanceProjectileEntity extends AbstractArrow {
             spawnFalling(level, center.add(Math.cos(angle) * distance, height, Math.sin(angle) * distance), false);
         }
         // The giant lance starts higher, so it lands last
-        if (GIANT_LANCE[weaponLevel - 1]) spawnFalling(level, center.add(0, RAIN_HEIGHT + 14, 0), true);
+        if (WeaponLevels.pick(GIANT_LANCE, weaponLevel)) spawnFalling(level, center.add(0, RAIN_HEIGHT + 14, 0), true);
         level.playSound(null, center.x, center.y, center.z, SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 1.0F, 1.4F);
     }
 

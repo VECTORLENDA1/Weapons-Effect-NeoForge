@@ -126,7 +126,7 @@ public class ThrownAxeEntity extends Entity {
 
     /// Damage: every mob the axe touches (once going and, from level III, once more coming back).
     private void hurtMobs(ServerLevel level) {
-        if (returning && !HIT_ON_RETURN[weaponLevel - 1]) return;
+        if (returning && !WeaponLevels.pick(HIT_ON_RETURN, weaponLevel)) return;
         Set<LivingEntity> hit = returning ? hitReturning : hitGoing;
         DamageSource source = owner instanceof Player player ? player.damageSources().playerAttack(player) : owner.damageSources().mobAttack(owner);
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.4),

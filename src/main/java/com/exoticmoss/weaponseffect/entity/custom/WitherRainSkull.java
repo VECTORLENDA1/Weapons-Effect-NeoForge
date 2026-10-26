@@ -62,7 +62,7 @@ public class WitherRainSkull extends WitherSkull {
         this(ModEntities.WITHER_RAIN_SKULL, level);
         this.setOwner(owner);
         this.weaponLevel = weaponLevel;
-        this.setDangerous(BLUE[weaponLevel - 1]);
+        this.setDangerous(WeaponLevels.pick(BLUE, weaponLevel));
     }
 
     /// The ability: a spread of skulls in front of the player.
@@ -86,7 +86,7 @@ public class WitherRainSkull extends WitherSkull {
 
         // Keeps the speed, and turns towards the closest monster (level III and up)
         Vec3 direction = this.getDeltaMovement().normalize();
-        if (HOMING[weaponLevel - 1]) {
+        if (WeaponLevels.pick(HOMING, weaponLevel)) {
             LivingEntity target = closestMonster(level);
             if (target != null) {
                 Vec3 toTarget = target.getBoundingBox().getCenter().subtract(this.position()).normalize();

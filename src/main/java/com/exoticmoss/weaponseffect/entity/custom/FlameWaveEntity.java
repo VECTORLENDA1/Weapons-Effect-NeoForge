@@ -99,7 +99,7 @@ public class FlameWaveEntity extends Entity {
     }
 
     public boolean isSoulFire() {
-        return SOUL_FIRE[getWeaponLevel() - 1];
+        return WeaponLevels.pick(SOUL_FIRE, getWeaponLevel());
     }
 
     /// The direction of the flames (where the player was aiming).

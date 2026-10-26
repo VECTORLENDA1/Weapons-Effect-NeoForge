@@ -108,7 +108,7 @@ public class SmokeBombEntity extends Entity {
             this.discard();
             return;
         }
-        if (this.tickCount % EFFECT_INTERVAL == 0) affectMobs(level, KEEP_LOST[getWeaponLevel() - 1]);
+        if (this.tickCount % EFFECT_INTERVAL == 0) affectMobs(level, WeaponLevels.pick(KEEP_LOST, getWeaponLevel()));
     }
 
     /// Blinds the mobs inside; if "lose" is true they also stop chasing the player.

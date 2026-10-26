@@ -23,14 +23,14 @@ public final class WeaponLevels {
     /// Highest level of a weapon.
     public static final int MAX_LEVEL = 5;
     /// Experience needed to be ready for the next level: { I -> II, II -> III, III -> IV, IV -> V }.
-    public static final int[] XP_TO_NEXT_LEVEL = {1000, 3000, 6000, 10000};
+    public static final int[] XP_TO_NEXT_LEVEL = {1000, 2500, 4000, 8000};
     /// Experience given when an ability hits a mob, and extra experience when it kills the mob.
-    public static final float XP_PER_HIT = 0.5F;
-    public static final float XP_PER_KILL = 3F;
+    public static final float XP_PER_HIT = 4F;
+    public static final float XP_PER_KILL = 8F;
     /// Experience given by a normal hit (left-click) with the weapon.
-    public static final float XP_PER_NORMAL_HIT = 0.1F;
+    public static final float XP_PER_NORMAL_HIT = 1F;
     /// Experience for each damage a mob takes from the effect of an ability (Wither, Poison, fire, freezing).
-    public static final float XP_PER_EFFECT_DAMAGE = 0.2F;
+    public static final float XP_PER_EFFECT_DAMAGE = 2F;
 
     private WeaponLevels() {
     }

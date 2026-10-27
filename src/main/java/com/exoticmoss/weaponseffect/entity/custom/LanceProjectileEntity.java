@@ -54,10 +54,13 @@ public class LanceProjectileEntity extends AbstractArrow {
     public static final int[] WEAKNESS_SECONDS = {0, 0, 6, 8, 10};
     /// Levels with the giant lance at the end.
     public static final boolean[] GIANT_LANCE = {false, false, false, false, true};
-    /// The giant lance: its explosion (radius in blocks and damage), and how big it looks.
+    /// The giant lance at level V: its explosion (radius in blocks and damage), and how big it looks.
+    /// Above level V (command levels) they keep growing with the level (see giantRadius, giantDamage, giantScale).
     public static final float GIANT_RADIUS = 6.0F;
     public static final float GIANT_DAMAGE = 40.0F;
     public static final float GIANT_SCALE = 4.0F;
+    /// The size grows slower than the explosion (a level 100 lance would cover the sky).
+    public static final double GIANT_SCALE_GROWTH = 0.02;
     /// How high the lances start (blocks above the hit), how fast they fall (blocks per tick)
     /// and how long they stay in the ground before disappearing (ticks).
     public static final float RAIN_HEIGHT = 12.0F;
@@ -67,6 +70,8 @@ public class LanceProjectileEntity extends AbstractArrow {
     private static final EntityDataAccessor<Byte> ID_LOYALTY = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Boolean> ID_FOIL = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> ID_GIANT = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.BOOLEAN);
+    /// How big the giant lance looks (sent to the client, it grows with the level).
+    private static final EntityDataAccessor<Float> ID_GIANT_SCALE = SynchedEntityData.defineId(LanceProjectileEntity.class, EntityDataSerializers.FLOAT);
     /// Damage done when the lance hits a mob.
     private static final float DAMAGE = 10.0F;
     private boolean dealtDamage;
@@ -102,9 +107,28 @@ public class LanceProjectileEntity extends AbstractArrow {
         pBuilder.define(ID_LOYALTY, (byte)0);
         pBuilder.define(ID_FOIL, false);
         pBuilder.define(ID_GIANT, false);
+        pBuilder.define(ID_GIANT_SCALE, GIANT_SCALE);
     }
 
     /// true for the giant lance of level V (drawn bigger).
+    /// How big the giant lance looks.
+    public float giantScale() {
+        return this.entityData.get(ID_GIANT_SCALE);
+    }
+
+    /// The giant lance for this level: level V = the numbers above; more levels (command) = bigger.
+    public static float giantRadius(int level) {
+        return (float) (GIANT_RADIUS * (1 + WeaponLevels.ABOVE_MAX_GROWTH * Math.max(0, level - WeaponLevels.MAX_LEVEL)));
+    }
+
+    public static float giantDamage(int level) {
+        return (float) (GIANT_DAMAGE * (1 + WeaponLevels.ABOVE_MAX_GROWTH * Math.max(0, level - WeaponLevels.MAX_LEVEL)));
+    }
+
+    public static float giantScale(int level) {
+        return (float) (GIANT_SCALE * (1 + GIANT_SCALE_GROWTH * Math.max(0, level - WeaponLevels.MAX_LEVEL)));
+    }
+
     public boolean isGiant() {
         return this.entityData.get(ID_GIANT);
     }
@@ -130,6 +154,7 @@ public class LanceProjectileEntity extends AbstractArrow {
         lance.isRainLance = true;
         lance.weaponLevel = weaponLevel;
         lance.entityData.set(ID_GIANT, giant);
+        lance.entityData.set(ID_GIANT_SCALE, giantScale(weaponLevel));
         lance.setOwner(this.getOwner());
         lance.pickup = Pickup.DISALLOWED;
         lance.shoot(0, -1, 0, RAIN_SPEED, giant ? 0 : 2.0F);
@@ -139,8 +164,8 @@ public class LanceProjectileEntity extends AbstractArrow {
     /// The giant lance explodes when it lands (damage only, no blocks broken).
     private void giantExplosion(ServerLevel level) {
         if (!(this.getOwner() instanceof LivingEntity owner)) return;
-        ShockwaveEntity.blast(level, this.position(), GIANT_RADIUS, 0x70D0D8FF, 0,
-                new ShockwaveEntity.Blast(owner, ModItems.LANCE.get(), GIANT_DAMAGE, 0.6, 0.6, 0));
+        ShockwaveEntity.blast(level, this.position(), giantRadius(weaponLevel), 0x70D0D8FF, 0,
+                new ShockwaveEntity.Blast(owner, ModItems.LANCE.get(), giantDamage(weaponLevel), 0.6, 0.6, 0));
         this.discard();
     }
 

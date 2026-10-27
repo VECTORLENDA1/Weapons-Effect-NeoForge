@@ -244,5 +244,7 @@
   "entity.weaponseffect.thrown_axe": "Boomerang Axe",
   "entity.weaponseffect.darkness_slam": "Dark Slam",
   "weaponseffect.ability.ground": "Only from the ground",
-  "weaponseffect.ability.air_dashes": "No more dashes in the air: touch the ground"
+  "weaponseffect.ability.air_dashes": "No more dashes in the air: touch the ground",
+  "weaponseffect.stat.giant_damage": "Giant lance damage",
+  "weaponseffect.stat.giant_radius": "Giant lance radius"
 }

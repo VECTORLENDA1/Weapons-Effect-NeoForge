@@ -244,5 +244,7 @@
   "entity.weaponseffect.thrown_axe": "Machado Bumerangue",
   "entity.weaponseffect.darkness_slam": "Impacto Sombrio",
   "weaponseffect.ability.ground": "Só a partir do chão",
-  "weaponseffect.ability.air_dashes": "Sem investidas no ar: toca no chão"
+  "weaponseffect.ability.air_dashes": "Sem investidas no ar: toca no chão",
+  "weaponseffect.stat.giant_damage": "Dano da lança gigante",
+  "weaponseffect.stat.giant_radius": "Raio da lança gigante"
 }

@@ -47,7 +47,7 @@ public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntit
 
     @Override
     protected AABB getBoundingBoxForCulling(LanceProjectileEntity entity) {
-        return super.getBoundingBoxForCulling(entity).inflate(entity.isGiant() ? 2.5 * LanceProjectileEntity.GIANT_SCALE : 2.5);
+        return super.getBoundingBoxForCulling(entity).inflate(entity.isGiant() ? 2.5 * entity.giantScale() : 2.5);
     }
 
     @Override
@@ -61,6 +61,6 @@ public class LanceProjectileRenderer extends EntityRenderer<LanceProjectileEntit
         state.yRot = entity.getYRot(partialTicks);
         state.xRot = entity.getXRot(partialTicks);
         state.isFoil = entity.isFoil();
-        state.scale = entity.isGiant() ? LanceProjectileEntity.GIANT_SCALE : 1;
+        state.scale = entity.isGiant() ? entity.giantScale() : 1;
     }
 }

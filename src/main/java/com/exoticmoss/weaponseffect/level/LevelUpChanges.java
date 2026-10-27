@@ -68,7 +68,9 @@ public final class LevelUpChanges {
                 stat("lances", l -> WeaponLevels.pick(LanceProjectileEntity.RAIN_COUNT, l)),
                 stat("damage", l -> WeaponLevels.pick(LanceProjectileEntity.RAIN_DAMAGE, l)),
                 stat("radius", l -> WeaponLevels.pick(LanceProjectileEntity.RAIN_RADIUS, l)),
-                seconds("weakness", l -> WeaponLevels.pick(LanceProjectileEntity.WEAKNESS_SECONDS, l))));
+                seconds("weakness", l -> WeaponLevels.pick(LanceProjectileEntity.WEAKNESS_SECONDS, l)),
+                stat("giant_damage", l -> WeaponLevels.pick(LanceProjectileEntity.GIANT_LANCE, l) ? LanceProjectileEntity.giantDamage(l) : 0),
+                stat("giant_radius", l -> WeaponLevels.pick(LanceProjectileEntity.GIANT_LANCE, l) ? LanceProjectileEntity.giantRadius(l) : 0)));
         stats.put(ModItems.POISON_SWORD, List.of(
                 stat("radius", l -> WeaponLevels.pick(PoisonCloudEntity.RADIUS, l)),
                 seconds("duration", l -> WeaponLevels.pick(PoisonCloudEntity.DURATION, l) / 20.0),
